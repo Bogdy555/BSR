@@ -2,9 +2,9 @@
 
 call gccvarsx64.bat
 
-mkdir ".\Binaries\"
-mkdir ".\Binaries\Software Rasterizer\"
-mkdir ".\Binaries\Software Rasterizer\C++98\"
+if not exist ".\Binaries\" mkdir ".\Binaries\"
+if not exist ".\Binaries\Software Rasterizer\" mkdir ".\Binaries\Software Rasterizer\"
+if not exist ".\Binaries\Software Rasterizer\C++98\" mkdir ".\Binaries\Software Rasterizer\C++98\"
 
 echo on
 

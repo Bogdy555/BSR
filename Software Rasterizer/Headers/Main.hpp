@@ -10,6 +10,8 @@
 
 #include "Dependencies.hpp"
 
+#include "Math.hpp"
+
 
 
 #pragma pack(pop)

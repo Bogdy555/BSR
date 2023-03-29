@@ -8,8 +8,13 @@
 
 
 
+#include <iostream>
+#include <fstream>
 #include <cstdio>
+
 #include <cassert>
+
+#include <cmath>
 
 
 
@@ -22,6 +27,23 @@
 
 
 template <typename T> class Vector;
+
+namespace Math
+{
+
+	struct Vec2f;
+
+	struct Vec3f;
+
+	struct Vec4f;
+
+	class Mat2f;
+
+	class Mat3f;
+
+	class Mat4f;
+
+}
 
 
 

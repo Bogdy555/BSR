@@ -200,4 +200,23 @@ private:
 
 
 
+template <typename T> std::ostream& operator<< (std::ostream& _OutStream, const Vector<T>& _Vec)
+{
+	_OutStream << _Vec.GetSize() << '\n';
+
+	for (size_t _Index = 0; _Index < _Vec.GetSize() - 1; _Index++)
+	{
+		_OutStream << _Vec[_Index] << ' ';
+	}
+
+	if (_Vec.GetSize())
+	{
+		_OutStream << _Vec[_Vec.GetSize() - 1];
+	}
+
+	return _OutStream;
+}
+
+
+
 #endif
