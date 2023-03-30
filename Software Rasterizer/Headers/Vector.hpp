@@ -219,4 +219,24 @@ template <typename T> std::ostream& operator<< (std::ostream& _OutStream, const 
 
 
 
+template <typename T> std::istream& operator>> (std::istream& _InStream, Vector<T>& _Vec)
+{
+	size_t _Size = 0;
+
+	_InStream >> _Size;
+
+	for (size_t _Index = 0; _Index < _Size; _Index++)
+	{
+		T _Elem;
+
+		_InStream >> _Elem;
+
+		_Vec.PushBack(_Elem);
+	}
+
+	return _InStream;
+}
+
+
+
 #endif

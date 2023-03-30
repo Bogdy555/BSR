@@ -12,6 +12,12 @@
 
 #include "Math.hpp"
 
+#include "AssetManager.hpp"
+
+#include "Image.hpp"
+
+#include "Geometry.hpp"
+
 
 
 #pragma pack(pop)

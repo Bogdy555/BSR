@@ -175,13 +175,19 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Sources\AssetManager.cpp" />
     <ClCompile Include="Sources\EntryPoint.cpp" />
+    <ClCompile Include="Sources\Geometry.cpp" />
+    <ClCompile Include="Sources\Image.cpp" />
     <ClCompile Include="Sources\Math.cpp" />
     <ClCompile Include="Sources\Math_Matrix.cpp" />
     <ClCompile Include="Sources\Math_Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Headers\AssetManager.hpp" />
     <ClInclude Include="Headers\Dependencies.hpp" />
+    <ClInclude Include="Headers\Geometry.hpp" />
+    <ClInclude Include="Headers\Image.hpp" />
     <ClInclude Include="Headers\Macros.hpp" />
     <ClInclude Include="Headers\Main.hpp" />
     <ClInclude Include="Headers\Math.hpp" />
