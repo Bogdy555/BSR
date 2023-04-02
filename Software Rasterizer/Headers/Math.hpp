@@ -18,6 +18,7 @@ namespace Math
 
 		Vec2f(const float _x = 0.0f, const float _y = 0.0f);
 		Vec2f(const Vec2f& _Other);
+		Vec2f(Vec2f&& _Other) noexcept;
 		~Vec2f();
 
 		float* Data();
@@ -58,6 +59,7 @@ namespace Math
 		const float& operator[] (const size_t _Index) const;
 
 		const Vec2f& operator= (const Vec2f& _Other);
+		const Vec2f& operator= (Vec2f&& _Other) noexcept;
 
 		static const float GetAngle(const Vec2f& _A, const Vec2f& _B);
 		static const float Distance(const Vec2f& _A, const Vec2f& _B);
@@ -74,10 +76,11 @@ namespace Math
 
 		Vec3f(const float _x = 0.0f, const float _y = 0.0f, const float _z = 0.0f);
 		Vec3f(const Vec3f& _Other);
+		Vec3f(Vec3f&& _Other) noexcept;
 		explicit Vec3f(const Vec2f& _Other, const float _z = 0.0f);
 		~Vec3f();
 
-		const Vec2f ToVec2f() const;
+		explicit operator const Vec2f() const;
 
 		float* Data();
 		const float* Data() const;
@@ -117,6 +120,7 @@ namespace Math
 		const float& operator[] (const size_t _Index) const;
 
 		const Vec3f& operator= (const Vec3f& _Other);
+		const Vec3f& operator= (Vec3f&& _Other) noexcept;
 
 		static const float GetAngle(const Vec3f& _A, const Vec3f& _B);
 		static const float Distance(const Vec3f& _A, const Vec3f& _B);
@@ -134,12 +138,13 @@ namespace Math
 
 		Vec4f(const float _x = 0.0f, const float _y = 0.0f, const float _z = 0.0f, const float _w = 0.0f);
 		Vec4f(const Vec4f& _Other);
+		Vec4f(Vec4f&& _Other) noexcept;
 		explicit Vec4f(const Vec2f& _Other, const float _z = 0.0f, const float _w = 0.0f);
 		explicit Vec4f(const Vec3f& _Other, const float _w = 0.0f);
 		~Vec4f();
 
-		const Vec2f ToVec2f() const;
-		const Vec3f ToVec3f() const;
+		explicit operator const Vec2f() const;
+		explicit operator const Vec3f() const;
 
 		float* Data();
 		const float* Data() const;
@@ -179,6 +184,7 @@ namespace Math
 		const float& operator[] (const size_t _Index) const;
 
 		const Vec4f& operator= (const Vec4f& _Other);
+		const Vec4f& operator= (Vec4f&& _Other) noexcept;
 
 		static const float GetAngle(const Vec4f& _A, const Vec4f& _B);
 		static const float Distance(const Vec4f& _A, const Vec4f& _B);
@@ -196,6 +202,7 @@ namespace Math
 
 		Mat2f();
 		Mat2f(const Mat2f& _Other);
+		Mat2f(Mat2f&& _Other) noexcept;
 		~Mat2f();
 
 		float* Data();
@@ -240,6 +247,7 @@ namespace Math
 		const float* operator[] (const size_t _Index) const;
 
 		const Mat2f& operator= (const Mat2f& _Other);
+		const Mat2f& operator= (Mat2f&& _Other) noexcept;
 
 		static const Mat2f GetScale(const float _x, const float _y);
 		static const Mat2f GetFill(const float _Value);
@@ -259,10 +267,11 @@ namespace Math
 
 		Mat3f();
 		Mat3f(const Mat3f& _Other);
+		Mat3f(Mat3f&& _Other) noexcept;
 		explicit Mat3f(const Mat2f& _Other);
 		~Mat3f();
 
-		const Mat2f ToMat2f() const;
+		explicit operator const Mat2f() const;
 
 		float* Data();
 		const float* Data() const;
@@ -306,6 +315,7 @@ namespace Math
 		const float* operator[] (const size_t _Index) const;
 
 		const Mat3f& operator= (const Mat3f& _Other);
+		const Mat3f& operator= (Mat3f&& _Other) noexcept;
 
 		static const Mat3f GetScale(const float _x, const float _y, const float _z);
 		static const Mat3f GetFill(const float _Value);
@@ -327,12 +337,13 @@ namespace Math
 
 		Mat4f();
 		Mat4f(const Mat4f& _Other);
+		Mat4f(Mat4f&& _Other) noexcept;
 		explicit Mat4f(const Mat2f& _Other);
 		explicit Mat4f(const Mat3f& _Other);
 		~Mat4f();
 
-		const Mat2f ToMat2f() const;
-		const Mat3f ToMat3f() const;
+		explicit operator const Mat2f() const;
+		explicit operator const Mat3f() const;
 
 		float* Data();
 		const float* Data() const;
@@ -376,11 +387,12 @@ namespace Math
 		const float* operator[] (const size_t _Index) const;
 
 		const Mat4f& operator= (const Mat4f& _Other);
+		const Mat4f& operator= (Mat4f&& _Other) noexcept;
 
 		static const Mat4f GetScale(const float _x, const float _y, const float _z, const float _w);
 		static const Mat4f GetFill(const float _Value);
 		static const Mat4f GetShear(const float _Value, const size_t _ShearedAxis, const size_t _ShearByAxis);
-		static const Mat4f GetRotation(const float _Angle, const Vec4f& _RotationAxis);
+		static const Mat4f GetRotation(const float _Angle, const Vec3f& _RotationAxis);
 		static const Mat4f GetTranslation(const Vec3f& _Coords);
 		static const Mat4f GetOrtho(const float _Left, const float _Right, const float _Bottom, const float _Top, const float _Front, const float _Back);
 		static const Mat4f GetPerspective(const float _Fov, const float _AspectRatio, const float _ZNear, const float _ZFar);

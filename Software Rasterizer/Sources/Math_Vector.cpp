@@ -12,6 +12,12 @@ Math::Vec2f::Vec2f(const Vec2f& _Other) : x(_Other.x), y(_Other.y)
 
 }
 
+Math::Vec2f::Vec2f(Vec2f&& _Other) noexcept : x(_Other.x), y(_Other.y)
+{
+	_Other.x = 0.0f;
+	_Other.y = 0.0f;
+}
+
 Math::Vec2f::~Vec2f()
 {
 
@@ -186,6 +192,17 @@ const Math::Vec2f& Math::Vec2f::operator= (const Vec2f& _Other)
 	return *this;
 }
 
+const Math::Vec2f& Math::Vec2f::operator= (Vec2f&& _Other) noexcept
+{
+	x = _Other.x;
+	y = _Other.y;
+
+	_Other.x = 0.0f;
+	_Other.y = 0.0f;
+
+	return *this;
+}
+
 const float Math::Vec2f::GetAngle(const Vec2f& _A, const Vec2f& _B)
 {
 	return acosf(Dot(_A.Normalized(), _B.Normalized()));
@@ -223,6 +240,13 @@ Math::Vec3f::Vec3f(const Vec3f& _Other) : x(_Other.x), y(_Other.y), z(_Other.z)
 
 }
 
+Math::Vec3f::Vec3f(Vec3f&& _Other) noexcept : x(_Other.x), y(_Other.y), z(_Other.z)
+{
+	_Other.x = 0.0f;
+	_Other.y = 0.0f;
+	_Other.z = 0.0f;
+}
+
 Math::Vec3f::Vec3f(const Vec2f& _Other, const float _z) : x(_Other.x), y(_Other.y), z(_z)
 {
 
@@ -233,7 +257,7 @@ Math::Vec3f::~Vec3f()
 
 }
 
-const Math::Vec2f Math::Vec3f::ToVec2f() const
+Math::Vec3f::operator const Math::Vec2f() const
 {
 	return Vec2f(x, y);
 }
@@ -416,6 +440,19 @@ const Math::Vec3f& Math::Vec3f::operator= (const Vec3f& _Other)
 	return *this;
 }
 
+const Math::Vec3f& Math::Vec3f::operator= (Vec3f&& _Other) noexcept
+{
+	x = _Other.x;
+	y = _Other.y;
+	z = _Other.z;
+
+	_Other.x = 0.0f;
+	_Other.y = 0.0f;
+	_Other.z = 0.0f;
+
+	return *this;
+}
+
 const float Math::Vec3f::GetAngle(const Vec3f& _A, const Vec3f& _B)
 {
 	return acosf(Dot(_A.Normalized(), _B.Normalized()));
@@ -458,6 +495,14 @@ Math::Vec4f::Vec4f(const Vec4f& _Other) : x(_Other.x), y(_Other.y), z(_Other.z),
 
 }
 
+Math::Vec4f::Vec4f(Vec4f&& _Other) noexcept : x(_Other.x), y(_Other.y), z(_Other.z), w(_Other.w)
+{
+	_Other.x = 0.0f;
+	_Other.y = 0.0f;
+	_Other.z = 0.0f;
+	_Other.w = 0.0f;
+}
+
 Math::Vec4f::Vec4f(const Vec2f& _Other, const float _z, const float _w) : x(_Other.x), y(_Other.y), z(_z), w(_w)
 {
 
@@ -473,12 +518,12 @@ Math::Vec4f::~Vec4f()
 
 }
 
-const Math::Vec2f Math::Vec4f::ToVec2f() const
+Math::Vec4f::operator const Math::Vec2f() const
 {
 	return Vec2f(x, y);
 }
 
-const Math::Vec3f Math::Vec4f::ToVec3f() const
+Math::Vec4f::operator const Math::Vec3f() const
 {
 	return Vec3f(x, y, z);
 }
@@ -670,9 +715,24 @@ const Math::Vec4f& Math::Vec4f::operator= (const Vec4f& _Other)
 	return *this;
 }
 
+const Math::Vec4f& Math::Vec4f::operator= (Vec4f&& _Other) noexcept
+{
+	x = _Other.x;
+	y = _Other.y;
+	z = _Other.z;
+	w = _Other.w;
+
+	_Other.x = 0.0f;
+	_Other.y = 0.0f;
+	_Other.z = 0.0f;
+	_Other.w = 0.0f;
+
+	return *this;
+}
+
 const float Math::Vec4f::GetAngle(const Vec4f& _A, const Vec4f& _B)
 {
-	return acosf(Vec3f::Dot(_A.ToVec3f().Normalized(), _B.ToVec3f().Normalized()));
+	return acosf(Vec3f::Dot(((Vec3f)(_A)).Normalized(), ((Vec3f)(_B)).Normalized()));
 }
 
 const float Math::Vec4f::Distance(const Vec4f & _A, const Vec4f & _B)

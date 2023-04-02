@@ -37,13 +37,11 @@
 
 #include <iostream>
 #include <fstream>
-#include <cstdio>
 
 #include <cassert>
 
 #include <cmath>
 
-#include <cstring>
 #include <sstream>
 
 
@@ -57,6 +55,13 @@
 
 
 template <typename T> class Vector;
+
+namespace String
+{
+
+
+
+}
 
 namespace Math
 {
@@ -88,8 +93,10 @@ namespace Image
 
 }
 
-namespace Geometry
+namespace Rasterizer
 {
+
+	struct Camera;
 
 	struct VertexData;
 

@@ -10,8 +10,8 @@
 
 struct Asset
 {
-	void* Data;
-	const wchar_t* Name;
+	void* Data = nullptr;
+	const wchar_t* Name = nullptr;
 };
 
 class AssetManager
@@ -20,6 +20,8 @@ class AssetManager
 public:
 
 	AssetManager();
+	AssetManager(const AssetManager& _Other) = delete;
+	AssetManager(AssetManager&& _Other) noexcept;
 	~AssetManager();
 
 	bool AddAsset(void* _Data, const wchar_t* _Name);
@@ -29,6 +31,7 @@ public:
 	void RemoveAllAssets();
 
 	const size_t GetAssetsCount() const;
+	const size_t GetAssetIndex(const wchar_t* _Name) const;
 
 	void* GetAssetData(const wchar_t* _Name);
 	const void* GetAssetData(const wchar_t* _Name) const;
@@ -36,7 +39,8 @@ public:
 	Asset& operator[] (const size_t _Index);
 	const Asset& operator[] (const size_t _Index) const;
 
-	const size_t GetAssetIndex(const wchar_t* _Name) const;
+	void operator= (const AssetManager& _Other) = delete;
+	void operator= (AssetManager&& _Other) noexcept;
 
 private:
 

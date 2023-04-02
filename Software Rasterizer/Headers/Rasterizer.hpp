@@ -1,6 +1,6 @@
-#ifndef Model_hpp
+#ifndef Rasterizer_hpp
 
-#define Model_hpp
+#define Rasterizer_hpp
 
 
 
@@ -8,16 +8,40 @@
 
 
 
-namespace Geometry
+#define OBJ_MAX_LINE_LEN 200
+
+
+
+namespace Rasterizer
 {
+
+	struct Camera
+	{
+
+		Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
+
+		float AngleFlat = 0.0f;
+		float AngleVertical = 0.0f;
+		float AngleTilt = 0.0f;
+
+		bool Perspective = true;
+
+		float FieldOfView = 120.0f;
+		float NearPlane = 0.001f;
+		float FarPlane = 1000.0f;
+
+		const Math::Mat4f GetViewMatrix() const;
+		const Math::Mat4f GetProjectionMatrix(const float _AspectRatio) const;
+
+	};
 
 	struct VertexData
 	{
-		Math::Vec4f Position;
-		Math::Vec4f Color;
-		Math::Vec3f Normal;
-		Math::Vec3f Tangent;
-		Math::Vec2f TextureCoords;
+		Math::Vec4f Position = Math::Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
+		Math::Vec4f Color = Math::Vec4f(1.0f, 1.0f, 1.0f, 1.0f);
+		Math::Vec3f Normal = Math::Vec3f(0.0f, 0.0f, 1.0f);
+		Math::Vec3f Tangent = Math::Vec3f(1.0f, 0.0f, 0.0f);
+		Math::Vec2f TextureCoords = Math::Vec2f(0.0f, 0.0f);
 	};
 
 	class VertexBuffer
@@ -27,6 +51,7 @@ namespace Geometry
 
 		VertexBuffer();
 		VertexBuffer(const VertexBuffer& _Other);
+		VertexBuffer(VertexBuffer&& _Other) noexcept;
 		~VertexBuffer();
 
 		void PushBack(const VertexData& _Vertex);
@@ -39,6 +64,7 @@ namespace Geometry
 		const VertexData& operator[] (const size_t _Index) const;
 
 		void operator= (const VertexBuffer& _Other);
+		void operator= (VertexBuffer&& _Other) noexcept;
 
 	private:
 
@@ -48,9 +74,9 @@ namespace Geometry
 
 	struct IndexData
 	{
-		size_t IndexA;
-		size_t IndexB;
-		size_t IndexC;
+		size_t IndexA = 0;
+		size_t IndexB = 0;
+		size_t IndexC = 0;
 	};
 
 	class IndexBuffer
@@ -60,6 +86,7 @@ namespace Geometry
 
 		IndexBuffer();
 		IndexBuffer(const IndexBuffer& _Other);
+		IndexBuffer(IndexBuffer&& _Other) noexcept;
 		~IndexBuffer();
 
 		void PushBack(const IndexData& _Index);
@@ -72,6 +99,7 @@ namespace Geometry
 		const IndexData& operator[] (const size_t _Index) const;
 
 		void operator= (const IndexBuffer& _Other);
+		void operator= (IndexBuffer&& _Other) noexcept;
 
 	private:
 
@@ -92,7 +120,10 @@ namespace Geometry
 
 		Model();
 		Model(const Model& _Other);
+		Model(Model&& _Other) noexcept;
 		~Model();
+
+		bool Load(const wchar_t* _Path);
 
 		void PushBack(const Mesh& _Mesh);
 		void Erase(const size_t _Index);
@@ -104,6 +135,7 @@ namespace Geometry
 		const Mesh& operator[] (const size_t _Index) const;
 
 		void operator= (const Model& _Other);
+		void operator= (Model&& _Other) noexcept;
 
 	private:
 

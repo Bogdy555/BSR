@@ -177,22 +177,28 @@
   <ItemGroup>
     <ClCompile Include="Sources\AssetManager.cpp" />
     <ClCompile Include="Sources\EntryPoint.cpp" />
-    <ClCompile Include="Sources\Geometry.cpp" />
     <ClCompile Include="Sources\Image.cpp" />
     <ClCompile Include="Sources\Math.cpp" />
     <ClCompile Include="Sources\Math_Matrix.cpp" />
     <ClCompile Include="Sources\Math_Vector.cpp" />
+    <ClCompile Include="Sources\Rasterizer.cpp" />
+    <ClCompile Include="Sources\String.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\AssetManager.hpp" />
     <ClInclude Include="Headers\Dependencies.hpp" />
-    <ClInclude Include="Headers\Geometry.hpp" />
     <ClInclude Include="Headers\Image.hpp" />
     <ClInclude Include="Headers\Macros.hpp" />
     <ClInclude Include="Headers\Main.hpp" />
     <ClInclude Include="Headers\Math.hpp" />
+    <ClInclude Include="Headers\Rasterizer.hpp" />
+    <ClInclude Include="Headers\String.hpp" />
     <ClInclude Include="Headers\Templates.hpp" />
     <ClInclude Include="Headers\Vector.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Files\Cubes.mtl" />
+    <None Include="Files\Cubes.wfobj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

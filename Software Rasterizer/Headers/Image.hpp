@@ -13,16 +13,16 @@ namespace Image
 
 	struct ImageSRGBA
 	{
-		unsigned char* Data;
-		size_t Width;
-		size_t Height;
+		unsigned char* Data = nullptr;
+		size_t Width = 0;
+		size_t Height = 0;
 	};
 
 	struct ImageHDR
 	{
-		float* Data;
-		size_t Width;
-		size_t Height;
+		float* Data = nullptr;
+		size_t Width = 0;
+		size_t Height = 0;
 	};
 
 	float* HDRReadFile(const wchar_t* _Path, size_t& _Width, size_t& _Height);

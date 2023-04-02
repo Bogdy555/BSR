@@ -10,13 +10,15 @@
 
 #include "Dependencies.hpp"
 
+#include "String.hpp"
+
 #include "Math.hpp"
 
 #include "AssetManager.hpp"
 
 #include "Image.hpp"
 
-#include "Geometry.hpp"
+#include "Rasterizer.hpp"
 
 
 

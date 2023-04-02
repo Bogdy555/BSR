@@ -6,13 +6,22 @@ This project is a software rasterizer able to render 3D graphics in *real time (
 
 
 
+## Requirements
+
+The only supported platform is Windows (7 all the way up to 11 on both 32 and 64 bit architectures).
+It is necessary to be compiled in MSVC.
+
+
+
 ## Getting started
 
-To compile the project use the script provided in the root folder called "C++98.bat". In order for it to work **GCC has to be added to the path and the line that calls "gccvarsx64.bat" should be removed**.
+It works out of the box since I only use relative paths and the project does not have external dependencies.
 
-I usually develop in VS, but it does not have support for C++ 98 so I had to resume to this method so it is what it is.
 
-It should work out of the box since I only use relative paths and the project does not have external dependencies like 3-rd party libraries.
+
+## Features
+
+Currently the features that are available are the math lib and the asset manager and loader that can load 3D models and textures.
 
 
 
@@ -22,7 +31,7 @@ Here I will list all of the classes and structures found in the project and a sh
 
 * class Vector
 
-This class is a container that has exactly the same functionality as the std::vector from STL.
+This class is a container that has exactly the same functionality as the std::vector from STL. It has support for move semantics and it is templated.
 
 * struct Math::Vec2f
 
@@ -64,32 +73,30 @@ Data about an image on the sRGB color space with alpha channel.
 
 Stores a high dynamic range image.
 
-* struct Geometry::VertexData
+* struct Rasterizer::Camera
+
+Used to store and manage the position and orientation data from which to render the scene.
+
+* struct Rasterizer::VertexData
 
 The properties of a point on the 3D model.
 
-* class Geometry::VertexBuffer
+* class Rasterizer::VertexBuffer
 
 A pool of verteces.
 
-* struct Geometry::IndexData
+* struct Rasterizer::IndexData
 
 A set of 3 indexs into the vertex buffer. Such a triplet forms a triangle.
 
-* class Geometry::IndexBuffer
+* class Rasterizer::IndexBuffer
 
 A pool of indexed triangles.
 
-* struct Geometry::Mesh
+* struct Rasterizer::Mesh
 
 Quick and dirty hack to pair up a VBO and an IBO.
 
-* class Geometry::Model
+* class Rasterizer::Model
 
 A set of meshes that describe a 3D model.
-
-
-
-## Features
-
-Currently the features that are available are the math lib and the asset manager and loader that can load 3D models and textures.

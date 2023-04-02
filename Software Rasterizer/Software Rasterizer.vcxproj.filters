@@ -33,7 +33,10 @@
     <ClCompile Include="Sources\AssetManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Geometry.cpp">
+    <ClCompile Include="Sources\Rasterizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\String.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -62,8 +65,15 @@
     <ClInclude Include="Headers\AssetManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Geometry.hpp">
+    <ClInclude Include="Headers\Rasterizer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\String.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Files\Cubes.wfobj" />
+    <None Include="Files\Cubes.mtl" />
   </ItemGroup>
 </Project>

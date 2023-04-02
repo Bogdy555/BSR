@@ -26,11 +26,23 @@ public:
 
 			assert(Data);
 
+			if (!Data)
+			{
+				Size = 0;
+				return;
+			}
+
 			for (size_t _Index = 0; _Index < Size; _Index++)
 			{
 				Data[_Index] = _Other.Data[_Index];
 			}
 		}
+	}
+
+	Vector(Vector<T>&& _Other) noexcept : Size(_Other.Size), Data(_Other.Data)
+	{
+		_Other.Size = 0;
+		_Other.Data = nullptr;
 	}
 
 	~Vector()
@@ -48,9 +60,14 @@ public:
 
 		assert(_NewData);
 
-		for (size_t _Index = 0; _Index < Size; _Index++)
+		if (!_NewData)
 		{
-			_NewData[_Index] = Data[_Index];
+			return;
+		}
+
+		for (size_t _Index = 0; _Index < _NewSize - 1; _Index++)
+		{
+			_NewData[_Index] = (T&&)(Data[_Index]);
 		}
 
 		_NewData[_NewSize - 1] = _Object;
@@ -64,9 +81,70 @@ public:
 		Size = _NewSize;
 	}
 
+	void EmplaceBack(T&& _Object)
+	{
+		size_t _NewSize = Size + 1;
+		T* _NewData = new T[_NewSize];
+
+		assert(_NewData);
+
+		if (!_NewData)
+		{
+			return;
+		}
+
+		for (size_t _Index = 0; _Index < _NewSize - 1; _Index++)
+		{
+			_NewData[_Index] = (T&&)(Data[_Index]);
+		}
+
+		_NewData[_NewSize - 1] = (T&&)(_Object);
+
+		if (Data)
+		{
+			delete[] Data;
+		}
+
+		Data = _NewData;
+		Size = _NewSize;
+	}
+
+	template <typename... TParams> void EmplaceBack(TParams&&... _Object)
+	{
+		size_t _NewSize = Size + 1;
+		T* _NewData = new T[_NewSize];
+
+		assert(_NewData);
+
+		if (!_NewData)
+		{
+			return;
+		}
+
+		for (size_t _Index = 0; _Index < _NewSize - 1; _Index++)
+		{
+			_NewData[_Index] = (T&&)(Data[_Index]);
+		}
+
+		_NewData[_NewSize - 1] = (T&&)(T(_Object...));
+
+		if (Data)
+		{
+			delete[] Data;
+		}
+
+		Data = _NewData;
+		Size = _NewSize;
+	}
+
 	void Erase(const size_t _ObjIndex)
 	{
 		assert(_ObjIndex < Size);
+
+		if (_ObjIndex < Size)
+		{
+			return;
+		}
 
 		if (Size == 1)
 		{
@@ -83,12 +161,12 @@ public:
 
 		for (size_t _Index = 0; _Index < _ObjIndex; _Index++)
 		{
-			_NewData[_Index] = Data[_Index];
+			_NewData[_Index] = (T&&)(Data[_Index]);
 		}
 
 		for (size_t _Index = _ObjIndex; _Index < _NewSize; _Index++)
 		{
-			_NewData[_Index] = Data[_Index + 1];
+			_NewData[_Index] = (T&&)(Data[_Index + 1]);
 		}
 
 		if (Data)
@@ -122,16 +200,6 @@ public:
 	}
 
 	const T* GetData() const
-	{
-		return Data;
-	}
-
-	operator T* ()
-	{
-		return Data;
-	}
-
-	operator const T* () const
 	{
 		return Data;
 	}
@@ -182,11 +250,28 @@ public:
 
 			assert(Data);
 
+			if (!Data)
+			{
+				Size = 0;
+				return *this;
+			}
+
 			for (size_t _Index = 0; _Index < Size; _Index++)
 			{
 				Data[_Index] = _Other.Data[_Index];
 			}
 		}
+
+		return *this;
+	}
+
+	const Vector<T>& operator= (Vector<T>&& _Other) noexcept
+	{
+		Size = _Other.Size;
+		Data = _Other.Data;
+
+		_Other.Size = 0;
+		_Other.Data = nullptr;
 
 		return *this;
 	}
@@ -220,6 +305,45 @@ template <typename T> std::ostream& operator<< (std::ostream& _OutStream, const 
 
 
 template <typename T> std::istream& operator>> (std::istream& _InStream, Vector<T>& _Vec)
+{
+	size_t _Size = 0;
+
+	_InStream >> _Size;
+
+	for (size_t _Index = 0; _Index < _Size; _Index++)
+	{
+		T _Elem;
+
+		_InStream >> _Elem;
+
+		_Vec.PushBack(_Elem);
+	}
+
+	return _InStream;
+}
+
+
+
+template <typename T> std::wostream& operator<< (std::wostream& _OutStream, const Vector<T>& _Vec)
+{
+	_OutStream << _Vec.GetSize() << '\n';
+
+	for (size_t _Index = 0; _Index < _Vec.GetSize() - 1; _Index++)
+	{
+		_OutStream << _Vec[_Index] << ' ';
+	}
+
+	if (_Vec.GetSize())
+	{
+		_OutStream << _Vec[_Vec.GetSize() - 1];
+	}
+
+	return _OutStream;
+}
+
+
+
+template <typename T> std::wistream& operator>> (std::wistream& _InStream, Vector<T>& _Vec)
 {
 	size_t _Size = 0;
 

@@ -14,6 +14,15 @@ Math::Mat2f::Mat2f(const Mat2f& _Other) : Matrix()
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1];
 }
 
+Math::Mat2f::Mat2f(Mat2f&& _Other) noexcept : Matrix()
+{
+	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1];
+	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1];
+
+	_Other[0][0] = 1.0f; _Other[0][1] = 0.0f;
+	_Other[1][0] = 0.0f; _Other[1][1] = 1.0f;
+}
+
 Math::Mat2f::~Mat2f()
 {
 
@@ -260,6 +269,17 @@ const Math::Mat2f& Math::Mat2f::operator= (const Mat2f& _Other)
 	return *this;
 }
 
+const Math::Mat2f& Math::Mat2f::operator= (Mat2f&& _Other) noexcept
+{
+	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1];
+	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1];
+
+	_Other[0][0] = 1.0f; _Other[0][1] = 0.0f;
+	_Other[1][0] = 0.0f; _Other[1][1] = 1.0f;
+
+	return *this;
+}
+
 const Math::Mat2f Math::Mat2f::GetScale(const float _x, const float _y)
 {
 	Mat2f _Matrix;
@@ -318,6 +338,17 @@ Math::Mat3f::Mat3f(const Mat3f& _Other) : Matrix()
 	Matrix[2][0] = _Other[2][0]; Matrix[2][1] = _Other[2][1]; Matrix[2][2] = _Other[2][2];
 }
 
+Math::Mat3f::Mat3f(Mat3f&& _Other) noexcept : Matrix()
+{
+	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = _Other[0][2];
+	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2];
+	Matrix[2][0] = _Other[2][0]; Matrix[2][1] = _Other[2][1]; Matrix[2][2] = _Other[2][2];
+
+	_Other[0][0] = 1.0f; _Other[0][1] = 0.0f; _Other[0][2] = 0.0f;
+	_Other[1][0] = 0.0f; _Other[1][1] = 1.0f; _Other[1][2] = 0.0f;
+	_Other[2][0] = 0.0f; _Other[2][1] = 0.0f; _Other[2][2] = 1.0f;
+}
+
 Math::Mat3f::Mat3f(const Mat2f& _Other) : Matrix()
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = 0.0f;
@@ -330,7 +361,7 @@ Math::Mat3f::~Mat3f()
 
 }
 
-const Math::Mat2f Math::Mat3f::ToMat2f() const
+Math::Mat3f::operator const Math::Mat2f() const
 {
 	Mat2f _Matrix;
 
@@ -664,6 +695,19 @@ const Math::Mat3f& Math::Mat3f::operator= (const Mat3f& _Other)
 	return *this;
 }
 
+const Math::Mat3f& Math::Mat3f::operator= (Mat3f&& _Other) noexcept
+{
+	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = _Other[0][2];
+	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2];
+	Matrix[2][0] = _Other[2][0]; Matrix[2][1] = _Other[2][1]; Matrix[2][2] = _Other[2][2];
+
+	_Other[0][0] = 1.0f; _Other[0][1] = 0.0f; _Other[0][2] = 0.0f;
+	_Other[1][0] = 0.0f; _Other[1][1] = 1.0f; _Other[1][2] = 0.0f;
+	_Other[2][0] = 0.0f; _Other[2][1] = 0.0f; _Other[2][2] = 1.0f;
+
+	return *this;
+}
+
 const Math::Mat3f Math::Mat3f::GetScale(const float _x, const float _y, const float _z)
 {
 	Mat3f _Matrix;
@@ -758,6 +802,19 @@ Math::Mat4f::Mat4f(const Mat4f& _Other) : Matrix()
 	Matrix[3][0] = _Other[3][0]; Matrix[3][1] = _Other[3][1]; Matrix[3][2] = _Other[3][2]; Matrix[3][3] = _Other[3][3];
 }
 
+Math::Mat4f::Mat4f(Mat4f&& _Other) noexcept : Matrix()
+{
+	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = _Other[0][2]; Matrix[0][3] = _Other[0][3];
+	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2]; Matrix[1][3] = _Other[1][3];
+	Matrix[2][0] = _Other[2][0]; Matrix[2][1] = _Other[2][1]; Matrix[2][2] = _Other[2][2]; Matrix[2][3] = _Other[2][3];
+	Matrix[3][0] = _Other[3][0]; Matrix[3][1] = _Other[3][1]; Matrix[3][2] = _Other[3][2]; Matrix[3][3] = _Other[3][3];
+
+	_Other[0][0] = 1.0f; _Other[0][1] = 0.0f; _Other[0][2] = 0.0f; _Other[0][3] = 0.0f;
+	_Other[1][0] = 0.0f; _Other[1][1] = 1.0f; _Other[1][2] = 0.0f; _Other[1][3] = 0.0f;
+	_Other[2][0] = 0.0f; _Other[2][1] = 0.0f; _Other[2][2] = 1.0f; _Other[2][3] = 0.0f;
+	_Other[3][0] = 0.0f; _Other[3][1] = 0.0f; _Other[3][2] = 0.0f; _Other[3][3] = 1.0f;
+}
+
 Math::Mat4f::Mat4f(const Mat2f& _Other) : Matrix()
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = 0.0f; Matrix[0][3] = 0.0f;
@@ -779,7 +836,7 @@ Math::Mat4f::~Mat4f()
 
 }
 
-const Math::Mat2f Math::Mat4f::ToMat2f() const
+Math::Mat4f::operator const Math::Mat2f() const
 {
 	Mat2f _Matrix;
 
@@ -789,7 +846,7 @@ const Math::Mat2f Math::Mat4f::ToMat2f() const
 	return _Matrix;
 }
 
-const Math::Mat3f Math::Mat4f::ToMat3f() const
+Math::Mat4f::operator const Math::Mat3f() const
 {
 	Mat3f _Matrix;
 
@@ -1227,6 +1284,21 @@ const Math::Mat4f& Math::Mat4f::operator= (const Mat4f& _Other)
 	return *this;
 }
 
+const Math::Mat4f& Math::Mat4f::operator= (Mat4f&& _Other) noexcept
+{
+	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = _Other[0][2]; Matrix[0][3] = _Other[0][3];
+	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2]; Matrix[1][3] = _Other[1][3];
+	Matrix[2][0] = _Other[2][0]; Matrix[2][1] = _Other[2][1]; Matrix[2][2] = _Other[2][2]; Matrix[2][3] = _Other[2][3];
+	Matrix[3][0] = _Other[3][0]; Matrix[3][1] = _Other[3][1]; Matrix[3][2] = _Other[3][2]; Matrix[3][3] = _Other[3][3];
+
+	Matrix[0][0] = 1.0f; Matrix[0][1] = 0.0f; Matrix[0][2] = 0.0f; Matrix[0][3] = 0.0f;
+	Matrix[1][0] = 0.0f; Matrix[1][1] = 1.0f; Matrix[1][2] = 0.0f; Matrix[1][3] = 0.0f;
+	Matrix[2][0] = 0.0f; Matrix[2][1] = 0.0f; Matrix[2][2] = 1.0f; Matrix[2][3] = 0.0f;
+	Matrix[3][0] = 0.0f; Matrix[3][1] = 0.0f; Matrix[3][2] = 0.0f; Matrix[3][3] = 1.0f;
+
+	return *this;
+}
+
 const Math::Mat4f Math::Mat4f::GetScale(const float _x, const float _y, const float _z, const float _w)
 {
 	Mat4f _Matrix;
@@ -1260,7 +1332,7 @@ const Math::Mat4f Math::Mat4f::GetShear(const float _Value, const size_t _Sheare
 	return _Matrix;
 }
 
-const Math::Mat4f Math::Mat4f::GetRotation(const float _Angle, const Vec4f& _RotationAxis)
+const Math::Mat4f Math::Mat4f::GetRotation(const float _Angle, const Vec3f& _RotationAxis)
 {
 	Mat4f _Matrix;
 

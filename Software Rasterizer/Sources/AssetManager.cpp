@@ -7,6 +7,11 @@ AssetManager::AssetManager() : Assets()
 
 }
 
+AssetManager::AssetManager(AssetManager&& _Other) noexcept : Assets(std::move(Assets))
+{
+
+}
+
 AssetManager::~AssetManager()
 {
 	for (size_t _Index = 0; _Index < Assets.GetSize(); _Index++)
@@ -83,6 +88,19 @@ const size_t AssetManager::GetAssetsCount() const
 	return Assets.GetSize();
 }
 
+const size_t AssetManager::GetAssetIndex(const wchar_t* _Name) const
+{
+	for (size_t _Index = 0; _Index < Assets.GetSize(); _Index++)
+	{
+		if (wcscmp(_Name, Assets[_Index].Name) == 0)
+		{
+			return _Index;
+		}
+	}
+
+	return (size_t)(-1);
+}
+
 void* AssetManager::GetAssetData(const wchar_t* _Name)
 {
 	for (size_t _Index = 0; _Index < Assets.GetSize(); _Index++)
@@ -119,15 +137,7 @@ const Asset& AssetManager::operator[] (const size_t _Index) const
 	return Assets[_Index];
 }
 
-const size_t AssetManager::GetAssetIndex(const wchar_t* _Name) const
+void AssetManager::operator= (AssetManager&& _Other) noexcept
 {
-	for (size_t _Index = 0; _Index < Assets.GetSize(); _Index++)
-	{
-		if (wcscmp(_Name, Assets[_Index].Name) == 0)
-		{
-			return _Index;
-		}
-	}
-
-	return (size_t)(-1);
+	Assets = std::move(_Other.Assets);
 }
