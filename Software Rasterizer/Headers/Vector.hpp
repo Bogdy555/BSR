@@ -24,7 +24,7 @@ public:
 		{
 			Data = new T[Size];
 
-			assert(Data);
+			ASSERT(Data);
 
 			if (!Data)
 			{
@@ -45,6 +45,14 @@ public:
 		_Other.Data = nullptr;
 	}
 
+	Vector(const std::initializer_list<T>& _List) : Size(0), Data(nullptr)
+	{
+		for (const T& _Elem : _List)
+		{
+			PushBack(_Elem);
+		}
+	}
+
 	~Vector()
 	{
 		if (Data)
@@ -58,7 +66,7 @@ public:
 		size_t _NewSize = Size + 1;
 		T* _NewData = new T[_NewSize];
 
-		assert(_NewData);
+		ASSERT(_NewData);
 
 		if (!_NewData)
 		{
@@ -86,7 +94,7 @@ public:
 		size_t _NewSize = Size + 1;
 		T* _NewData = new T[_NewSize];
 
-		assert(_NewData);
+		ASSERT(_NewData);
 
 		if (!_NewData)
 		{
@@ -114,7 +122,7 @@ public:
 		size_t _NewSize = Size + 1;
 		T* _NewData = new T[_NewSize];
 
-		assert(_NewData);
+		ASSERT(_NewData);
 
 		if (!_NewData)
 		{
@@ -139,7 +147,7 @@ public:
 
 	void Erase(const size_t _ObjIndex)
 	{
-		assert(_ObjIndex < Size);
+		ASSERT(_ObjIndex < Size);
 
 		if (_ObjIndex < Size)
 		{
@@ -248,7 +256,7 @@ public:
 		{
 			Data = new T[Size];
 
-			assert(Data);
+			ASSERT(Data);
 
 			if (!Data)
 			{
@@ -267,6 +275,11 @@ public:
 
 	const Vector<T>& operator= (Vector<T>&& _Other) noexcept
 	{
+		if (Data)
+		{
+			delete[] Data;
+		}
+
 		Size = _Other.Size;
 		Data = _Other.Data;
 
@@ -316,7 +329,7 @@ template <typename T> std::istream& operator>> (std::istream& _InStream, Vector<
 
 		_InStream >> _Elem;
 
-		_Vec.PushBack(_Elem);
+		_Vec.EmplaceBack(std::move(_Elem));
 	}
 
 	return _InStream;
@@ -355,7 +368,7 @@ template <typename T> std::wistream& operator>> (std::wistream& _InStream, Vecto
 
 		_InStream >> _Elem;
 
-		_Vec.PushBack(_Elem);
+		_Vec.EmplaceBack(std::move(_Elem));
 	}
 
 	return _InStream;

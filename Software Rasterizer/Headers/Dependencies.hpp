@@ -38,8 +38,6 @@
 #include <iostream>
 #include <fstream>
 
-#include <cassert>
-
 #include <cmath>
 
 #include <sstream>

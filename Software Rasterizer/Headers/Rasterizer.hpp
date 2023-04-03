@@ -37,7 +37,7 @@ namespace Rasterizer
 
 	struct VertexData
 	{
-		Math::Vec4f Position = Math::Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
+		Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
 		Math::Vec4f Color = Math::Vec4f(1.0f, 1.0f, 1.0f, 1.0f);
 		Math::Vec3f Normal = Math::Vec3f(0.0f, 0.0f, 1.0f);
 		Math::Vec3f Tangent = Math::Vec3f(1.0f, 0.0f, 0.0f);
@@ -109,6 +109,7 @@ namespace Rasterizer
 
 	struct Mesh
 	{
+		wchar_t* Name = nullptr;
 		VertexBuffer VBO;
 		IndexBuffer IBO;
 	};
@@ -126,6 +127,7 @@ namespace Rasterizer
 		bool Load(const wchar_t* _Path);
 
 		void PushBack(const Mesh& _Mesh);
+		void EmplaceBack(Mesh&& _Mesh) noexcept;
 		void Erase(const size_t _Index);
 		void Clear();
 

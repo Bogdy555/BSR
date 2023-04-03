@@ -9,7 +9,7 @@ This project is a software rasterizer able to render 3D graphics in *real time (
 ## Requirements
 
 The only supported platform is Windows (7 all the way up to 11 on both 32 and 64 bit architectures).
-It is necessary to be compiled in MSVC.
+It is necessary to be compiled with MSVC. The C++ version used is C++20.
 
 
 
