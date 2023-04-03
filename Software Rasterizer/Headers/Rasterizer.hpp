@@ -125,6 +125,7 @@ namespace Rasterizer
 		~Model();
 
 		bool Load(const wchar_t* _Path);
+		const bool Save(const wchar_t* _Path) const;
 
 		void PushBack(const Mesh& _Mesh);
 		void EmplaceBack(Mesh&& _Mesh) noexcept;

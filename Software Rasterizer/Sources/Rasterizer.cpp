@@ -717,6 +717,71 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 	return true;
 }
 
+const bool Rasterizer::Model::Save(const wchar_t* _Path) const
+{
+	std::wofstream _fOut;
+
+	_fOut.open(_Path);
+
+	if (!_fOut.is_open())
+	{
+		return false;
+	}
+
+	size_t _CurrentSize = 1;
+
+	for (size_t _IndexMesh = 0; _IndexMesh < Meshes.GetSize(); _IndexMesh++)
+	{
+		const Mesh& _CurrentMesh = Meshes[_IndexMesh];
+
+		if (!_CurrentMesh.Name)
+		{
+			_fOut.close();
+			_wremove(_Path);
+			return false;
+		}
+
+		_fOut << L'o' << L' ' << _CurrentMesh.Name << L'\n';
+
+		for (size_t _IndexVertex = 0; _IndexVertex < _CurrentMesh.VBO.GetSize(); _IndexVertex++)
+		{
+			const VertexData& _CurrentVertex = _CurrentMesh.VBO[_IndexVertex];
+
+			_fOut << L'v' << L' ' << _CurrentVertex.Position.x << L' ' << _CurrentVertex.Position.y << L' ' << _CurrentVertex.Position.z << L'\n';
+		}
+
+		for (size_t _IndexVertex = 0; _IndexVertex < _CurrentMesh.VBO.GetSize(); _IndexVertex++)
+		{
+			const VertexData& _CurrentVertex = _CurrentMesh.VBO[_IndexVertex];
+
+			_fOut << L'v' << L't' << L' ' << _CurrentVertex.TextureCoords.x << L' ' << _CurrentVertex.TextureCoords.y << L'\n';
+		}
+
+		for (size_t _IndexVertex = 0; _IndexVertex < _CurrentMesh.VBO.GetSize(); _IndexVertex++)
+		{
+			const VertexData& _CurrentVertex = _CurrentMesh.VBO[_IndexVertex];
+
+			_fOut << L'v' << L'n' << L' ' << _CurrentVertex.Normal.x << L' ' << _CurrentVertex.Normal.y << L' ' << _CurrentVertex.Normal.z << L'\n';
+		}
+
+		for (size_t _IndexTriangle = 0; _IndexTriangle < _CurrentMesh.IBO.GetSize(); _IndexTriangle++)
+		{
+			const IndexData& _CurrentTriangle = _CurrentMesh.IBO[_IndexTriangle];
+
+			_fOut << L'f' << L' ';
+			_fOut << _CurrentTriangle.IndexA + _CurrentSize << L'/' << _CurrentTriangle.IndexA + _CurrentSize << L'/' << _CurrentTriangle.IndexA + _CurrentSize << L' ';
+			_fOut << _CurrentTriangle.IndexB + _CurrentSize << L'/' << _CurrentTriangle.IndexB + _CurrentSize << L'/' << _CurrentTriangle.IndexB + _CurrentSize << L' ';
+			_fOut << _CurrentTriangle.IndexC + _CurrentSize << L'/' << _CurrentTriangle.IndexC + _CurrentSize << L'/' << _CurrentTriangle.IndexC + _CurrentSize << L'\n';
+		}
+
+		_CurrentSize += _CurrentMesh.VBO.GetSize();
+	}
+
+	_fOut.close();
+
+	return true;
+}
+
 void Rasterizer::Model::PushBack(const Mesh& _Mesh)
 {
 	for (size_t _Index = 0; _Index < Meshes.GetSize(); _Index++)
