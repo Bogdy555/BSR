@@ -44,7 +44,7 @@ public:
 
 private:
 
-	Vector<Asset> Assets;
+	std::vector<Asset> Assets;
 
 };
 

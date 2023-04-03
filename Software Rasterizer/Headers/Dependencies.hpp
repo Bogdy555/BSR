@@ -8,29 +8,7 @@
 
 
 
-#ifndef _CRT_SECURE_NO_WARNINGS
-
-#define _CRT_SECURE_NO_WARNINGS
-
-#endif
-
-#ifndef _UNICODE
-
-#define _UNICODE
-
-#endif
-
-#ifndef UNICODE
-
-#define UNICODE
-
-#endif
-
-#define WINVER _WIN32_WINNT_WIN7
-#define _WIN32_WINNT _WIN32_WINNT_WIN7
-#include <winsdkver.h>
-#include <sdkddkver.h>
-
+#include "WinTargetVer.hpp"
 #include <Windows.h>
 
 
@@ -40,6 +18,7 @@
 
 #include <cmath>
 
+#include <vector>
 #include <sstream>
 
 
@@ -85,16 +64,40 @@ class AssetManager;
 namespace Image
 {
 
-	struct ImageSRGBA;
+	struct Image;
 
-	struct ImageHDR;
+	struct ImageFloat;
 
 }
 
 namespace Rasterizer
 {
 
+	enum LerpTypes : const uint8_t;
+
+	enum WrapTypes : const uint8_t;
+
+	class Texture;
+
+	class Texture_R;
+
+	class Texture_RG;
+
+	class Texture_RGB;
+
+	class Texture_RGBA;
+
+	class Texture_Float_R;
+
+	class Texture_Float_RG;
+
+	class Texture_Float_RGB;
+
+	class Texture_Float_RGBA;
+
 	struct Camera;
+
+	struct Transform;
 
 	struct VertexData;
 

@@ -2,6 +2,873 @@
 
 
 
+Rasterizer::Texture::Texture() : LerpType(_Linear), WrapType(_Repeat)
+{
+
+}
+
+Rasterizer::Texture::Texture(Texture&& _Other) noexcept : LerpType(_Other.LerpType), WrapType(_Other.WrapType)
+{
+	_Other.LerpType = _Linear;
+	_Other.WrapType = _Repeat;
+}
+
+Rasterizer::Texture::~Texture()
+{
+
+}
+
+void Rasterizer::Texture::SetLerpType(const uint8_t _LerpType)
+{
+	LerpType = _LerpType;
+}
+
+void Rasterizer::Texture::SetWrapType(const uint8_t _WrapType)
+{
+	WrapType = _WrapType;
+}
+
+const uint8_t Rasterizer::Texture::GetLerpType() const
+{
+	return LerpType;
+}
+
+const uint8_t Rasterizer::Texture::GetWrapType() const
+{
+	return WrapType;
+}
+
+void Rasterizer::Texture::operator= (Texture&& _Other) noexcept
+{
+	LerpType = _Other.LerpType;
+	WrapType = _Other.WrapType;
+
+	_Other.LerpType = _Linear;
+	_Other.WrapType = _Repeat;
+}
+
+
+
+Rasterizer::Texture_R::Texture_R() : Texture(), Textures()
+{
+
+}
+
+Rasterizer::Texture_R::Texture_R(Texture_R&& _Other) noexcept : Texture(std::move(_Other)), Textures(std::move(_Other.Textures))
+{
+
+}
+
+Rasterizer::Texture_R::~Texture_R()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+}
+
+void Rasterizer::Texture_R::AddMip(const Image::Image& _Image)
+{
+	if (!_Image.Data || !_Image.Width || !_Image.Height)
+	{
+		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
+		return;
+	}
+
+	Image::Image _NewImage;
+
+	_NewImage.Data = new uint8_t[_Image.Width * _Image.Height * 1];
+	_NewImage.Width = _Image.Width;
+	_NewImage.Height = _Image.Height;
+
+	if (!_NewImage.Data)
+	{
+		DEBUG_BREAK();
+		return;
+	}
+
+	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
+	{
+		for (size_t _X = 0; _X < _Image.Width; _X++)
+		{
+			_NewImage.Data[(_X + _Y * _Image.Width) * 1 + 0] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 0];
+		}
+	}
+
+	Textures.push_back(Image::Image());
+
+	Textures[Textures.size() - 1].Data = _NewImage.Data;
+	Textures[Textures.size() - 1].Width = _NewImage.Width;
+	Textures[Textures.size() - 1].Height = _NewImage.Height;
+}
+
+void Rasterizer::Texture_R::AddDirectMip(Image::Image&& _Image)
+{
+	ASSERT_MSG(_Image.Data, STRING_TYPE("Can not add an empty image to the texture mip chain."));
+
+	Textures.emplace_back(std::move(_Image));
+}
+
+void Rasterizer::Texture_R::RemoveMip(const size_t _Index)
+{
+	delete[] Textures[_Index].Data;
+	Textures.erase(Textures.begin() + _Index);
+}
+
+void Rasterizer::Texture_R::RemoveAllMips()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+	Textures.clear();
+}
+
+const size_t Rasterizer::Texture_R::GetMipsCount() const
+{
+	return Textures.size();
+}
+
+Image::Image& Rasterizer::Texture_R::operator[] (const size_t _Index)
+{
+	return Textures[_Index];
+}
+
+const Image::Image& Rasterizer::Texture_R::operator[] (const size_t _Index) const
+{
+	return Textures[_Index];
+}
+
+void Rasterizer::Texture_R::operator= (Texture_R&& _Other) noexcept
+{
+	RemoveAllMips();
+
+	(Texture&)(*this) = std::move((Texture&)(_Other));
+
+	Textures = std::move(_Other.Textures);
+}
+
+
+
+Rasterizer::Texture_RG::Texture_RG() : Texture(), Textures()
+{
+
+}
+
+Rasterizer::Texture_RG::Texture_RG(Texture_RG&& _Other) noexcept : Texture(std::move(_Other)), Textures(std::move(_Other.Textures))
+{
+
+}
+
+Rasterizer::Texture_RG::~Texture_RG()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+}
+
+void Rasterizer::Texture_RG::AddMip(const Image::Image& _Image)
+{
+	if (!_Image.Data || !_Image.Width || !_Image.Height)
+	{
+		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
+		return;
+	}
+
+	Image::Image _NewImage;
+
+	_NewImage.Data = new uint8_t[_Image.Width * _Image.Height * 2];
+	_NewImage.Width = _Image.Width;
+	_NewImage.Height = _Image.Height;
+
+	if (!_NewImage.Data)
+	{
+		DEBUG_BREAK();
+		return;
+	}
+
+	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
+	{
+		for (size_t _X = 0; _X < _Image.Width; _X++)
+		{
+			_NewImage.Data[(_X + _Y * _Image.Width) * 2 + 0] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 0];
+			_NewImage.Data[(_X + _Y * _Image.Width) * 2 + 1] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 1];
+		}
+	}
+
+	Textures.push_back(Image::Image());
+
+	Textures[Textures.size() - 1].Data = _NewImage.Data;
+	Textures[Textures.size() - 1].Width = _NewImage.Width;
+	Textures[Textures.size() - 1].Height = _NewImage.Height;
+}
+
+void Rasterizer::Texture_RG::AddDirectMip(Image::Image&& _Image)
+{
+	ASSERT_MSG(_Image.Data, STRING_TYPE("Can not add an empty image to the texture mip chain."));
+
+	Textures.emplace_back(std::move(_Image));
+}
+
+void Rasterizer::Texture_RG::RemoveMip(const size_t _Index)
+{
+	delete[] Textures[_Index].Data;
+	Textures.erase(Textures.begin() + _Index);
+}
+
+void Rasterizer::Texture_RG::RemoveAllMips()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+	Textures.clear();
+}
+
+const size_t Rasterizer::Texture_RG::GetMipsCount() const
+{
+	return Textures.size();
+}
+
+Image::Image& Rasterizer::Texture_RG::operator[] (const size_t _Index)
+{
+	return Textures[_Index];
+}
+
+const Image::Image& Rasterizer::Texture_RG::operator[] (const size_t _Index) const
+{
+	return Textures[_Index];
+}
+
+void Rasterizer::Texture_RG::operator= (Texture_RG&& _Other) noexcept
+{
+	RemoveAllMips();
+
+	(Texture&)(*this) = std::move((Texture&)(_Other));
+
+	Textures = std::move(_Other.Textures);
+}
+
+
+
+Rasterizer::Texture_RGB::Texture_RGB() : Texture(), Textures()
+{
+
+}
+
+Rasterizer::Texture_RGB::Texture_RGB(Texture_RGB&& _Other) noexcept : Texture(std::move(_Other)), Textures(std::move(_Other.Textures))
+{
+
+}
+
+Rasterizer::Texture_RGB::~Texture_RGB()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+}
+
+void Rasterizer::Texture_RGB::AddMip(const Image::Image& _Image)
+{
+	if (!_Image.Data || !_Image.Width || !_Image.Height)
+	{
+		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
+		return;
+	}
+
+	Image::Image _NewImage;
+
+	_NewImage.Data = new uint8_t[_Image.Width * _Image.Height * 3];
+	_NewImage.Width = _Image.Width;
+	_NewImage.Height = _Image.Height;
+
+	if (!_NewImage.Data)
+	{
+		DEBUG_BREAK();
+		return;
+	}
+
+	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
+	{
+		for (size_t _X = 0; _X < _Image.Width; _X++)
+		{
+			_NewImage.Data[(_X + _Y * _Image.Width) * 3 + 0] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 0];
+			_NewImage.Data[(_X + _Y * _Image.Width) * 3 + 1] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 1];
+			_NewImage.Data[(_X + _Y * _Image.Width) * 3 + 2] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 2];
+		}
+	}
+
+	Textures.push_back(Image::Image());
+
+	Textures[Textures.size() - 1].Data = _NewImage.Data;
+	Textures[Textures.size() - 1].Width = _NewImage.Width;
+	Textures[Textures.size() - 1].Height = _NewImage.Height;
+}
+
+void Rasterizer::Texture_RGB::AddDirectMip(Image::Image&& _Image)
+{
+	ASSERT_MSG(_Image.Data, STRING_TYPE("Can not add an empty image to the texture mip chain."));
+
+	Textures.emplace_back(std::move(_Image));
+}
+
+void Rasterizer::Texture_RGB::RemoveMip(const size_t _Index)
+{
+	delete[] Textures[_Index].Data;
+	Textures.erase(Textures.begin() + _Index);
+}
+
+void Rasterizer::Texture_RGB::RemoveAllMips()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+	Textures.clear();
+}
+
+const size_t Rasterizer::Texture_RGB::GetMipsCount() const
+{
+	return Textures.size();
+}
+
+Image::Image& Rasterizer::Texture_RGB::operator[] (const size_t _Index)
+{
+	return Textures[_Index];
+}
+
+const Image::Image& Rasterizer::Texture_RGB::operator[] (const size_t _Index) const
+{
+	return Textures[_Index];
+}
+
+void Rasterizer::Texture_RGB::operator= (Texture_RGB&& _Other) noexcept
+{
+	RemoveAllMips();
+
+	(Texture&)(*this) = std::move((Texture&)(_Other));
+
+	Textures = std::move(_Other.Textures);
+}
+
+
+
+Rasterizer::Texture_RGBA::Texture_RGBA() : Texture(), Textures()
+{
+
+}
+
+Rasterizer::Texture_RGBA::Texture_RGBA(Texture_RGBA&& _Other) noexcept : Texture(std::move(_Other)), Textures(std::move(_Other.Textures))
+{
+
+}
+
+Rasterizer::Texture_RGBA::~Texture_RGBA()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+}
+
+void Rasterizer::Texture_RGBA::AddMip(const Image::Image& _Image)
+{
+	if (!_Image.Data || !_Image.Width || !_Image.Height)
+	{
+		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
+		return;
+	}
+
+	Image::Image _NewImage;
+
+	_NewImage.Data = new uint8_t[_Image.Width * _Image.Height * 4];
+	_NewImage.Width = _Image.Width;
+	_NewImage.Height = _Image.Height;
+
+	if (!_NewImage.Data)
+	{
+		DEBUG_BREAK();
+		return;
+	}
+
+	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
+	{
+		for (size_t _X = 0; _X < _Image.Width; _X++)
+		{
+			_NewImage.Data[(_X + _Y * _Image.Width) * 4 + 0] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 0];
+			_NewImage.Data[(_X + _Y * _Image.Width) * 4 + 1] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 1];
+			_NewImage.Data[(_X + _Y * _Image.Width) * 4 + 2] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 2];
+			_NewImage.Data[(_X + _Y * _Image.Width) * 4 + 3] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 3];
+		}
+	}
+
+	Textures.push_back(Image::Image());
+
+	Textures[Textures.size() - 1].Data = _NewImage.Data;
+	Textures[Textures.size() - 1].Width = _NewImage.Width;
+	Textures[Textures.size() - 1].Height = _NewImage.Height;
+}
+
+void Rasterizer::Texture_RGBA::AddDirectMip(Image::Image&& _Image)
+{
+	ASSERT_MSG(_Image.Data, STRING_TYPE("Can not add an empty image to the texture mip chain."));
+
+	Textures.emplace_back(std::move(_Image));
+}
+
+void Rasterizer::Texture_RGBA::RemoveMip(const size_t _Index)
+{
+	delete[] Textures[_Index].Data;
+	Textures.erase(Textures.begin() + _Index);
+}
+
+void Rasterizer::Texture_RGBA::RemoveAllMips()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+	Textures.clear();
+}
+
+const size_t Rasterizer::Texture_RGBA::GetMipsCount() const
+{
+	return Textures.size();
+}
+
+Image::Image& Rasterizer::Texture_RGBA::operator[] (const size_t _Index)
+{
+	return Textures[_Index];
+}
+
+const Image::Image& Rasterizer::Texture_RGBA::operator[] (const size_t _Index) const
+{
+	return Textures[_Index];
+}
+
+void Rasterizer::Texture_RGBA::operator= (Texture_RGBA&& _Other) noexcept
+{
+	RemoveAllMips();
+
+	(Texture&)(*this) = std::move((Texture&)(_Other));
+
+	Textures = std::move(_Other.Textures);
+}
+
+
+
+Rasterizer::Texture_Float_R::Texture_Float_R() : Texture(), Textures()
+{
+
+}
+
+Rasterizer::Texture_Float_R::Texture_Float_R(Texture_Float_R&& _Other) noexcept : Texture(std::move(_Other)), Textures(std::move(_Other.Textures))
+{
+
+}
+
+Rasterizer::Texture_Float_R::~Texture_Float_R()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+}
+
+void Rasterizer::Texture_Float_R::AddMip(const Image::ImageFloat& _Image)
+{
+	if (!_Image.Data || !_Image.Width || !_Image.Height)
+	{
+		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
+		return;
+	}
+
+	Image::ImageFloat _NewImage;
+
+	_NewImage.Data = new float[_Image.Width * _Image.Height * 1];
+	_NewImage.Width = _Image.Width;
+	_NewImage.Height = _Image.Height;
+
+	if (!_NewImage.Data)
+	{
+		DEBUG_BREAK();
+		return;
+	}
+
+	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
+	{
+		for (size_t _X = 0; _X < _Image.Width; _X++)
+		{
+			_NewImage.Data[(_X + _Y * _Image.Width) * 1 + 0] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 0];
+		}
+	}
+
+	Textures.push_back(Image::ImageFloat());
+
+	Textures[Textures.size() - 1].Data = _NewImage.Data;
+	Textures[Textures.size() - 1].Width = _NewImage.Width;
+	Textures[Textures.size() - 1].Height = _NewImage.Height;
+}
+
+void Rasterizer::Texture_Float_R::AddDirectMip(Image::ImageFloat&& _Image)
+{
+	ASSERT_MSG(_Image.Data, STRING_TYPE("Can not add an empty image to the texture mip chain."));
+
+	Textures.emplace_back(std::move(_Image));
+}
+
+void Rasterizer::Texture_Float_R::RemoveMip(const size_t _Index)
+{
+	delete[] Textures[_Index].Data;
+	Textures.erase(Textures.begin() + _Index);
+}
+
+void Rasterizer::Texture_Float_R::RemoveAllMips()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+	Textures.clear();
+}
+
+const size_t Rasterizer::Texture_Float_R::GetMipsCount() const
+{
+	return Textures.size();
+}
+
+Image::ImageFloat& Rasterizer::Texture_Float_R::operator[] (const size_t _Index)
+{
+	return Textures[_Index];
+}
+
+const Image::ImageFloat& Rasterizer::Texture_Float_R::operator[] (const size_t _Index) const
+{
+	return Textures[_Index];
+}
+
+void Rasterizer::Texture_Float_R::operator= (Texture_Float_R&& _Other) noexcept
+{
+	RemoveAllMips();
+
+	(Texture&)(*this) = std::move((Texture&)(_Other));
+
+	Textures = std::move(_Other.Textures);
+}
+
+
+
+Rasterizer::Texture_Float_RG::Texture_Float_RG() : Texture(), Textures()
+{
+
+}
+
+Rasterizer::Texture_Float_RG::Texture_Float_RG(Texture_Float_RG&& _Other) noexcept : Texture(std::move(_Other)), Textures(std::move(_Other.Textures))
+{
+
+}
+
+Rasterizer::Texture_Float_RG::~Texture_Float_RG()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+}
+
+void Rasterizer::Texture_Float_RG::AddMip(const Image::ImageFloat& _Image)
+{
+	if (!_Image.Data || !_Image.Width || !_Image.Height)
+	{
+		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
+		return;
+	}
+
+	Image::ImageFloat _NewImage;
+
+	_NewImage.Data = new float[_Image.Width * _Image.Height * 2];
+	_NewImage.Width = _Image.Width;
+	_NewImage.Height = _Image.Height;
+
+	if (!_NewImage.Data)
+	{
+		DEBUG_BREAK();
+		return;
+	}
+
+	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
+	{
+		for (size_t _X = 0; _X < _Image.Width; _X++)
+		{
+			_NewImage.Data[(_X + _Y * _Image.Width) * 2 + 0] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 0];
+			_NewImage.Data[(_X + _Y * _Image.Width) * 2 + 1] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 1];
+		}
+	}
+
+	Textures.push_back(Image::ImageFloat());
+
+	Textures[Textures.size() - 1].Data = _NewImage.Data;
+	Textures[Textures.size() - 1].Width = _NewImage.Width;
+	Textures[Textures.size() - 1].Height = _NewImage.Height;
+}
+
+void Rasterizer::Texture_Float_RG::AddDirectMip(Image::ImageFloat&& _Image)
+{
+	ASSERT_MSG(_Image.Data, STRING_TYPE("Can not add an empty image to the texture mip chain."));
+
+	Textures.emplace_back(std::move(_Image));
+}
+
+void Rasterizer::Texture_Float_RG::RemoveMip(const size_t _Index)
+{
+	delete[] Textures[_Index].Data;
+	Textures.erase(Textures.begin() + _Index);
+}
+
+void Rasterizer::Texture_Float_RG::RemoveAllMips()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+	Textures.clear();
+}
+
+const size_t Rasterizer::Texture_Float_RG::GetMipsCount() const
+{
+	return Textures.size();
+}
+
+Image::ImageFloat& Rasterizer::Texture_Float_RG::operator[] (const size_t _Index)
+{
+	return Textures[_Index];
+}
+
+const Image::ImageFloat& Rasterizer::Texture_Float_RG::operator[] (const size_t _Index) const
+{
+	return Textures[_Index];
+}
+
+void Rasterizer::Texture_Float_RG::operator= (Texture_Float_RG&& _Other) noexcept
+{
+	RemoveAllMips();
+
+	(Texture&)(*this) = std::move((Texture&)(_Other));
+
+	Textures = std::move(_Other.Textures);
+}
+
+
+
+Rasterizer::Texture_Float_RGB::Texture_Float_RGB() : Texture(), Textures()
+{
+
+}
+
+Rasterizer::Texture_Float_RGB::Texture_Float_RGB(Texture_Float_RGB&& _Other) noexcept : Texture(std::move(_Other)), Textures(std::move(_Other.Textures))
+{
+
+}
+
+Rasterizer::Texture_Float_RGB::~Texture_Float_RGB()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+}
+
+void Rasterizer::Texture_Float_RGB::AddMip(const Image::ImageFloat& _Image)
+{
+	if (!_Image.Data || !_Image.Width || !_Image.Height)
+	{
+		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
+		return;
+	}
+
+	Image::ImageFloat _NewImage;
+
+	_NewImage.Data = new float[_Image.Width * _Image.Height * 3];
+	_NewImage.Width = _Image.Width;
+	_NewImage.Height = _Image.Height;
+
+	if (!_NewImage.Data)
+	{
+		DEBUG_BREAK();
+		return;
+	}
+
+	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
+	{
+		for (size_t _X = 0; _X < _Image.Width; _X++)
+		{
+			_NewImage.Data[(_X + _Y * _Image.Width) * 3 + 0] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 0];
+			_NewImage.Data[(_X + _Y * _Image.Width) * 3 + 1] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 1];
+			_NewImage.Data[(_X + _Y * _Image.Width) * 3 + 2] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 2];
+		}
+	}
+
+	Textures.push_back(Image::ImageFloat());
+
+	Textures[Textures.size() - 1].Data = _NewImage.Data;
+	Textures[Textures.size() - 1].Width = _NewImage.Width;
+	Textures[Textures.size() - 1].Height = _NewImage.Height;
+}
+
+void Rasterizer::Texture_Float_RGB::AddDirectMip(Image::ImageFloat&& _Image)
+{
+	ASSERT_MSG(_Image.Data, STRING_TYPE("Can not add an empty image to the texture mip chain."));
+
+	Textures.emplace_back(std::move(_Image));
+}
+
+void Rasterizer::Texture_Float_RGB::RemoveMip(const size_t _Index)
+{
+	delete[] Textures[_Index].Data;
+	Textures.erase(Textures.begin() + _Index);
+}
+
+void Rasterizer::Texture_Float_RGB::RemoveAllMips()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+	Textures.clear();
+}
+
+const size_t Rasterizer::Texture_Float_RGB::GetMipsCount() const
+{
+	return Textures.size();
+}
+
+Image::ImageFloat& Rasterizer::Texture_Float_RGB::operator[] (const size_t _Index)
+{
+	return Textures[_Index];
+}
+
+const Image::ImageFloat& Rasterizer::Texture_Float_RGB::operator[] (const size_t _Index) const
+{
+	return Textures[_Index];
+}
+
+void Rasterizer::Texture_Float_RGB::operator= (Texture_Float_RGB&& _Other) noexcept
+{
+	RemoveAllMips();
+
+	(Texture&)(*this) = std::move((Texture&)(_Other));
+
+	Textures = std::move(_Other.Textures);
+}
+
+
+
+Rasterizer::Texture_Float_RGBA::Texture_Float_RGBA() : Texture(), Textures()
+{
+
+}
+
+Rasterizer::Texture_Float_RGBA::Texture_Float_RGBA(Texture_Float_RGBA&& _Other) noexcept : Texture(std::move(_Other)), Textures(std::move(_Other.Textures))
+{
+
+}
+
+Rasterizer::Texture_Float_RGBA::~Texture_Float_RGBA()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+}
+
+void Rasterizer::Texture_Float_RGBA::AddMip(const Image::ImageFloat& _Image)
+{
+	if (!_Image.Data || !_Image.Width || !_Image.Height)
+	{
+		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
+		return;
+	}
+
+	Image::ImageFloat _NewImage;
+
+	_NewImage.Data = new float[_Image.Width * _Image.Height * 4];
+	_NewImage.Width = _Image.Width;
+	_NewImage.Height = _Image.Height;
+
+	if (!_NewImage.Data)
+	{
+		DEBUG_BREAK();
+		return;
+	}
+
+	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
+	{
+		for (size_t _X = 0; _X < _Image.Width; _X++)
+		{
+			_NewImage.Data[(_X + _Y * _Image.Width) * 4 + 0] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 0];
+			_NewImage.Data[(_X + _Y * _Image.Width) * 4 + 1] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 1];
+			_NewImage.Data[(_X + _Y * _Image.Width) * 4 + 2] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 2];
+			_NewImage.Data[(_X + _Y * _Image.Width) * 4 + 3] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 3];
+		}
+	}
+
+	Textures.push_back(Image::ImageFloat());
+
+	Textures[Textures.size() - 1].Data = _NewImage.Data;
+	Textures[Textures.size() - 1].Width = _NewImage.Width;
+	Textures[Textures.size() - 1].Height = _NewImage.Height;
+}
+
+void Rasterizer::Texture_Float_RGBA::AddDirectMip(Image::ImageFloat&& _Image)
+{
+	ASSERT_MSG(_Image.Data, STRING_TYPE("Can not add an empty image to the texture mip chain."));
+
+	Textures.emplace_back(std::move(_Image));
+}
+
+void Rasterizer::Texture_Float_RGBA::RemoveMip(const size_t _Index)
+{
+	delete[] Textures[_Index].Data;
+	Textures.erase(Textures.begin() + _Index);
+}
+
+void Rasterizer::Texture_Float_RGBA::RemoveAllMips()
+{
+	for (size_t _Index = 0; _Index < Textures.size(); _Index++)
+	{
+		delete[] Textures[_Index].Data;
+	}
+	Textures.clear();
+}
+
+const size_t Rasterizer::Texture_Float_RGBA::GetMipsCount() const
+{
+	return Textures.size();
+}
+
+Image::ImageFloat& Rasterizer::Texture_Float_RGBA::operator[] (const size_t _Index)
+{
+	return Textures[_Index];
+}
+
+const Image::ImageFloat& Rasterizer::Texture_Float_RGBA::operator[] (const size_t _Index) const
+{
+	return Textures[_Index];
+}
+
+void Rasterizer::Texture_Float_RGBA::operator= (Texture_Float_RGBA&& _Other) noexcept
+{
+	RemoveAllMips();
+
+	(Texture&)(*this) = std::move((Texture&)(_Other));
+
+	Textures = std::move(_Other.Textures);
+}
+
+
+
 const Math::Mat4f Rasterizer::Camera::GetViewMatrix() const
 {
 	return
@@ -19,6 +886,24 @@ const Math::Mat4f Rasterizer::Camera::GetProjectionMatrix(const float _AspectRat
 	}
 
 	return Math::Mat4f::GetOrtho(-FieldOfView / 2.0f * _AspectRatio, FieldOfView / 2.0f * _AspectRatio, -FieldOfView / 2.0f, FieldOfView / 2.0f, -FarPlane, -NearPlane);
+}
+
+
+
+const Math::Mat4f Rasterizer::Transform::GetModelMatrix() const
+{
+	return
+		Math::Mat4f::GetTranslation(Position) *
+		Math::Mat4f::GetRotation(AngleFlat, Math::Vec3f(0.0f, -1.0f, 0.0f)) *
+		Math::Mat4f::GetRotation(AngleVertical, Math::Vec3f(-1.0f, 0.0f, 0.0f)) *
+		Math::Mat4f::GetRotation(AngleTilt, Math::Vec3f(0.0f, 0.0f, 1.0f)) *
+		Math::Mat4f::GetScale(Scale.x, Scale.y, Scale.z, 1.0f) *
+		Math::Mat4f::GetShear(ShearXByY, 0, 1) *
+		Math::Mat4f::GetShear(ShearXByZ, 0, 2) *
+		Math::Mat4f::GetShear(ShearYByZ, 1, 2) *
+		Math::Mat4f::GetShear(ShearYByX, 1, 0) *
+		Math::Mat4f::GetShear(ShearZByX, 2, 0) *
+		Math::Mat4f::GetShear(ShearZByY, 2, 1);
 }
 
 
@@ -45,22 +930,22 @@ Rasterizer::VertexBuffer::~VertexBuffer()
 
 void Rasterizer::VertexBuffer::PushBack(const VertexData& _Vertex)
 {
-	Verteces.PushBack(_Vertex);
+	Verteces.push_back(_Vertex);
 }
 
 void Rasterizer::VertexBuffer::Erase(const size_t _Index)
 {
-	Verteces.Erase(_Index);
+	Verteces.erase(Verteces.begin() + _Index);
 }
 
 void Rasterizer::VertexBuffer::Clear()
 {
-	Verteces.Clear();
+	Verteces.clear();
 }
 
 const size_t Rasterizer::VertexBuffer::GetSize() const
 {
-	return Verteces.GetSize();
+	return Verteces.size();
 }
 
 Rasterizer::VertexData& Rasterizer::VertexBuffer::operator[] (const size_t _Index)
@@ -107,22 +992,22 @@ Rasterizer::IndexBuffer::~IndexBuffer()
 
 void Rasterizer::IndexBuffer::PushBack(const IndexData& _Index)
 {
-	Indexes.PushBack(_Index);
+	Indexes.push_back(_Index);
 }
 
 void Rasterizer::IndexBuffer::Erase(const size_t _Index)
 {
-	Indexes.Erase(_Index);
+	Indexes.erase(Indexes.begin() + _Index);
 }
 
 void Rasterizer::IndexBuffer::Clear()
 {
-	Indexes.Clear();
+	Indexes.clear();
 }
 
 const size_t Rasterizer::IndexBuffer::GetSize() const
 {
-	return Indexes.GetSize();
+	return Indexes.size();
 }
 
 Rasterizer::IndexData& Rasterizer::IndexBuffer::operator[] (const size_t _Index)
@@ -164,7 +1049,7 @@ Rasterizer::Model::Model(Model&& _Other) noexcept : Meshes(std::move(_Other.Mesh
 
 Rasterizer::Model::~Model()
 {
-	for (size_t _Index = 0; _Index < Meshes.GetSize(); _Index++)
+	for (size_t _Index = 0; _Index < Meshes.size(); _Index++)
 	{
 		delete[] Meshes[_Index].Name;
 	}
@@ -186,7 +1071,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 		size_t TextureCoords = (size_t)(-1);
 	};
 
-	Meshes.Clear();
+	Meshes.clear();
 
 	if (!_Path)
 	{
@@ -202,13 +1087,13 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 		return false;
 	}
 
-	Vector<MeshFileData> _Meshes;
+	std::vector<MeshFileData> _Meshes;
 
-	Vector<Math::Vec3f> _Positions;
-	Vector<Math::Vec3f> _Normals;
-	Vector<Math::Vec2f> _TextureCoords;
+	std::vector<Math::Vec3f> _Positions;
+	std::vector<Math::Vec3f> _Normals;
+	std::vector<Math::Vec2f> _TextureCoords;
 
-	Vector<Vector<FaceVertex>> _Faces;
+	std::vector<std::vector<FaceVertex>> _Faces;
 
 	wchar_t _Line[OBJ_MAX_LINE_LEN + 1];
 	wchar_t _OriginalLine[OBJ_MAX_LINE_LEN + 1];
@@ -222,20 +1107,20 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 			_Line[_Index] = _OriginalLine[_Index];
 		}
 
-		Vector<const wchar_t*> _Tokens;
+		std::vector<const wchar_t*> _Tokens;
 
 		{
 			const wchar_t* _Token = String::TokenizeWhiteSpace(_Line);
 
 			while (_Token)
 			{
-				_Tokens.PushBack(_Token);
+				_Tokens.push_back(_Token);
 
 				_Token = String::TokenizeWhiteSpace(nullptr);
 			}
 		}
 
-		if (!_Tokens.GetSize())
+		if (!_Tokens.size())
 		{
 			continue;
 		}
@@ -247,22 +1132,22 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 
 		if (String::TheSame(_Tokens[0], L"o"))
 		{
-			if (_Tokens.GetSize() != 2)
+			if (_Tokens.size() != 2)
 			{
 				_fIn.close();
-				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 				{
 					delete[] _Meshes[_IndexDelete].Name;
 				}
 				return false;
 			}
 
-			for (size_t _Index = 0; _Index < _Meshes.GetSize(); _Index++)
+			for (size_t _Index = 0; _Index < _Meshes.size(); _Index++)
 			{
 				if (String::TheSame(_Tokens[1], _Meshes[_Index].Name))
 				{
 					_fIn.close();
-					for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+					for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 					{
 						delete[] _Meshes[_IndexDelete].Name;
 					}
@@ -279,7 +1164,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 			if (!_MeshFileData.Name)
 			{
 				_fIn.close();
-				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 				{
 					delete[] _Meshes[_IndexDelete].Name;
 				}
@@ -291,93 +1176,93 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				_MeshFileData.Name[_Index] = _Tokens[1][_Index];
 			}
 
-			_MeshFileData.FacesStart = _Faces.GetSize();
+			_MeshFileData.FacesStart = _Faces.size();
 
-			if (_Meshes.GetSize())
+			if (_Meshes.size())
 			{
-				_Meshes[_Meshes.GetSize() - 1].FacesEnd = _Faces.GetSize();
+				_Meshes[_Meshes.size() - 1].FacesEnd = _Faces.size();
 			}
 
-			_Meshes.PushBack(_MeshFileData);
+			_Meshes.push_back(_MeshFileData);
 
 			continue;
 		}
 
 		if (String::TheSame(_Tokens[0], L"v"))
 		{
-			if (_Tokens.GetSize() != 4)
+			if (_Tokens.size() != 4)
 			{
 				_fIn.close();
-				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 				{
 					delete[] _Meshes[_IndexDelete].Name;
 				}
 				return false;
 			}
 
-			_Positions.PushBack(Math::Vec3f(std::stof(_Tokens[1]), std::stof(_Tokens[2]), std::stof(_Tokens[3])));
+			_Positions.push_back(Math::Vec3f(std::stof(_Tokens[1]), std::stof(_Tokens[2]), std::stof(_Tokens[3])));
 
 			continue;
 		}
 
 		if (String::TheSame(_Tokens[0], L"vn"))
 		{
-			if (_Tokens.GetSize() != 4)
+			if (_Tokens.size() != 4)
 			{
 				_fIn.close();
-				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 				{
 					delete[] _Meshes[_IndexDelete].Name;
 				}
 				return false;
 			}
 
-			_Normals.PushBack((Math::Vec3f(std::stof(_Tokens[1]), std::stof(_Tokens[2]), std::stof(_Tokens[3]))));
+			_Normals.push_back((Math::Vec3f(std::stof(_Tokens[1]), std::stof(_Tokens[2]), std::stof(_Tokens[3]))));
 
 			continue;
 		}
 
 		if (String::TheSame(_Tokens[0], L"vt"))
 		{
-			if (_Tokens.GetSize() != 3)
+			if (_Tokens.size() != 3)
 			{
 				_fIn.close();
-				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 				{
 					delete[] _Meshes[_IndexDelete].Name;
 				}
 				return false;
 			}
 
-			_TextureCoords.PushBack((Math::Vec2f(std::stof(_Tokens[1]), std::stof(_Tokens[2]))));
+			_TextureCoords.push_back((Math::Vec2f(std::stof(_Tokens[1]), std::stof(_Tokens[2]))));
 
 			continue;
 		}
 
 		if (String::TheSame(_Tokens[0], L"f"))
 		{
-			if (_Tokens.GetSize() < 4)
+			if (_Tokens.size() < 4)
 			{
 				_fIn.close();
-				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 				{
 					delete[] _Meshes[_IndexDelete].Name;
 				}
 				return false;
 			}
 
-			_Faces.PushBack(Vector<FaceVertex>());
+			_Faces.push_back(std::vector<FaceVertex>());
 
-			Vector<FaceVertex>& _CurrentFace = _Faces[_Faces.GetSize() - 1];
+			std::vector<FaceVertex>& _CurrentFace = _Faces[_Faces.size() - 1];
 
-			for (size_t _Index = 1; _Index < _Tokens.GetSize(); _Index++)
+			for (size_t _Index = 1; _Index < _Tokens.size(); _Index++)
 			{
 				size_t _TokenLen = String::Length(_Tokens[_Index]);
 
 				if (_Tokens[_Index][0] == L'/' || _Tokens[_Index][_TokenLen - 1] == L'/')
 				{
 					_fIn.close();
-					for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+					for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 					{
 						delete[] _Meshes[_IndexDelete].Name;
 					}
@@ -395,10 +1280,10 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 					X64_CALL(_FaceVertex.Position = std::stoull(_Tokens[_Index]) - 1);
 					X86_CALL(_FaceVertex.Position = std::stoul(_Tokens[_Index]) - 1);
 
-					if (_FaceVertex.Position >= _Positions.GetSize())
+					if (_FaceVertex.Position >= _Positions.size())
 					{
 						_fIn.close();
-						for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+						for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 						{
 							delete[] _Meshes[_IndexDelete].Name;
 						}
@@ -416,14 +1301,14 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 						_FaceVertexText[_IndexCopy] = _Tokens[_Index][_IndexCopy];
 					}
 
-					Vector<const wchar_t*> _FaceVertexTokens;
+					std::vector<const wchar_t*> _FaceVertexTokens;
 
 					{
 						const wchar_t* _Token = String::TokenizeSlashes(_FaceVertexText);
 
 						while (_Token)
 						{
-							_FaceVertexTokens.PushBack(_Token);
+							_FaceVertexTokens.push_back(_Token);
 
 							_Token = String::TokenizeSlashes(nullptr);
 						}
@@ -432,10 +1317,10 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 					X64_CALL(_FaceVertex.Position = std::stoull(_FaceVertexTokens[0]) - 1);
 					X86_CALL(_FaceVertex.Position = std::stoul(_FaceVertexTokens[0]) - 1);
 
-					if (_FaceVertex.Position >= _Positions.GetSize())
+					if (_FaceVertex.Position >= _Positions.size())
 					{
 						_fIn.close();
-						for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+						for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 						{
 							delete[] _Meshes[_IndexDelete].Name;
 						}
@@ -445,10 +1330,10 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 					X64_CALL(_FaceVertex.TextureCoords = std::stoull(_FaceVertexTokens[1]) - 1);
 					X86_CALL(_FaceVertex.TextureCoords = std::stoul(_FaceVertexTokens[1]) - 1);
 
-					if (_FaceVertex.TextureCoords >= _TextureCoords.GetSize())
+					if (_FaceVertex.TextureCoords >= _TextureCoords.size())
 					{
 						_fIn.close();
-						for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+						for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 						{
 							delete[] _Meshes[_IndexDelete].Name;
 						}
@@ -466,28 +1351,28 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 						_FaceVertexText[_IndexCopy] = _Tokens[_Index][_IndexCopy];
 					}
 
-					Vector<const wchar_t*> _FaceVertexTokens;
+					std::vector<const wchar_t*> _FaceVertexTokens;
 
 					{
 						const wchar_t* _Token = String::TokenizeSlashes(_FaceVertexText);
 
 						while (_Token)
 						{
-							_FaceVertexTokens.PushBack(_Token);
+							_FaceVertexTokens.push_back(_Token);
 
 							_Token = String::TokenizeSlashes(nullptr);
 						}
 					}
 
-					if (_FaceVertexTokens.GetSize() == 2)
+					if (_FaceVertexTokens.size() == 2)
 					{
 						X64_CALL(_FaceVertex.Position = std::stoull(_FaceVertexTokens[0]) - 1);
 						X86_CALL(_FaceVertex.Position = std::stoul(_FaceVertexTokens[0]) - 1);
 
-						if (_FaceVertex.Position >= _Positions.GetSize())
+						if (_FaceVertex.Position >= _Positions.size())
 						{
 							_fIn.close();
-							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 							{
 								delete[] _Meshes[_IndexDelete].Name;
 							}
@@ -497,10 +1382,10 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 						X64_CALL(_FaceVertex.Normal = std::stoull(_FaceVertexTokens[1]) - 1);
 						X86_CALL(_FaceVertex.Normal = std::stoul(_FaceVertexTokens[1]) - 1);
 
-						if (_FaceVertex.Normal >= _Normals.GetSize())
+						if (_FaceVertex.Normal >= _Normals.size())
 						{
 							_fIn.close();
-							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 							{
 								delete[] _Meshes[_IndexDelete].Name;
 							}
@@ -512,10 +1397,10 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 						X64_CALL(_FaceVertex.Position = std::stoull(_FaceVertexTokens[0]) - 1);
 						X86_CALL(_FaceVertex.Position = std::stoul(_FaceVertexTokens[0]) - 1);
 
-						if (_FaceVertex.Position >= _Positions.GetSize())
+						if (_FaceVertex.Position >= _Positions.size())
 						{
 							_fIn.close();
-							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 							{
 								delete[] _Meshes[_IndexDelete].Name;
 							}
@@ -525,10 +1410,10 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 						X64_CALL(_FaceVertex.TextureCoords = std::stoull(_FaceVertexTokens[1]) - 1);
 						X86_CALL(_FaceVertex.TextureCoords = std::stoul(_FaceVertexTokens[1]) - 1);
 
-						if (_FaceVertex.TextureCoords >= _TextureCoords.GetSize())
+						if (_FaceVertex.TextureCoords >= _TextureCoords.size())
 						{
 							_fIn.close();
-							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 							{
 								delete[] _Meshes[_IndexDelete].Name;
 							}
@@ -538,10 +1423,10 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 						X64_CALL(_FaceVertex.Normal = std::stoull(_FaceVertexTokens[2]) - 1);
 						X86_CALL(_FaceVertex.Normal = std::stoul(_FaceVertexTokens[2]) - 1);
 
-						if (_FaceVertex.Normal >= _Normals.GetSize())
+						if (_FaceVertex.Normal >= _Normals.size())
 						{
 							_fIn.close();
-							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 							{
 								delete[] _Meshes[_IndexDelete].Name;
 							}
@@ -554,7 +1439,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				default:
 				{
 					_fIn.close();
-					for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+					for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.size(); _IndexDelete++)
 					{
 						delete[] _Meshes[_IndexDelete].Name;
 					}
@@ -562,22 +1447,22 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				}
 				}
 
-				_CurrentFace.PushBack(_FaceVertex);
+				_CurrentFace.push_back(_FaceVertex);
 			}
 
 			continue;
 		}
 	}
 
-	if (!_Meshes.GetSize())
+	if (!_Meshes.size())
 	{
 		_fIn.close();
 		return false;
 	}
 
-	_Meshes[_Meshes.GetSize() - 1].FacesEnd = _Faces.GetSize();
+	_Meshes[_Meshes.size() - 1].FacesEnd = _Faces.size();
 
-	for (size_t _IndexMesh = 0; _IndexMesh < _Meshes.GetSize(); _IndexMesh++)
+	for (size_t _IndexMesh = 0; _IndexMesh < _Meshes.size(); _IndexMesh++)
 	{
 		MeshFileData& _CurrentMesh = _Meshes[_IndexMesh];
 
@@ -587,9 +1472,9 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 
 		for (size_t _IndexFace = _CurrentMesh.FacesStart; _IndexFace < _CurrentMesh.FacesEnd; _IndexFace++)
 		{
-			Vector<FaceVertex>& _CurrentFace = _Faces[_IndexFace];
+			std::vector<FaceVertex>& _CurrentFace = _Faces[_IndexFace];
 
-			for (size_t _IndexFaceVertex = 1; _IndexFaceVertex < _CurrentFace.GetSize() - 1; _IndexFaceVertex++)
+			for (size_t _IndexFaceVertex = 1; _IndexFaceVertex < _CurrentFace.size() - 1; _IndexFaceVertex++)
 			{
 				VertexData _VertA;
 				VertexData _VertB;
@@ -709,7 +1594,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 			}
 		}
 
-		Meshes.EmplaceBack(std::move(_Mesh));
+		Meshes.emplace_back(std::move(_Mesh));
 	}
 
 	_fIn.close();
@@ -730,7 +1615,7 @@ const bool Rasterizer::Model::Save(const wchar_t* _Path) const
 
 	size_t _CurrentSize = 1;
 
-	for (size_t _IndexMesh = 0; _IndexMesh < Meshes.GetSize(); _IndexMesh++)
+	for (size_t _IndexMesh = 0; _IndexMesh < Meshes.size(); _IndexMesh++)
 	{
 		const Mesh& _CurrentMesh = Meshes[_IndexMesh];
 
@@ -784,7 +1669,7 @@ const bool Rasterizer::Model::Save(const wchar_t* _Path) const
 
 void Rasterizer::Model::PushBack(const Mesh& _Mesh)
 {
-	for (size_t _Index = 0; _Index < Meshes.GetSize(); _Index++)
+	for (size_t _Index = 0; _Index < Meshes.size(); _Index++)
 	{
 		if (String::TheSame(Meshes[_Index].Name, _Mesh.Name))
 		{
@@ -793,12 +1678,12 @@ void Rasterizer::Model::PushBack(const Mesh& _Mesh)
 		}
 	}
 
-	Meshes.PushBack(_Mesh);
+	Meshes.push_back(_Mesh);
 }
 
 void Rasterizer::Model::EmplaceBack(Mesh && _Mesh) noexcept
 {
-	for (size_t _Index = 0; _Index < Meshes.GetSize(); _Index++)
+	for (size_t _Index = 0; _Index < Meshes.size(); _Index++)
 	{
 		if (String::TheSame(Meshes[_Index].Name, _Mesh.Name))
 		{
@@ -807,29 +1692,29 @@ void Rasterizer::Model::EmplaceBack(Mesh && _Mesh) noexcept
 		}
 	}
 
-	Meshes.EmplaceBack(std::move(_Mesh));
+	Meshes.emplace_back(std::move(_Mesh));
 }
 
 void Rasterizer::Model::Erase(const size_t _Index)
 {
 	delete[] Meshes[_Index].Name;
 
-	Meshes.Erase(_Index);
+	Meshes.erase(Meshes.begin() + _Index);
 }
 
 void Rasterizer::Model::Clear()
 {
-	for (size_t _Index = 0; _Index < Meshes.GetSize(); _Index++)
+	for (size_t _Index = 0; _Index < Meshes.size(); _Index++)
 	{
 		delete[] Meshes[_Index].Name;
 	}
 
-	Meshes.Clear();
+	Meshes.clear();
 }
 
 const size_t Rasterizer::Model::GetSize() const
 {
-	return Meshes.GetSize();
+	return Meshes.size();
 }
 
 Rasterizer::Mesh& Rasterizer::Model::operator[] (const size_t _Index)

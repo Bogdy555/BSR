@@ -11,14 +11,14 @@
 namespace Image
 {
 
-	struct ImageSRGBA
+	struct Image
 	{
-		unsigned char* Data = nullptr;
+		uint8_t* Data = nullptr;
 		size_t Width = 0;
 		size_t Height = 0;
 	};
 
-	struct ImageHDR
+	struct ImageFloat
 	{
 		float* Data = nullptr;
 		size_t Width = 0;
@@ -27,9 +27,9 @@ namespace Image
 
 	float* HDRReadFile(const wchar_t* _Path, size_t& _Width, size_t& _Height);
 
-	bool SaveBmp(const wchar_t* _Path, const unsigned char* _Img, const size_t _Width, const size_t _Height);
+	bool SaveBmp(const wchar_t* _Path, const uint8_t* _Img, const size_t _Width, const size_t _Height);
 
-	unsigned char* LoadBmp(const wchar_t* _Path, size_t& _Width, size_t& _Height);
+	uint8_t* LoadBmp(const wchar_t* _Path, size_t& _Width, size_t& _Height);
 
 }
 

@@ -18,7 +18,7 @@ static bool ReachedFileEnd(FILE* _File)
 
 
 
-static bool OldDecode(FILE* _File, unsigned char* _ScanLine, size_t _Width)
+static bool OldDecode(FILE* _File, uint8_t* _ScanLine, size_t _Width)
 {
 	size_t _Len = 0;
 	size_t _RightShift = 0;
@@ -29,25 +29,25 @@ static bool OldDecode(FILE* _File, unsigned char* _ScanLine, size_t _Width)
 		{
 			return false;
 		}
-		unsigned char _R = fgetc(_File);
+		uint8_t _R = fgetc(_File);
 
 		if (ReachedFileEnd(_File))
 		{
 			return false;
 		}
-		unsigned char _G = fgetc(_File);
+		uint8_t _G = fgetc(_File);
 
 		if (ReachedFileEnd(_File))
 		{
 			return false;
 		}
-		unsigned char _B = fgetc(_File);
+		uint8_t _B = fgetc(_File);
 
 		if (ReachedFileEnd(_File))
 		{
 			return false;
 		}
-		unsigned char _E = fgetc(_File);
+		uint8_t _E = fgetc(_File);
 
 		if (_R == 1 && _G == 1 && _B == 1)
 		{
@@ -80,7 +80,7 @@ static bool OldDecode(FILE* _File, unsigned char* _ScanLine, size_t _Width)
 	return true;
 }
 
-static bool Decode(FILE* _File, unsigned char* _ScanLine, size_t _Width)
+static bool Decode(FILE* _File, uint8_t* _ScanLine, size_t _Width)
 {
 	if (_Width < 8 || _Width > 32767)
 	{
@@ -92,7 +92,7 @@ static bool Decode(FILE* _File, unsigned char* _ScanLine, size_t _Width)
 		{
 			return false;
 		}
-		unsigned char _Next1 = fgetc(_File);
+		uint8_t _Next1 = fgetc(_File);
 
 		if (_Next1 != '\x02')
 		{
@@ -104,7 +104,7 @@ static bool Decode(FILE* _File, unsigned char* _ScanLine, size_t _Width)
 		{
 			return false;
 		}
-		unsigned char _Next2 = fgetc(_File);
+		uint8_t _Next2 = fgetc(_File);
 
 		if (_Next2 != '\x02')
 		{
@@ -116,7 +116,7 @@ static bool Decode(FILE* _File, unsigned char* _ScanLine, size_t _Width)
 		{
 			return false;
 		}
-		unsigned char _Next3 = fgetc(_File);
+		uint8_t _Next3 = fgetc(_File);
 
 		if ((_Next3 & 0b10000000) != 0)
 		{
@@ -128,7 +128,7 @@ static bool Decode(FILE* _File, unsigned char* _ScanLine, size_t _Width)
 		{
 			return false;
 		}
-		unsigned char _Next4 = fgetc(_File);
+		uint8_t _Next4 = fgetc(_File);
 
 		if (((unsigned short)(_Next3) << 8) + (unsigned short)(_Next4) != (unsigned short)(_Width))
 		{
@@ -146,7 +146,7 @@ static bool Decode(FILE* _File, unsigned char* _ScanLine, size_t _Width)
 			{
 				return false;
 			}
-			unsigned char _Len = fgetc(_File);
+			uint8_t _Len = fgetc(_File);
 
 			if (_Len > 128)
 			{
@@ -156,7 +156,7 @@ static bool Decode(FILE* _File, unsigned char* _ScanLine, size_t _Width)
 				{
 					return false;
 				}
-				unsigned char _Value = fgetc(_File);
+				uint8_t _Value = fgetc(_File);
 
 				while (_Len)
 				{
@@ -196,7 +196,7 @@ static bool Decode(FILE* _File, unsigned char* _ScanLine, size_t _Width)
 
 
 
-static float ConvertComponent(unsigned char _Component, unsigned char _Exponent)
+static float ConvertComponent(uint8_t _Component, uint8_t _Exponent)
 {
 	return (float)(_Component) / 256.0f * powf(2.0f, (float)(_Exponent)-128.0f);
 }
@@ -223,7 +223,7 @@ static float GetBFromXYZ(float _X, float _Y, float _Z)
 
 
 
-static void PlaceScanLine(float* _Image, unsigned char* _ScanLine, size_t _Width, size_t _Y, bool _FlipX)
+static void PlaceScanLine(float* _Image, uint8_t* _ScanLine, size_t _Width, size_t _Y, bool _FlipX)
 {
 	if (_FlipX)
 	{
@@ -519,7 +519,7 @@ float* Image::HDRReadFile(const wchar_t* _Path, size_t& _Width, size_t& _Height)
 		return nullptr;
 	}
 
-	unsigned char* _ScanLine = new unsigned char[_Width * 4];
+	uint8_t* _ScanLine = new uint8_t[_Width * 4];
 
 	if (!_ScanLine)
 	{
@@ -612,7 +612,7 @@ float* Image::HDRReadFile(const wchar_t* _Path, size_t& _Width, size_t& _Height)
 
 
 
-bool Image::SaveBmp(const wchar_t* _Path, const unsigned char* _Img, const size_t _Width, const size_t _Height)
+bool Image::SaveBmp(const wchar_t* _Path, const uint8_t* _Img, const size_t _Width, const size_t _Height)
 {
 	if (!_Path || !_Img || !_Width || !_Height)
 	{
@@ -688,9 +688,9 @@ bool Image::SaveBmp(const wchar_t* _Path, const unsigned char* _Img, const size_
 
 
 
-unsigned char* Image::LoadBmp(const wchar_t* _Path, size_t& _Width, size_t& _Height)
+uint8_t* Image::LoadBmp(const wchar_t* _Path, size_t& _Width, size_t& _Height)
 {
-	unsigned char* _Data = nullptr;
+	uint8_t* _Data = nullptr;
 	_Width = 0;
 	_Height = 0;
 
@@ -714,7 +714,7 @@ unsigned char* Image::LoadBmp(const wchar_t* _Path, size_t& _Width, size_t& _Hei
 		return nullptr;
 	}
 
-	_Data = new unsigned char[(size_t)(_Bmp.bmWidth) * (size_t)(_Bmp.bmHeight) * 4];
+	_Data = new uint8_t[(size_t)(_Bmp.bmWidth) * (size_t)(_Bmp.bmHeight) * 4];
 
 	if (!_Data)
 	{
@@ -731,7 +731,7 @@ unsigned char* Image::LoadBmp(const wchar_t* _Path, size_t& _Width, size_t& _Hei
 
 	for (size_t _Index = 0; _Index < (size_t)(_Bmp.bmWidth) * (size_t)(_Bmp.bmHeight); _Index++)
 	{
-		unsigned char _Aux = _Data[_Index * 4 + 0];
+		uint8_t _Aux = _Data[_Index * 4 + 0];
 		_Data[_Index * 4 + 0] = _Data[_Index * 4 + 2];
 		_Data[_Index * 4 + 2] = _Aux;
 		_Data[_Index * 4 + 3] = 255;
@@ -741,10 +741,10 @@ unsigned char* Image::LoadBmp(const wchar_t* _Path, size_t& _Width, size_t& _Hei
 	{
 		for (size_t _X = 0; _X < (size_t)(_Bmp.bmWidth); _X++)
 		{
-			unsigned char _Aux0 = _Data[(_X + _Y * _Bmp.bmWidth) * 4 + 0];
-			unsigned char _Aux1 = _Data[(_X + _Y * _Bmp.bmWidth) * 4 + 1];
-			unsigned char _Aux2 = _Data[(_X + _Y * _Bmp.bmWidth) * 4 + 2];
-			unsigned char _Aux3 = _Data[(_X + _Y * _Bmp.bmWidth) * 4 + 3];
+			uint8_t _Aux0 = _Data[(_X + _Y * _Bmp.bmWidth) * 4 + 0];
+			uint8_t _Aux1 = _Data[(_X + _Y * _Bmp.bmWidth) * 4 + 1];
+			uint8_t _Aux2 = _Data[(_X + _Y * _Bmp.bmWidth) * 4 + 2];
+			uint8_t _Aux3 = _Data[(_X + _Y * _Bmp.bmWidth) * 4 + 3];
 
 			_Data[(_X + _Y * _Bmp.bmWidth) * 4 + 0] = _Data[(_X + (_Bmp.bmHeight - _Y - 1) * _Bmp.bmWidth) * 4 + 0];
 			_Data[(_X + _Y * _Bmp.bmWidth) * 4 + 1] = _Data[(_X + (_Bmp.bmHeight - _Y - 1) * _Bmp.bmWidth) * 4 + 1];

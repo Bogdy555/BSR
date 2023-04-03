@@ -65,17 +65,57 @@ Used to store an address to an asset and it's name.
 
 Used to handle assets in order to avoid copying data all around the place.
 
-* struct Image::ImageSRGBA
+* struct Image::Image
 
-Data about an image on the sRGB color space with alpha channel.
+Data about an image.
 
-* struct Image::ImageHDR
+* struct Image::ImageFloat
 
-Stores a high dynamic range image.
+Stores an image with floating point components.
+
+* class Texture
+
+Base class for any texture.
+
+* class Texture_R : public Texture
+
+A texture with 1 component.
+
+* class Texture_RG : public Texture
+
+A texture with 2 components.
+
+* class Texture_RGB : public Texture
+
+A texture with 3 components.
+
+* class Texture_RGBA : public Texture
+
+A texture with 4 components.
+
+* class Texture_Float_R : public Texture
+
+A texture with 1 floating point component.
+
+* class Texture_Float_RG : public Texture
+
+A texture with 2 floating point components.
+
+* class Texture_Float_RGB : public Texture
+
+A texture with 3 floating point components.
+
+* class Texture_Float_RGBA : public Texture
+
+A texture with 4 floating point components.
 
 * struct Rasterizer::Camera
 
 Used to store and manage the position and orientation data from which to render the scene.
+
+* struct Rasterizer::Transform
+
+It is used to store the position and orientation of a 3D model.
 
 * struct Rasterizer::VertexData
 

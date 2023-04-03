@@ -15,6 +15,305 @@
 namespace Rasterizer
 {
 
+	enum LerpTypes : const uint8_t
+	{
+		_Nearest = 0,
+		_Linear = 1
+	};
+
+	enum WrapTypes : const uint8_t
+	{
+		_Black = 0,
+		_Clamp = 1,
+		_Repeat = 2,
+		_Mirror = 3
+	};
+
+	class Texture
+	{
+
+	public:
+
+		Texture();
+		Texture(const Texture& _Other) = delete;
+		Texture(Texture&& _Other) noexcept;
+		virtual ~Texture();
+
+		//virtual const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const = 0;
+		//virtual const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const = 0;
+
+		void SetLerpType(const uint8_t _LerpType);
+		void SetWrapType(const uint8_t _WrapType);
+
+		const uint8_t GetLerpType() const;
+		const uint8_t GetWrapType() const;
+
+		void operator= (const Texture& _Other) = delete;
+		void operator= (Texture&& _Other) noexcept;
+
+	protected:
+
+		uint8_t LerpType;
+		uint8_t WrapType;
+
+	};
+
+	class Texture_R : public Texture
+	{
+
+	public:
+
+		Texture_R();
+		Texture_R(const Texture_R& _Other) = delete;
+		Texture_R(Texture_R&& _Other) noexcept;
+		~Texture_R();
+
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+
+		void AddMip(const Image::Image& _Image);
+		void AddDirectMip(Image::Image&& _Image);
+		void RemoveMip(const size_t _Index);
+		void RemoveAllMips();
+
+		const size_t GetMipsCount() const;
+
+		Image::Image& operator[] (const size_t _Index);
+		const Image::Image& operator[] (const size_t _Index) const;
+
+		void operator= (const Texture_R& _Other) = delete;
+		void operator= (Texture_R&& _Other) noexcept;
+
+	private:
+
+		std::vector<Image::Image> Textures;
+
+	};
+
+	class Texture_RG : public Texture
+	{
+
+	public:
+
+		Texture_RG();
+		Texture_RG(const Texture_RG& _Other) = delete;
+		Texture_RG(Texture_RG&& _Other) noexcept;
+		~Texture_RG();
+
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+
+		void AddMip(const Image::Image& _Image);
+		void AddDirectMip(Image::Image&& _Image);
+		void RemoveMip(const size_t _Index);
+		void RemoveAllMips();
+
+		const size_t GetMipsCount() const;
+
+		Image::Image& operator[] (const size_t _Index);
+		const Image::Image& operator[] (const size_t _Index) const;
+
+		void operator= (const Texture_RG& _Other) = delete;
+		void operator= (Texture_RG&& _Other) noexcept;
+
+	private:
+
+		std::vector<Image::Image> Textures;
+
+	};
+
+	class Texture_RGB : public Texture
+	{
+
+	public:
+
+		Texture_RGB();
+		Texture_RGB(const Texture_RGB& _Other) = delete;
+		Texture_RGB(Texture_RGB&& _Other) noexcept;
+		~Texture_RGB();
+
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+
+		void AddMip(const Image::Image& _Image);
+		void AddDirectMip(Image::Image&& _Image);
+		void RemoveMip(const size_t _Index);
+		void RemoveAllMips();
+
+		const size_t GetMipsCount() const;
+
+		Image::Image& operator[] (const size_t _Index);
+		const Image::Image& operator[] (const size_t _Index) const;
+
+		void operator= (const Texture_RGB& _Other) = delete;
+		void operator= (Texture_RGB&& _Other) noexcept;
+
+	private:
+
+		std::vector<Image::Image> Textures;
+
+	};
+
+	class Texture_RGBA : public Texture
+	{
+
+	public:
+
+		Texture_RGBA();
+		Texture_RGBA(const Texture_RGBA& _Other) = delete;
+		Texture_RGBA(Texture_RGBA&& _Other) noexcept;
+		~Texture_RGBA();
+
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+
+		void AddMip(const Image::Image& _Image);
+		void AddDirectMip(Image::Image&& _Image);
+		void RemoveMip(const size_t _Index);
+		void RemoveAllMips();
+
+		const size_t GetMipsCount() const;
+
+		Image::Image& operator[] (const size_t _Index);
+		const Image::Image& operator[] (const size_t _Index) const;
+
+		void operator= (const Texture_RGBA& _Other) = delete;
+		void operator= (Texture_RGBA&& _Other) noexcept;
+
+	private:
+
+		std::vector<Image::Image> Textures;
+
+	};
+
+	class Texture_Float_R : public Texture
+	{
+
+	public:
+
+		Texture_Float_R();
+		Texture_Float_R(const Texture_Float_R& _Other) = delete;
+		Texture_Float_R(Texture_Float_R&& _Other) noexcept;
+		~Texture_Float_R();
+
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+
+		void AddMip(const Image::ImageFloat& _Image);
+		void AddDirectMip(Image::ImageFloat&& _Image);
+		void RemoveMip(const size_t _Index);
+		void RemoveAllMips();
+
+		const size_t GetMipsCount() const;
+
+		Image::ImageFloat& operator[] (const size_t _Index);
+		const Image::ImageFloat& operator[] (const size_t _Index) const;
+
+		void operator= (const Texture_Float_R& _Other) = delete;
+		void operator= (Texture_Float_R&& _Other) noexcept;
+
+	private:
+
+		std::vector<Image::ImageFloat> Textures;
+
+	};
+
+	class Texture_Float_RG : public Texture
+	{
+
+	public:
+
+		Texture_Float_RG();
+		Texture_Float_RG(const Texture_Float_RG& _Other) = delete;
+		Texture_Float_RG(Texture_Float_RG&& _Other) noexcept;
+		~Texture_Float_RG();
+
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+
+		void AddMip(const Image::ImageFloat& _Image);
+		void AddDirectMip(Image::ImageFloat&& _Image);
+		void RemoveMip(const size_t _Index);
+		void RemoveAllMips();
+
+		const size_t GetMipsCount() const;
+
+		Image::ImageFloat& operator[] (const size_t _Index);
+		const Image::ImageFloat& operator[] (const size_t _Index) const;
+
+		void operator= (const Texture_Float_RG& _Other) = delete;
+		void operator= (Texture_Float_RG&& _Other) noexcept;
+
+	private:
+
+		std::vector<Image::ImageFloat> Textures;
+
+	};
+
+	class Texture_Float_RGB : public Texture
+	{
+
+	public:
+
+		Texture_Float_RGB();
+		Texture_Float_RGB(const Texture_Float_RGB& _Other) = delete;
+		Texture_Float_RGB(Texture_Float_RGB&& _Other) noexcept;
+		~Texture_Float_RGB();
+
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+
+		void AddMip(const Image::ImageFloat& _Image);
+		void AddDirectMip(Image::ImageFloat&& _Image);
+		void RemoveMip(const size_t _Index);
+		void RemoveAllMips();
+
+		const size_t GetMipsCount() const;
+
+		Image::ImageFloat& operator[] (const size_t _Index);
+		const Image::ImageFloat& operator[] (const size_t _Index) const;
+
+		void operator= (const Texture_Float_RGB& _Other) = delete;
+		void operator= (Texture_Float_RGB&& _Other) noexcept;
+
+	private:
+
+		std::vector<Image::ImageFloat> Textures;
+
+	};
+
+	class Texture_Float_RGBA : public Texture
+	{
+
+	public:
+
+		Texture_Float_RGBA();
+		Texture_Float_RGBA(const Texture_Float_RGBA& _Other) = delete;
+		Texture_Float_RGBA(Texture_Float_RGBA&& _Other) noexcept;
+		~Texture_Float_RGBA();
+
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
+		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+
+		void AddMip(const Image::ImageFloat& _Image);
+		void AddDirectMip(Image::ImageFloat&& _Image);
+		void RemoveMip(const size_t _Index);
+		void RemoveAllMips();
+
+		const size_t GetMipsCount() const;
+
+		Image::ImageFloat& operator[] (const size_t _Index);
+		const Image::ImageFloat& operator[] (const size_t _Index) const;
+
+		void operator= (const Texture_Float_RGBA& _Other) = delete;
+		void operator= (Texture_Float_RGBA&& _Other) noexcept;
+
+	private:
+
+		std::vector<Image::ImageFloat> Textures;
+
+	};
+
 	struct Camera
 	{
 
@@ -32,6 +331,30 @@ namespace Rasterizer
 
 		const Math::Mat4f GetViewMatrix() const;
 		const Math::Mat4f GetProjectionMatrix(const float _AspectRatio) const;
+
+	};
+
+	struct Transform
+	{
+
+		Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
+
+		float AngleFlat = 0.0f;
+		float AngleVertical = 0.0f;
+		float AngleTilt = 0.0f;
+
+		Math::Vec3f Scale = Math::Vec3f(1.0f, 1.0f, 1.0f);
+
+		float ShearXByY = 0.0f;
+		float ShearXByZ = 0.0f;
+
+		float ShearYByZ = 0.0f;
+		float ShearYByX = 0.0f;
+
+		float ShearZByX = 0.0f;
+		float ShearZByY = 0.0f;
+
+		const Math::Mat4f GetModelMatrix() const;
 
 	};
 
@@ -68,7 +391,7 @@ namespace Rasterizer
 
 	private:
 
-		Vector<VertexData> Verteces;
+		std::vector<VertexData> Verteces;
 
 	};
 
@@ -103,7 +426,7 @@ namespace Rasterizer
 
 	private:
 
-		Vector<IndexData> Indexes;
+		std::vector<IndexData> Indexes;
 
 	};
 
@@ -142,7 +465,7 @@ namespace Rasterizer
 
 	private:
 
-		Vector<Mesh> Meshes;
+		std::vector<Mesh> Meshes;
 
 	};
 

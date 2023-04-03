@@ -199,6 +199,7 @@
     <ClInclude Include="Headers\String.hpp" />
     <ClInclude Include="Headers\Templates.hpp" />
     <ClInclude Include="Headers\Vector.hpp" />
+    <ClInclude Include="Headers\WinTargetVer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Files\Cubes.mtl" />
