@@ -247,7 +247,7 @@ static void PlaceScanLine(float* _Image, uint8_t* _ScanLine, size_t _Width, size
 
 
 
-float* Image::HDRReadFile(const wchar_t* _Path, size_t& _Width, size_t& _Height)
+float* Image::LoadHdr(const wchar_t* _Path, size_t& _Width, size_t& _Height)
 {
 	if (!_Path)
 	{
@@ -664,22 +664,35 @@ bool Image::SaveBmp(const wchar_t* _Path, const uint8_t* _Img, const size_t _Wid
 		return false;
 	}
 
-	for (size_t y = _Height - 1; y > 0; y--)
+	uint8_t* _NewImg = new uint8_t[_Width * _Height * 4];
+
+	if (!_NewImg)
 	{
-		if (fwrite(_Img + y * _Width * 4, 1, _Width * 4, _File) != _Width * 4)
+		fclose(_File);
+		_wremove(_Path);
+		return false;
+	}
+
+	for (size_t _Index = 0; _Index < _Width * _Height; _Index++)
+	{
+		_NewImg[_Index * 4 + 0] = _Img[_Index * 4 + 2];
+		_NewImg[_Index * 4 + 1] = _Img[_Index * 4 + 1];
+		_NewImg[_Index * 4 + 2] = _Img[_Index * 4 + 0];
+		_NewImg[_Index * 4 + 3] = 0;
+	}
+
+	for (size_t y = 0; y < _Height; y++)
+	{
+		if (fwrite(_NewImg + y * _Width * 4, 1, _Width * 4, _File) != _Width * 4)
 		{
+			delete[] _NewImg;
 			fclose(_File);
 			_wremove(_Path);
 			return false;
 		}
 	}
 
-	if (fwrite(_Img, 1, _Width * 4, _File) != _Width * 4)
-	{
-		fclose(_File);
-		_wremove(_Path);
-		return false;
-	}
+	delete[] _NewImg;
 
 	fclose(_File);
 

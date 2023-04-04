@@ -205,6 +205,9 @@
     <None Include="Files\Cubes.mtl" />
     <None Include="Files\Cubes.wfobj" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Files\Texture.bmp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

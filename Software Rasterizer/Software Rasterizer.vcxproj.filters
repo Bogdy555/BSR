@@ -79,4 +79,9 @@
     <None Include="Files\Cubes.wfobj" />
     <None Include="Files\Cubes.mtl" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Files\Texture.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

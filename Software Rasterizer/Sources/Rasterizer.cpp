@@ -2,15 +2,15 @@
 
 
 
-Rasterizer::Texture::Texture() : LerpType(_Linear), WrapType(_Repeat)
+Rasterizer::Texture::Texture() : LerpType(_LerpLinear), WrapType(_WrapRepeat)
 {
 
 }
 
 Rasterizer::Texture::Texture(Texture&& _Other) noexcept : LerpType(_Other.LerpType), WrapType(_Other.WrapType)
 {
-	_Other.LerpType = _Linear;
-	_Other.WrapType = _Repeat;
+	_Other.LerpType = _LerpLinear;
+	_Other.WrapType = _WrapRepeat;
 }
 
 Rasterizer::Texture::~Texture()
@@ -43,8 +43,8 @@ void Rasterizer::Texture::operator= (Texture&& _Other) noexcept
 	LerpType = _Other.LerpType;
 	WrapType = _Other.WrapType;
 
-	_Other.LerpType = _Linear;
-	_Other.WrapType = _Repeat;
+	_Other.LerpType = _LerpLinear;
+	_Other.WrapType = _WrapRepeat;
 }
 
 
@@ -65,6 +65,94 @@ Rasterizer::Texture_R::~Texture_R()
 	{
 		delete[] Textures[_Index].Data;
 	}
+}
+
+const float Rasterizer::Texture_R::SampleR(const Math::Vec2f& _TextureCoords, const float _MipLevel) const
+{
+	if (!Textures.size())
+	{
+		return 0.0f;
+	}
+
+	Math::Vec2f _NewTextureCoords = _TextureCoords;
+	float _NewMipLevel = _MipLevel;
+
+	switch (WrapType)
+	{
+	case _WrapBlack:
+	{
+		if (_TextureCoords.x < 0.0f || _TextureCoords.x > 1.0f || _TextureCoords.y < 0.0f || _TextureCoords.y > 1.0f)
+		{
+			return 0.0f;
+		}
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapClamp:
+	{
+		_NewTextureCoords.x = Math::Clamp(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Clamp(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapRepeat:
+	{
+		_NewTextureCoords.x = Math::Period(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Period(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapMirror:
+	{
+		Math::Vec2f _Period(Math::Period(_TextureCoords.x, 0.0f, 1.0f), Math::Period(_TextureCoords.y, 0.0f, 1.0f));
+		_NewTextureCoords.x = (_Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 0) + (1.0f - _Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 1);
+		_NewTextureCoords.y = (_Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 0) + (1.0f - _Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 1);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	default:
+	{
+		return 0.0f;
+	}
+	}
+
+	switch (LerpType)
+	{
+	case _LerpNearest:
+	{
+		_NewMipLevel += 0.5f;
+
+		const Image::Image& _CurrentTexture = Textures[(size_t)(_NewMipLevel)];
+
+		size_t _ImageX = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Width - 1) + 0.5f, _NewTextureCoords.x) + 0.5f, 0.0f, (float)(_CurrentTexture.Width - 1)));
+		size_t _ImageY = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Height - 1) + 0.5f, _NewTextureCoords.y) + 0.5f, 0.0f, (float)(_CurrentTexture.Height - 1)));
+
+		float _R = (float)(_CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 1 + 0]) / 255.0f;
+
+		return _R;
+	}
+	case _LerpLinear:
+	{
+		break;
+	}
+	default:
+	{
+		return 0.0f;
+	}
+	}
+
+	return 0.0f;
+}
+
+const Math::Vec4f Rasterizer::Texture_R::SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel) const
+{
+	const float _R = SampleR(_TextureCoords, _MipLevel);
+
+	return Math::Vec4f(_R, _R, _R, 1.0f);
 }
 
 void Rasterizer::Texture_R::AddMip(const Image::Image& _Image)
@@ -166,6 +254,95 @@ Rasterizer::Texture_RG::~Texture_RG()
 	{
 		delete[] Textures[_Index].Data;
 	}
+}
+
+const Math::Vec2f Rasterizer::Texture_RG::SampleRG(const Math::Vec2f& _TextureCoords, const float _MipLevel) const
+{
+	if (!Textures.size())
+	{
+		return Math::Vec2f(0.0f, 0.0f);
+	}
+
+	Math::Vec2f _NewTextureCoords = _TextureCoords;
+	float _NewMipLevel = _MipLevel;
+
+	switch (WrapType)
+	{
+	case _WrapBlack:
+	{
+		if (_TextureCoords.x < 0.0f || _TextureCoords.x > 1.0f || _TextureCoords.y < 0.0f || _TextureCoords.y > 1.0f)
+		{
+			return Math::Vec2f(0.0f, 0.0f);
+		}
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapClamp:
+	{
+		_NewTextureCoords.x = Math::Clamp(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Clamp(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapRepeat:
+	{
+		_NewTextureCoords.x = Math::Period(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Period(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapMirror:
+	{
+		Math::Vec2f _Period(Math::Period(_TextureCoords.x, 0.0f, 1.0f), Math::Period(_TextureCoords.y, 0.0f, 1.0f));
+		_NewTextureCoords.x = (_Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 0) + (1.0f - _Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 1);
+		_NewTextureCoords.y = (_Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 0) + (1.0f - _Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 1);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	default:
+	{
+		return Math::Vec2f(0.0f, 0.0f);
+	}
+	}
+
+	switch (LerpType)
+	{
+	case _LerpNearest:
+	{
+		_NewMipLevel += 0.5f;
+
+		const Image::Image& _CurrentTexture = Textures[(size_t)(_NewMipLevel)];
+
+		size_t _ImageX = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Width - 1) + 0.5f, _NewTextureCoords.x) + 0.5f, 0.0f, (float)(_CurrentTexture.Width - 1)));
+		size_t _ImageY = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Height - 1) + 0.5f, _NewTextureCoords.y) + 0.5f, 0.0f, (float)(_CurrentTexture.Height - 1)));
+
+		float _R = (float)(_CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 2 + 0]) / 255.0f;
+		float _G = (float)(_CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 2 + 1]) / 255.0f;
+
+		return Math::Vec2f(_R, _G);
+	}
+	case _LerpLinear:
+	{
+		break;
+	}
+	default:
+	{
+		return Math::Vec2f(0.0f, 0.0f);
+	}
+	}
+
+	return Math::Vec2f(0.0f, 0.0f);
+}
+
+const Math::Vec4f Rasterizer::Texture_RG::SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel) const
+{
+	const Math::Vec2f _RG = SampleRG(_TextureCoords, _MipLevel);
+
+	return Math::Vec4f(_RG, 0.0f, 1.0f);
 }
 
 void Rasterizer::Texture_RG::AddMip(const Image::Image& _Image)
@@ -270,6 +447,96 @@ Rasterizer::Texture_RGB::~Texture_RGB()
 	}
 }
 
+const Math::Vec3f Rasterizer::Texture_RGB::SampleRGB(const Math::Vec2f& _TextureCoords, const float _MipLevel) const
+{
+	if (!Textures.size())
+	{
+		return Math::Vec3f(0.0f, 0.0f, 0.0f);
+	}
+
+	Math::Vec2f _NewTextureCoords = _TextureCoords;
+	float _NewMipLevel = _MipLevel;
+
+	switch (WrapType)
+	{
+	case _WrapBlack:
+	{
+		if (_TextureCoords.x < 0.0f || _TextureCoords.x > 1.0f || _TextureCoords.y < 0.0f || _TextureCoords.y > 1.0f)
+		{
+			return Math::Vec3f(0.0f, 0.0f, 0.0f);
+		}
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapClamp:
+	{
+		_NewTextureCoords.x = Math::Clamp(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Clamp(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapRepeat:
+	{
+		_NewTextureCoords.x = Math::Period(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Period(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapMirror:
+	{
+		Math::Vec2f _Period(Math::Period(_TextureCoords.x, 0.0f, 1.0f), Math::Period(_TextureCoords.y, 0.0f, 1.0f));
+		_NewTextureCoords.x = (_Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 0) + (1.0f - _Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 1);
+		_NewTextureCoords.y = (_Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 0) + (1.0f - _Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 1);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	default:
+	{
+		return Math::Vec3f(0.0f, 0.0f, 0.0f);
+	}
+	}
+
+	switch (LerpType)
+	{
+	case _LerpNearest:
+	{
+		_NewMipLevel += 0.5f;
+
+		const Image::Image& _CurrentTexture = Textures[(size_t)(_NewMipLevel)];
+
+		size_t _ImageX = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Width - 1) + 0.5f, _NewTextureCoords.x) + 0.5f, 0.0f, (float)(_CurrentTexture.Width - 1)));
+		size_t _ImageY = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Height - 1) + 0.5f, _NewTextureCoords.y) + 0.5f, 0.0f, (float)(_CurrentTexture.Height - 1)));
+
+		float _R = (float)(_CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 3 + 0]) / 255.0f;
+		float _G = (float)(_CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 3 + 1]) / 255.0f;
+		float _B = (float)(_CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 3 + 2]) / 255.0f;
+
+		return Math::Vec3f(_R, _G, _B);
+	}
+	case _LerpLinear:
+	{
+		break;
+	}
+	default:
+	{
+		return Math::Vec3f(0.0f, 0.0f, 0.0f);
+	}
+	}
+
+	return Math::Vec3f(0.0f, 0.0f, 0.0f);
+}
+
+const Math::Vec4f Rasterizer::Texture_RGB::SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel) const
+{
+	const Math::Vec3f _RGB = SampleRGB(_TextureCoords, _MipLevel);
+
+	return Math::Vec4f(_RGB, 1.0f);
+}
+
 void Rasterizer::Texture_RGB::AddMip(const Image::Image& _Image)
 {
 	if (!_Image.Data || !_Image.Width || !_Image.Height)
@@ -371,6 +638,90 @@ Rasterizer::Texture_RGBA::~Texture_RGBA()
 	{
 		delete[] Textures[_Index].Data;
 	}
+}
+
+const Math::Vec4f Rasterizer::Texture_RGBA::SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel) const
+{
+	if (!Textures.size())
+	{
+		return Math::Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+	Math::Vec2f _NewTextureCoords = _TextureCoords;
+	float _NewMipLevel = _MipLevel;
+
+	switch (WrapType)
+	{
+	case _WrapBlack:
+	{
+		if (_TextureCoords.x < 0.0f || _TextureCoords.x > 1.0f || _TextureCoords.y < 0.0f || _TextureCoords.y > 1.0f)
+		{
+			return Math::Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
+		}
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapClamp:
+	{
+		_NewTextureCoords.x = Math::Clamp(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Clamp(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapRepeat:
+	{
+		_NewTextureCoords.x = Math::Period(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Period(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapMirror:
+	{
+		Math::Vec2f _Period(Math::Period(_TextureCoords.x, 0.0f, 1.0f), Math::Period(_TextureCoords.y, 0.0f, 1.0f));
+		_NewTextureCoords.x = (_Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 0) + (1.0f - _Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 1);
+		_NewTextureCoords.y = (_Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 0) + (1.0f - _Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 1);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	default:
+	{
+		return Math::Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
+	}
+	}
+
+	switch (LerpType)
+	{
+	case _LerpNearest:
+	{
+		_NewMipLevel += 0.5f;
+
+		const Image::Image& _CurrentTexture = Textures[(size_t)(_NewMipLevel)];
+
+		size_t _ImageX = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Width - 1) + 0.5f, _NewTextureCoords.x) + 0.5f, 0.0f, (float)(_CurrentTexture.Width - 1)));
+		size_t _ImageY = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Height - 1) + 0.5f, _NewTextureCoords.y) + 0.5f, 0.0f, (float)(_CurrentTexture.Height - 1)));
+
+		float _R = (float)(_CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 4 + 0]) / 255.0f;
+		float _G = (float)(_CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 4 + 1]) / 255.0f;
+		float _B = (float)(_CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 4 + 2]) / 255.0f;
+		float _A = (float)(_CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 4 + 3]) / 255.0f;
+
+		return Math::Vec4f(_R, _G, _B, _A);
+	}
+	case _LerpLinear:
+	{
+		break;
+	}
+	default:
+	{
+		return Math::Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
+	}
+	}
+
+	return Math::Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Rasterizer::Texture_RGBA::AddMip(const Image::Image& _Image)
@@ -477,6 +828,94 @@ Rasterizer::Texture_Float_R::~Texture_Float_R()
 	}
 }
 
+const float Rasterizer::Texture_Float_R::SampleR(const Math::Vec2f& _TextureCoords, const float _MipLevel) const
+{
+	if (!Textures.size())
+	{
+		return 0.0f;
+	}
+
+	Math::Vec2f _NewTextureCoords = _TextureCoords;
+	float _NewMipLevel = _MipLevel;
+
+	switch (WrapType)
+	{
+	case _WrapBlack:
+	{
+		if (_TextureCoords.x < 0.0f || _TextureCoords.x > 1.0f || _TextureCoords.y < 0.0f || _TextureCoords.y > 1.0f)
+		{
+			return 0.0f;
+		}
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapClamp:
+	{
+		_NewTextureCoords.x = Math::Clamp(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Clamp(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapRepeat:
+	{
+		_NewTextureCoords.x = Math::Period(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Period(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapMirror:
+	{
+		Math::Vec2f _Period(Math::Period(_TextureCoords.x, 0.0f, 1.0f), Math::Period(_TextureCoords.y, 0.0f, 1.0f));
+		_NewTextureCoords.x = (_Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 0) + (1.0f - _Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 1);
+		_NewTextureCoords.y = (_Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 0) + (1.0f - _Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 1);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	default:
+	{
+		return 0.0f;
+	}
+	}
+
+	switch (LerpType)
+	{
+	case _LerpNearest:
+	{
+		_NewMipLevel += 0.5f;
+
+		const Image::ImageFloat& _CurrentTexture = Textures[(size_t)(_NewMipLevel)];
+
+		size_t _ImageX = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Width - 1) + 0.5f, _NewTextureCoords.x) + 0.5f, 0.0f, (float)(_CurrentTexture.Width - 1)));
+		size_t _ImageY = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Height - 1) + 0.5f, _NewTextureCoords.y) + 0.5f, 0.0f, (float)(_CurrentTexture.Height - 1)));
+
+		float _R = _CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 1 + 0];
+
+		return _R;
+	}
+	case _LerpLinear:
+	{
+		break;
+	}
+	default:
+	{
+		return 0.0f;
+	}
+	}
+
+	return 0.0f;
+}
+
+const Math::Vec4f Rasterizer::Texture_Float_R::SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel) const
+{
+	const float _R = SampleR(_TextureCoords, _MipLevel);
+
+	return Math::Vec4f(_R, _R, _R, 1.0f);
+}
+
 void Rasterizer::Texture_Float_R::AddMip(const Image::ImageFloat& _Image)
 {
 	if (!_Image.Data || !_Image.Width || !_Image.Height)
@@ -576,6 +1015,95 @@ Rasterizer::Texture_Float_RG::~Texture_Float_RG()
 	{
 		delete[] Textures[_Index].Data;
 	}
+}
+
+const Math::Vec2f Rasterizer::Texture_Float_RG::SampleRG(const Math::Vec2f& _TextureCoords, const float _MipLevel) const
+{
+	if (!Textures.size())
+	{
+		return Math::Vec2f(0.0f, 0.0f);
+	}
+
+	Math::Vec2f _NewTextureCoords = _TextureCoords;
+	float _NewMipLevel = _MipLevel;
+
+	switch (WrapType)
+	{
+	case _WrapBlack:
+	{
+		if (_TextureCoords.x < 0.0f || _TextureCoords.x > 1.0f || _TextureCoords.y < 0.0f || _TextureCoords.y > 1.0f)
+		{
+			return Math::Vec2f(0.0f, 0.0f);
+		}
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapClamp:
+	{
+		_NewTextureCoords.x = Math::Clamp(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Clamp(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapRepeat:
+	{
+		_NewTextureCoords.x = Math::Period(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Period(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapMirror:
+	{
+		Math::Vec2f _Period(Math::Period(_TextureCoords.x, 0.0f, 1.0f), Math::Period(_TextureCoords.y, 0.0f, 1.0f));
+		_NewTextureCoords.x = (_Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 0) + (1.0f - _Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 1);
+		_NewTextureCoords.y = (_Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 0) + (1.0f - _Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 1);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	default:
+	{
+		return Math::Vec2f(0.0f, 0.0f);
+	}
+	}
+
+	switch (LerpType)
+	{
+	case _LerpNearest:
+	{
+		_NewMipLevel += 0.5f;
+
+		const Image::ImageFloat& _CurrentTexture = Textures[(size_t)(_NewMipLevel)];
+
+		size_t _ImageX = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Width - 1) + 0.5f, _NewTextureCoords.x) + 0.5f, 0.0f, (float)(_CurrentTexture.Width - 1)));
+		size_t _ImageY = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Height - 1) + 0.5f, _NewTextureCoords.y) + 0.5f, 0.0f, (float)(_CurrentTexture.Height - 1)));
+
+		float _R = _CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 2 + 0];
+		float _G = _CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 2 + 1];
+
+		return Math::Vec2f(_R, _G);
+	}
+	case _LerpLinear:
+	{
+		break;
+	}
+	default:
+	{
+		return Math::Vec2f(0.0f, 0.0f);
+	}
+	}
+
+	return Math::Vec2f(0.0f, 0.0f);
+}
+
+const Math::Vec4f Rasterizer::Texture_Float_RG::SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel) const
+{
+	const Math::Vec2f _RG = SampleRG(_TextureCoords, _MipLevel);
+
+	return Math::Vec4f(_RG, 0.0f, 1.0f);
 }
 
 void Rasterizer::Texture_Float_RG::AddMip(const Image::ImageFloat& _Image)
@@ -680,6 +1208,96 @@ Rasterizer::Texture_Float_RGB::~Texture_Float_RGB()
 	}
 }
 
+const Math::Vec3f Rasterizer::Texture_Float_RGB::SampleRGB(const Math::Vec2f& _TextureCoords, const float _MipLevel) const
+{
+	if (!Textures.size())
+	{
+		return Math::Vec3f(0.0f, 0.0f, 0.0f);
+	}
+
+	Math::Vec2f _NewTextureCoords = _TextureCoords;
+	float _NewMipLevel = _MipLevel;
+
+	switch (WrapType)
+	{
+	case _WrapBlack:
+	{
+		if (_TextureCoords.x < 0.0f || _TextureCoords.x > 1.0f || _TextureCoords.y < 0.0f || _TextureCoords.y > 1.0f)
+		{
+			return Math::Vec3f(0.0f, 0.0f, 0.0f);
+		}
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapClamp:
+	{
+		_NewTextureCoords.x = Math::Clamp(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Clamp(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapRepeat:
+	{
+		_NewTextureCoords.x = Math::Period(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Period(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapMirror:
+	{
+		Math::Vec2f _Period(Math::Period(_TextureCoords.x, 0.0f, 1.0f), Math::Period(_TextureCoords.y, 0.0f, 1.0f));
+		_NewTextureCoords.x = (_Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 0) + (1.0f - _Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 1);
+		_NewTextureCoords.y = (_Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 0) + (1.0f - _Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 1);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	default:
+	{
+		return Math::Vec3f(0.0f, 0.0f, 0.0f);
+	}
+	}
+
+	switch (LerpType)
+	{
+	case _LerpNearest:
+	{
+		_NewMipLevel += 0.5f;
+
+		const Image::ImageFloat& _CurrentTexture = Textures[(size_t)(_NewMipLevel)];
+
+		size_t _ImageX = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Width - 1) + 0.5f, _NewTextureCoords.x) + 0.5f, 0.0f, (float)(_CurrentTexture.Width - 1)));
+		size_t _ImageY = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Height - 1) + 0.5f, _NewTextureCoords.y) + 0.5f, 0.0f, (float)(_CurrentTexture.Height - 1)));
+
+		float _R = _CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 3 + 0];
+		float _G = _CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 3 + 1];
+		float _B = _CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 3 + 2];
+
+		return Math::Vec3f(_R, _G, _B);
+	}
+	case _LerpLinear:
+	{
+		break;
+	}
+	default:
+	{
+		return Math::Vec3f(0.0f, 0.0f, 0.0f);
+	}
+	}
+
+	return Math::Vec3f(0.0f, 0.0f, 0.0f);
+}
+
+const Math::Vec4f Rasterizer::Texture_Float_RGB::SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel) const
+{
+	const Math::Vec3f _RGB = SampleRGB(_TextureCoords, _MipLevel);
+
+	return Math::Vec4f(_RGB, 1.0f);
+}
+
 void Rasterizer::Texture_Float_RGB::AddMip(const Image::ImageFloat& _Image)
 {
 	if (!_Image.Data || !_Image.Width || !_Image.Height)
@@ -781,6 +1399,90 @@ Rasterizer::Texture_Float_RGBA::~Texture_Float_RGBA()
 	{
 		delete[] Textures[_Index].Data;
 	}
+}
+
+const Math::Vec4f Rasterizer::Texture_Float_RGBA::SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel) const
+{
+	if (!Textures.size())
+	{
+		return Math::Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+	Math::Vec2f _NewTextureCoords = _TextureCoords;
+	float _NewMipLevel = _MipLevel;
+
+	switch (WrapType)
+	{
+	case _WrapBlack:
+	{
+		if (_TextureCoords.x < 0.0f || _TextureCoords.x > 1.0f || _TextureCoords.y < 0.0f || _TextureCoords.y > 1.0f)
+		{
+			return Math::Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
+		}
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapClamp:
+	{
+		_NewTextureCoords.x = Math::Clamp(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Clamp(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapRepeat:
+	{
+		_NewTextureCoords.x = Math::Period(_TextureCoords.x, 0.0f, 1.0f);
+		_NewTextureCoords.y = Math::Period(_TextureCoords.y, 0.0f, 1.0f);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	case _WrapMirror:
+	{
+		Math::Vec2f _Period(Math::Period(_TextureCoords.x, 0.0f, 1.0f), Math::Period(_TextureCoords.y, 0.0f, 1.0f));
+		_NewTextureCoords.x = (_Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 0) + (1.0f - _Period.x) * (float)(abs((int32_t)(floorf(_TextureCoords.x))) % 2 == 1);
+		_NewTextureCoords.y = (_Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 0) + (1.0f - _Period.y) * (float)(abs((int32_t)(floorf(_TextureCoords.y))) % 2 == 1);
+		_NewMipLevel = Math::Clamp(_MipLevel, 0.0f, (float)(Textures.size() - 1));
+
+		break;
+	}
+	default:
+	{
+		return Math::Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
+	}
+	}
+
+	switch (LerpType)
+	{
+	case _LerpNearest:
+	{
+		_NewMipLevel += 0.5f;
+
+		const Image::ImageFloat& _CurrentTexture = Textures[(size_t)(_NewMipLevel)];
+
+		size_t _ImageX = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Width - 1) + 0.5f, _NewTextureCoords.x) + 0.5f, 0.0f, (float)(_CurrentTexture.Width - 1)));
+		size_t _ImageY = (size_t)(Math::Clamp(Math::Mix(-0.5f, (float)(_CurrentTexture.Height - 1) + 0.5f, _NewTextureCoords.y) + 0.5f, 0.0f, (float)(_CurrentTexture.Height - 1)));
+
+		float _R = _CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 4 + 0];
+		float _G = _CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 4 + 1];
+		float _B = _CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 4 + 2];
+		float _A = _CurrentTexture.Data[(_ImageX + _ImageY * _CurrentTexture.Width) * 4 + 3];
+
+		return Math::Vec4f(_R, _G, _B, _A);
+	}
+	case _LerpLinear:
+	{
+		break;
+	}
+	default:
+	{
+		return Math::Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
+	}
+	}
+
+	return Math::Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Rasterizer::Texture_Float_RGBA::AddMip(const Image::ImageFloat& _Image)

@@ -17,16 +17,16 @@ namespace Rasterizer
 
 	enum LerpTypes : const uint8_t
 	{
-		_Nearest = 0,
-		_Linear = 1
+		_LerpNearest = 0,
+		_LerpLinear = 1
 	};
 
 	enum WrapTypes : const uint8_t
 	{
-		_Black = 0,
-		_Clamp = 1,
-		_Repeat = 2,
-		_Mirror = 3
+		_WrapBlack = 0,
+		_WrapClamp = 1,
+		_WrapRepeat = 2,
+		_WrapMirror = 3
 	};
 
 	class Texture
@@ -39,8 +39,7 @@ namespace Rasterizer
 		Texture(Texture&& _Other) noexcept;
 		virtual ~Texture();
 
-		//virtual const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const = 0;
-		//virtual const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const = 0;
+		virtual const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel) const = 0;
 
 		void SetLerpType(const uint8_t _LerpType);
 		void SetWrapType(const uint8_t _WrapType);
@@ -68,8 +67,8 @@ namespace Rasterizer
 		Texture_R(Texture_R&& _Other) noexcept;
 		~Texture_R();
 
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+		const float SampleR(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
+		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
 		void AddMip(const Image::Image& _Image);
 		void AddDirectMip(Image::Image&& _Image);
@@ -100,8 +99,8 @@ namespace Rasterizer
 		Texture_RG(Texture_RG&& _Other) noexcept;
 		~Texture_RG();
 
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+		const Math::Vec2f SampleRG(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
+		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
 		void AddMip(const Image::Image& _Image);
 		void AddDirectMip(Image::Image&& _Image);
@@ -132,8 +131,8 @@ namespace Rasterizer
 		Texture_RGB(Texture_RGB&& _Other) noexcept;
 		~Texture_RGB();
 
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+		const Math::Vec3f SampleRGB(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
+		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
 		void AddMip(const Image::Image& _Image);
 		void AddDirectMip(Image::Image&& _Image);
@@ -164,8 +163,7 @@ namespace Rasterizer
 		Texture_RGBA(Texture_RGBA&& _Other) noexcept;
 		~Texture_RGBA();
 
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
 		void AddMip(const Image::Image& _Image);
 		void AddDirectMip(Image::Image&& _Image);
@@ -196,8 +194,8 @@ namespace Rasterizer
 		Texture_Float_R(Texture_Float_R&& _Other) noexcept;
 		~Texture_Float_R();
 
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+		const float SampleR(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
+		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
 		void AddMip(const Image::ImageFloat& _Image);
 		void AddDirectMip(Image::ImageFloat&& _Image);
@@ -228,8 +226,8 @@ namespace Rasterizer
 		Texture_Float_RG(Texture_Float_RG&& _Other) noexcept;
 		~Texture_Float_RG();
 
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+		const Math::Vec2f SampleRG(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
+		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
 		void AddMip(const Image::ImageFloat& _Image);
 		void AddDirectMip(Image::ImageFloat&& _Image);
@@ -260,8 +258,8 @@ namespace Rasterizer
 		Texture_Float_RGB(Texture_Float_RGB&& _Other) noexcept;
 		~Texture_Float_RGB();
 
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+		const Math::Vec3f SampleRGB(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
+		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
 		void AddMip(const Image::ImageFloat& _Image);
 		void AddDirectMip(Image::ImageFloat&& _Image);
@@ -292,8 +290,7 @@ namespace Rasterizer
 		Texture_Float_RGBA(Texture_Float_RGBA&& _Other) noexcept;
 		~Texture_Float_RGBA();
 
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords) const override;
-		//const Math::Vec4f Sample(const Math::Vec2f& _TextureCoords, const float _MipLevel) const override;
+		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
 		void AddMip(const Image::ImageFloat& _Image);
 		void AddDirectMip(Image::ImageFloat&& _Image);

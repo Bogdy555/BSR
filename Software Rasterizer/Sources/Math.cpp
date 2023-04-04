@@ -48,16 +48,34 @@ const double Math::Mix(const double _A, const double _B, const double _Percentag
 
 const float Math::Period(const float _Value, const float _Min, const float _Max)
 {
-	return
-		_Value * (_Value >= _Min && _Value < _Max) +
-		(_Value - (_Max - _Min) * (((_Value - _Max) / (_Max - _Min)) + 1)) * (_Value >= _Max) +
-		(_Value + (_Max - _Min) * (((_Min - _Value) / (_Max - _Min)) + 1)) * (_Value < _Min);
+	float _Rez = _Value;
+
+	while (_Rez >= _Max)
+	{
+		_Rez -= _Max - _Min;
+	}
+
+	while (_Rez < _Min)
+	{
+		_Rez += _Max - _Min;
+	}
+
+	return _Rez;
 }
 
 const double Math::Period(const double _Value, const double _Min, const double _Max)
 {
-	return
-		_Value * (_Value >= _Min && _Value < _Max) +
-		(_Value - (_Max - _Min) * (((_Value - _Max) / (_Max - _Min)) + 1)) * (_Value >= _Max) +
-		(_Value + (_Max - _Min) * (((_Min - _Value) / (_Max - _Min)) + 1)) * (_Value < _Min);
+	double _Rez = _Value;
+
+	while (_Rez >= _Max)
+	{
+		_Rez -= _Max - _Min;
+	}
+
+	while (_Rez < _Min)
+	{
+		_Rez += _Max - _Min;
+	}
+
+	return _Rez;
 }

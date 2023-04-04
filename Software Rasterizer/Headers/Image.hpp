@@ -25,7 +25,7 @@ namespace Image
 		size_t Height = 0;
 	};
 
-	float* HDRReadFile(const wchar_t* _Path, size_t& _Width, size_t& _Height);
+	float* LoadHdr(const wchar_t* _Path, size_t& _Width, size_t& _Height);
 
 	bool SaveBmp(const wchar_t* _Path, const uint8_t* _Img, const size_t _Width, const size_t _Height);
 
