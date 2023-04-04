@@ -229,18 +229,20 @@ static void PlaceScanLine(float* _Image, uint8_t* _ScanLine, size_t _Width, size
 	{
 		for (size_t _X = 0; _X < _Width; _X++)
 		{
-			_Image[(_Width - _X - 1 + _Y * _Width) * 3 + 0] = ConvertComponent(_ScanLine[_X * 4 + 0], _ScanLine[_X * 4 + 3]);
-			_Image[(_Width - _X - 1 + _Y * _Width) * 3 + 1] = ConvertComponent(_ScanLine[_X * 4 + 1], _ScanLine[_X * 4 + 3]);
-			_Image[(_Width - _X - 1 + _Y * _Width) * 3 + 2] = ConvertComponent(_ScanLine[_X * 4 + 2], _ScanLine[_X * 4 + 3]);
+			_Image[(_Width - _X - 1 + _Y * _Width) * 4 + 0] = ConvertComponent(_ScanLine[_X * 4 + 0], _ScanLine[_X * 4 + 3]);
+			_Image[(_Width - _X - 1 + _Y * _Width) * 4 + 1] = ConvertComponent(_ScanLine[_X * 4 + 1], _ScanLine[_X * 4 + 3]);
+			_Image[(_Width - _X - 1 + _Y * _Width) * 4 + 2] = ConvertComponent(_ScanLine[_X * 4 + 2], _ScanLine[_X * 4 + 3]);
+			_Image[(_Width - _X - 1 + _Y * _Width) * 4 + 3] = 1.0f;
 		}
 	}
 	else
 	{
 		for (size_t _X = 0; _X < _Width; _X++)
 		{
-			_Image[(_X + _Y * _Width) * 3 + 0] = ConvertComponent(_ScanLine[_X * 4 + 0], _ScanLine[_X * 4 + 3]);
-			_Image[(_X + _Y * _Width) * 3 + 1] = ConvertComponent(_ScanLine[_X * 4 + 1], _ScanLine[_X * 4 + 3]);
-			_Image[(_X + _Y * _Width) * 3 + 2] = ConvertComponent(_ScanLine[_X * 4 + 2], _ScanLine[_X * 4 + 3]);
+			_Image[(_X + _Y * _Width) * 4 + 0] = ConvertComponent(_ScanLine[_X * 4 + 0], _ScanLine[_X * 4 + 3]);
+			_Image[(_X + _Y * _Width) * 4 + 1] = ConvertComponent(_ScanLine[_X * 4 + 1], _ScanLine[_X * 4 + 3]);
+			_Image[(_X + _Y * _Width) * 4 + 2] = ConvertComponent(_ScanLine[_X * 4 + 2], _ScanLine[_X * 4 + 3]);
+			_Image[(_X + _Y * _Width) * 4 + 3] = 1.0f;
 		}
 	}
 }
@@ -511,7 +513,7 @@ float* Image::LoadHdr(const wchar_t* _Path, size_t& _Width, size_t& _Height)
 		_Data.Clear();
 	}
 
-	float* _Image = new float[_Width * _Height * 3];
+	float* _Image = new float[_Width * _Height * 4];
 
 	if (!_Image)
 	{
@@ -538,7 +540,7 @@ float* Image::LoadHdr(const wchar_t* _Path, size_t& _Width, size_t& _Height)
 			return nullptr;
 		}
 
-		if (_FlipY)
+		if (!_FlipY)
 		{
 			PlaceScanLine(_Image, _ScanLine, _Width, _Height - _Y - 1, _FlipX);
 		}
@@ -565,7 +567,7 @@ float* Image::LoadHdr(const wchar_t* _Path, size_t& _Width, size_t& _Height)
 			_Height = _AuxSize;
 		}
 
-		float* _NewImage = new float[_Width * _Height * 3];
+		float* _NewImage = new float[_Width * _Height * 4];
 
 		if (!_NewImage)
 		{
@@ -578,9 +580,10 @@ float* Image::LoadHdr(const wchar_t* _Path, size_t& _Width, size_t& _Height)
 		{
 			for (size_t _X = 0; _X < _Width; _X++)
 			{
-				_NewImage[(_X + _Y * _Width) * 3 + 0] = _Image[(_Y + _X * _Height) * 3 + 0];
-				_NewImage[(_X + _Y * _Width) * 3 + 1] = _Image[(_Y + _X * _Height) * 3 + 1];
-				_NewImage[(_X + _Y * _Width) * 3 + 2] = _Image[(_Y + _X * _Height) * 3 + 2];
+				_NewImage[(_X + _Y * _Width) * 4 + 0] = _Image[(_Y + _X * _Height) * 4 + 0];
+				_NewImage[(_X + _Y * _Width) * 4 + 1] = _Image[(_Y + _X * _Height) * 4 + 1];
+				_NewImage[(_X + _Y * _Width) * 4 + 2] = _Image[(_Y + _X * _Height) * 4 + 2];
+				_NewImage[(_X + _Y * _Width) * 4 + 3] = _Image[(_Y + _X * _Height) * 4 + 3];
 			}
 		}
 
@@ -594,13 +597,13 @@ float* Image::LoadHdr(const wchar_t* _Path, size_t& _Width, size_t& _Height)
 		{
 			for (size_t _X = 0; _X < _Width; _X++)
 			{
-				float _ColorX = _Image[(_X + _Y * _Width) * 3 + 0];
-				float _ColorY = _Image[(_X + _Y * _Width) * 3 + 1];
-				float _ColorZ = _Image[(_X + _Y * _Width) * 3 + 2];
+				float _ColorX = _Image[(_X + _Y * _Width) * 4 + 0];
+				float _ColorY = _Image[(_X + _Y * _Width) * 4 + 1];
+				float _ColorZ = _Image[(_X + _Y * _Width) * 4 + 2];
 
-				_Image[(_X + _Y * _Width) * 3 + 0] = GetRFromXYZ(_ColorX, _ColorY, _ColorZ);
-				_Image[(_X + _Y * _Width) * 3 + 1] = GetGFromXYZ(_ColorX, _ColorY, _ColorZ);
-				_Image[(_X + _Y * _Width) * 3 + 2] = GetBFromXYZ(_ColorX, _ColorY, _ColorZ);
+				_Image[(_X + _Y * _Width) * 4 + 0] = GetRFromXYZ(_ColorX, _ColorY, _ColorZ);
+				_Image[(_X + _Y * _Width) * 4 + 1] = GetGFromXYZ(_ColorX, _ColorY, _ColorZ);
+				_Image[(_X + _Y * _Width) * 4 + 2] = GetBFromXYZ(_ColorX, _ColorY, _ColorZ);
 			}
 		}
 	}
