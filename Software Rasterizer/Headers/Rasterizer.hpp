@@ -85,6 +85,8 @@ namespace Rasterizer
 
 	private:
 
+		const float SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
+
 		std::vector<Image::Image> Textures;
 
 	};
@@ -116,6 +118,8 @@ namespace Rasterizer
 		void operator= (Texture_RG&& _Other) noexcept;
 
 	private:
+
+		const Math::Vec2f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
 
 		std::vector<Image::Image> Textures;
 
@@ -149,6 +153,8 @@ namespace Rasterizer
 
 	private:
 
+		const Math::Vec3f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
+
 		std::vector<Image::Image> Textures;
 
 	};
@@ -179,6 +185,8 @@ namespace Rasterizer
 		void operator= (Texture_RGBA&& _Other) noexcept;
 
 	private:
+
+		const Math::Vec4f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
 
 		std::vector<Image::Image> Textures;
 
@@ -212,6 +220,8 @@ namespace Rasterizer
 
 	private:
 
+		const float SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
+
 		std::vector<Image::ImageFloat> Textures;
 
 	};
@@ -243,6 +253,8 @@ namespace Rasterizer
 		void operator= (Texture_Float_RG&& _Other) noexcept;
 
 	private:
+
+		const Math::Vec2f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
 
 		std::vector<Image::ImageFloat> Textures;
 
@@ -276,6 +288,8 @@ namespace Rasterizer
 
 	private:
 
+		const Math::Vec3f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
+
 		std::vector<Image::ImageFloat> Textures;
 
 	};
@@ -306,6 +320,8 @@ namespace Rasterizer
 		void operator= (Texture_Float_RGBA&& _Other) noexcept;
 
 	private:
+
+		const Math::Vec4f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
 
 		std::vector<Image::ImageFloat> Textures;
 

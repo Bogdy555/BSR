@@ -186,6 +186,8 @@
     <ClCompile Include="Sources\Math_Matrix.cpp" />
     <ClCompile Include="Sources\Math_Vector.cpp" />
     <ClCompile Include="Sources\Rasterizer.cpp" />
+    <ClCompile Include="Sources\Rasterizer_Geometry.cpp" />
+    <ClCompile Include="Sources\Rasterizer_Texture.cpp" />
     <ClCompile Include="Sources\String.cpp" />
   </ItemGroup>
   <ItemGroup>

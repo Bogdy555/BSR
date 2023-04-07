@@ -228,6 +228,16 @@ const Math::Vec2f Math::Vec2f::Mix(const Vec2f& _A, const Vec2f& _B, const float
 	return Vec2f(Math::Mix(_A.x, _B.x, _Percentage), Math::Mix(_A.y, _B.y, _Percentage));
 }
 
+const Math::Vec2f Math::Vec2f::Pow(const Vec2f& _Base, const Vec2f& _Pow)
+{
+	return Vec2f(powf(_Base.x, _Pow.x), powf(_Base.y, _Pow.y));
+}
+
+const Math::Vec2f Math::Vec2f::Exp(const Vec2f& _Pow)
+{
+	return Vec2f(expf(_Pow.x), expf(_Pow.y));
+}
+
 
 
 Math::Vec3f::Vec3f(const float _x, const float _y, const float _z) : x(_x), y(_y), z(_z)
@@ -481,6 +491,16 @@ const Math::Vec3f Math::Vec3f::Clamp(const Vec3f & _Value, const Vec3f & _Min, c
 const Math::Vec3f Math::Vec3f::Mix(const Vec3f & _A, const Vec3f & _B, const float _Percentage)
 {
 	return Vec3f(Math::Mix(_A.x, _B.x, _Percentage), Math::Mix(_A.y, _B.y, _Percentage), Math::Mix(_A.z, _B.z, _Percentage));
+}
+
+const Math::Vec3f Math::Vec3f::Pow(const Vec3f& _Base, const Vec3f& _Pow)
+{
+	return Vec3f(powf(_Base.x, _Pow.x), powf(_Base.y, _Pow.y), powf(_Base.z, _Pow.z));
+}
+
+const Math::Vec3f Math::Vec3f::Exp(const Vec3f& _Pow)
+{
+	return Vec3f(expf(_Pow.x), expf(_Pow.y), expf(_Pow.z));
 }
 
 
@@ -758,4 +778,14 @@ const Math::Vec4f Math::Vec4f::Clamp(const Vec4f& _Value, const Vec4f& _Min, con
 const Math::Vec4f Math::Vec4f::Mix(const Vec4f& _A, const Vec4f& _B, const float _Percentage)
 {
 	return Vec4f(Math::Mix(_A.x, _B.x, _Percentage), Math::Mix(_A.y, _B.y, _Percentage), Math::Mix(_A.z, _B.z, _Percentage), Math::Mix(_A.w, _B.w, _Percentage));
+}
+
+const Math::Vec4f Math::Vec4f::Pow(const Vec4f& _Base, const Vec4f& _Pow)
+{
+	return Vec4f(powf(_Base.x, _Pow.x), powf(_Base.y, _Pow.y), powf(_Base.z, _Pow.z), powf(_Base.w, _Pow.w));
+}
+
+const Math::Vec4f Math::Vec4f::Exp(const Vec4f& _Pow)
+{
+	return Vec4f(expf(_Pow.x), expf(_Pow.y), expf(_Pow.z), expf(_Pow.w));
 }

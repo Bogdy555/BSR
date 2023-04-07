@@ -66,6 +66,8 @@ namespace Math
 		static const float Dot(const Vec2f& _A, const Vec2f& _B);
 		static const Vec2f Clamp(const Vec2f& _Value, const Vec2f& _Min, const Vec2f& _Max);
 		static const Vec2f Mix(const Vec2f& _A, const Vec2f& _B, const float _Percentage);
+		static const Vec2f Pow(const Vec2f& _Base, const Vec2f& _Pow);
+		static const Vec2f Exp(const Vec2f& _Pow);
 
 	};
 
@@ -128,6 +130,8 @@ namespace Math
 		static const Vec3f Cross(const Vec3f& _A, const Vec3f& _B);
 		static const Vec3f Clamp(const Vec3f& _Value, const Vec3f& _Min, const Vec3f& _Max);
 		static const Vec3f Mix(const Vec3f& _A, const Vec3f& _B, const float _Percentage);
+		static const Vec3f Pow(const Vec3f& _Base, const Vec3f& _Pow);
+		static const Vec3f Exp(const Vec3f& _Pow);
 
 	};
 
@@ -192,6 +196,8 @@ namespace Math
 		static const Vec4f Cross(const Vec4f& _A, const Vec4f& _B);
 		static const Vec4f Clamp(const Vec4f& _Value, const Vec4f& _Min, const Vec4f& _Max);
 		static const Vec4f Mix(const Vec4f& _A, const Vec4f& _B, const float _Percentage);
+		static const Vec4f Pow(const Vec4f& _Base, const Vec4f& _Pow);
+		static const Vec4f Exp(const Vec4f& _Pow);
 
 	};
 
