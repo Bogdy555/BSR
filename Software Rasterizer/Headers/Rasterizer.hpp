@@ -327,6 +327,163 @@ namespace Rasterizer
 
 	};
 
+	class FrameBuffer
+	{
+
+	public:
+
+		FrameBuffer();
+		FrameBuffer(const FrameBuffer& _Other);
+		FrameBuffer(FrameBuffer&& _Other) noexcept;
+		~FrameBuffer();
+
+		bool Create(const size_t _Width, const size_t _Height);
+		void Destroy();
+
+		void FillColor(const uint8_t _R, const uint8_t _G, const uint8_t _B);
+		void FillDepth(const float _Depth);
+		void FillStencil(const uint64_t _Value);
+
+		void SetR(const uint8_t _R, const size_t _X, const size_t _Y);
+		void SetG(const uint8_t _G, const size_t _X, const size_t _Y);
+		void SetB(const uint8_t _B, const size_t _X, const size_t _Y);
+
+		void SetDepth(const float _Depth, const size_t _X, const size_t _Y);
+
+		void SetStencil(const uint64_t _Value, const size_t _X, const size_t _Y);
+
+		const size_t GetWidth() const;
+		const size_t GetHeight() const;
+
+		const uint8_t GetR(const size_t _X, const size_t _Y) const;
+		const uint8_t GetG(const size_t _X, const size_t _Y) const;
+		const uint8_t GetB(const size_t _X, const size_t _Y) const;
+
+		const Math::Vec3f GetColor(const size_t _X, const size_t _Y) const;
+
+		const float GetDepth(const size_t _X, const size_t _Y) const;
+
+		const uint64_t GetStencil(const size_t _X, const size_t _Y) const;
+
+		void operator= (const FrameBuffer& _Other);
+		void operator= (FrameBuffer&& _Other) noexcept;
+
+	private:
+
+		size_t Width;
+		size_t Height;
+		uint8_t* Color;
+		float* Depth;
+		uint64_t* Stencil;
+
+	};
+
+	class FrameBufferFloat
+	{
+
+	public:
+
+		FrameBufferFloat();
+		FrameBufferFloat(const FrameBufferFloat& _Other);
+		FrameBufferFloat(FrameBufferFloat&& _Other) noexcept;
+		~FrameBufferFloat();
+
+		bool Create(const size_t _Width, const size_t _Height);
+		void Destroy();
+
+		void FillColor(const float _R, const float _G, const float _B);
+		void FillDepth(const float _Depth);
+		void FillStencil(const uint64_t _Value);
+
+		void SetR(const float _R, const size_t _X, const size_t _Y);
+		void SetG(const float _G, const size_t _X, const size_t _Y);
+		void SetB(const float _B, const size_t _X, const size_t _Y);
+
+		void SetDepth(const float _Depth, const size_t _X, const size_t _Y);
+
+		void SetStencil(const uint64_t _Value, const size_t _X, const size_t _Y);
+
+		const size_t GetWidth() const;
+		const size_t GetHeight() const;
+
+		const float GetR(const size_t _X, const size_t _Y) const;
+		const float GetG(const size_t _X, const size_t _Y) const;
+		const float GetB(const size_t _X, const size_t _Y) const;
+
+		const Math::Vec3f GetColor(const size_t _X, const size_t _Y) const;
+
+		const float GetDepth(const size_t _X, const size_t _Y) const;
+
+		const uint64_t GetStencil(const size_t _X, const size_t _Y) const;
+
+		void operator= (const FrameBufferFloat& _Other);
+		void operator= (FrameBufferFloat&& _Other) noexcept;
+
+	private:
+
+		size_t Width;
+		size_t Height;
+		float* Color;
+		float* Depth;
+		uint64_t* Stencil;
+
+	};
+
+	struct Material
+	{
+		Texture_RGB* Albedo = nullptr;
+		Texture_R* Alpha = nullptr;
+		Texture_R* Metalness = nullptr;
+		Texture_R* Roughness = nullptr;
+		Texture_R* AmbientOcclusion = nullptr;
+		Texture_RGB* NormalMap = nullptr;
+		Texture_RGB* Emission = nullptr;
+
+		Math::Vec3f AlbedoMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+		float AlphaMultiplier = 1.0f;
+		float MetalnessMultiplier = 1.0f;
+		float RoughnessMultiplier = 1.0f;
+		float AmbientOcclusionMultiplier = 1.0f;
+		Math::Vec3f NormalMapMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+		Math::Vec3f EmissionMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+
+		Texture_RGB* AlbedoBack = nullptr;
+		Texture_R* AlphaBack = nullptr;
+		Texture_R* MetalnessBack = nullptr;
+		Texture_R* RoughnessBack = nullptr;
+		Texture_R* AmbientOcclusionBack = nullptr;
+		Texture_RGB* NormalMapBack = nullptr;
+		Texture_RGB* EmissionBack = nullptr;
+
+		Math::Vec3f AlbedoBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+		float AlphaBackMultiplier = 1.0f;
+		float MetalnessBackMultiplier = 1.0f;
+		float RoughnessBackMultiplier = 1.0f;
+		float AmbientOcclusionBackMultiplier = 1.0f;
+		Math::Vec3f NormalMapBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+		Math::Vec3f EmissionBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+	};
+
+	enum LightTypes : uint8_t
+	{
+		_DirectionalLight = 0,
+		_PointLight = 1,
+		_SpotLight = 2
+	};
+
+	struct Light
+	{
+		uint8_t Type = _PointLight;
+		Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
+		Math::Vec3f Direction = Math::Vec3f(0.0f, -1.0f, 0.0f);
+		float Theta = 0.0f;
+		float ThetaFade = 0.0f;
+		Math::Vec3f Color = Math::Vec3f(1.0f, 1.0f, 1.0f);
+		float Intensity = 1.0f;
+		std::vector<Texture_R*> ShadowMaps;
+		float Radius = 0.0f;
+	};
+
 	struct Camera
 	{
 
@@ -374,7 +531,6 @@ namespace Rasterizer
 	struct VertexData
 	{
 		Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
-		Math::Vec4f Color = Math::Vec4f(1.0f, 1.0f, 1.0f, 1.0f);
 		Math::Vec3f Normal = Math::Vec3f(0.0f, 0.0f, 1.0f);
 		Math::Vec3f Tangent = Math::Vec3f(1.0f, 0.0f, 0.0f);
 		Math::Vec2f TextureCoords = Math::Vec2f(0.0f, 0.0f);

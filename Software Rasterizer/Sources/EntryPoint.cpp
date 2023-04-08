@@ -9,19 +9,19 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
 		if (!_Model.Load(L".\\Cubes.wfobj"))
 		{
-			std::wcout << L"Could not load the 3D model!\n";
+			LOG_LINE(STRING_TYPE("Could not load the 3D model!"));
 			return -1;
 		}
 
-		std::wcout << L"The 3D model was loaded.\n";
+		LOG_LINE(STRING_TYPE("The 3D model was loaded."));
 
 		if (!_Model.Save(L".\\Cubes.obj"))
 		{
-			std::wcout << L"Could not save the 3D model!\n";
+			LOG_LINE(STRING_TYPE("Could not save the 3D model!"));
 			return -1;
 		}
 
-		std::wcout << L"The 3D model was saved.\n";
+		LOG_LINE(STRING_TYPE("The 3D model was saved."));
 	}
 
 	{
@@ -31,11 +31,11 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
 		if (!_Img.Data)
 		{
-			std::wcout << L"Could not load the texture!\n";
+			LOG_LINE(STRING_TYPE("Could not load the texture!"));
 			return -1;
 		}
 
-		std::wcout << L"The texture was loaded.\n";
+		LOG_LINE(STRING_TYPE("The texture was loaded."));
 
 		Rasterizer::Texture_RGBA _Texture;
 
@@ -43,7 +43,7 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 		_Texture.SetWrapType(Rasterizer::_WrapMirror);
 		_Texture.AddDirectMip(std::move(_Img));
 
-		size_t _Resize = 3;
+		size_t _Resize = 15;
 		float _TextureResize = 1.0f;
 		float _TextureOffset = 0.0f;
 
@@ -53,7 +53,7 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
 		if (!_Img.Data)
 		{
-			std::wcout << L"Runtime error! (no more memory...)\n";
+			LOG_LINE(STRING_TYPE("Runtime error! (no more memory...)"));
 			return -1;
 		}
 
@@ -77,12 +77,12 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
 		if (!Image::SaveBmp(L".\\OutputTexture.bmp", _Img.Data, _Img.Width, _Img.Height))
 		{
-			std::wcout << L"Could not save the output texture!\n";
+			LOG_LINE(STRING_TYPE("Could not save the output texture!"));
 			delete[] _Img.Data;
 			return -1;
 		}
 
-		std::wcout << L"The output textured was saved.\n";
+		LOG_LINE(STRING_TYPE("The output textured was saved."));
 
 		delete[] _Img.Data;
 

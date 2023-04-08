@@ -95,6 +95,16 @@ namespace Rasterizer
 
 	class Texture_Float_RGBA;
 
+	class FrameBuffer;
+
+	class FrameBufferFloat;
+
+	struct Material;
+
+	enum LightTypes : const uint8_t;
+
+	struct Light;
+
 	struct Camera;
 
 	struct Transform;

@@ -575,13 +575,10 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				VertexData _VertC;
 
 				_VertA.Position = _Positions[_CurrentFace[0].Position];
-				_VertA.Color = Math::Vec4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 				_VertB.Position = _Positions[_CurrentFace[_IndexFaceVertex].Position];
-				_VertB.Color = Math::Vec4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 				_VertC.Position = _Positions[_CurrentFace[_IndexFaceVertex + 1].Position];
-				_VertC.Color = Math::Vec4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 				if (_CurrentFace[0].Normal != (size_t)(-1))
 				{

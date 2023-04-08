@@ -109,6 +109,22 @@ A texture with 3 floating point components.
 
 A texture with 4 floating point components.
 
+* class Rasterizer::FrameBuffer
+
+Storage for the frame and helper methods.
+
+* class Rasterizer::FrameBufferFloat
+
+Storage for the HDR frame and helper methods.
+
+* struct Rasterizer::Material
+
+Data structure that holds the material properties of a 3D model.
+
+* struct Rasterizer::Light
+
+The data of a light source.
+
 * struct Rasterizer::Camera
 
 Used to store and manage the position and orientation data from which to render the scene.
