@@ -426,9 +426,6 @@ namespace Math
 	const float Mix(const float _A, const float _B, const float _Percentage);
 	const double Mix(const double _A, const double _B, const double _Percentage);
 
-	const float Period(const float _Value, const float _Min, const float _Max);
-	const double Period(const double _Value, const double _Min, const double _Max);
-
 }
 
 

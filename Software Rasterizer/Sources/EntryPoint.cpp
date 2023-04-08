@@ -39,12 +39,16 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
 		Rasterizer::Texture_RGBA _Texture;
 
-		_Texture.SetLerpType(Rasterizer::_LerpNearest);
+		_Texture.SetLerpType(Rasterizer::_LerpLinear);
 		_Texture.SetWrapType(Rasterizer::_WrapMirror);
 		_Texture.AddDirectMip(std::move(_Img));
 
-		_Img.Width *= 9;
-		_Img.Height *= 9;
+		size_t _Resize = 3;
+		float _TextureResize = 1.0f;
+		float _TextureOffset = 0.0f;
+
+		_Img.Width *= _Resize;
+		_Img.Height *= _Resize;
 		_Img.Data = new uint8_t[_Img.Width * _Img.Height * 4];
 
 		if (!_Img.Data)
@@ -59,8 +63,8 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 			{
 				Math::Vec2f _TextureCoords;
 
-				_TextureCoords.x = ((float)(_X) / (float)(_Img.Width) + 0.5f / (float)(_Img.Width)) * 9.0f - 4.0f;
-				_TextureCoords.y = ((float)(_Y) / (float)(_Img.Height) + 0.5f / (float)(_Img.Height)) * 9.0f - 4.0f;
+				_TextureCoords.x = ((float)(_X) / (float)(_Img.Width) + 0.5f / (float)(_Img.Width)) * _TextureResize + _TextureOffset;
+				_TextureCoords.y = ((float)(_Y) / (float)(_Img.Height) + 0.5f / (float)(_Img.Height)) * _TextureResize + _TextureOffset;
 
 				Math::Vec4f _Rez = _Texture.SampleRGBA(_TextureCoords);
 
@@ -81,6 +85,8 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 		std::wcout << L"The output textured was saved.\n";
 
 		delete[] _Img.Data;
+
+		ShellExecute(NULL, nullptr, L".\\OutputTexture.bmp", nullptr, nullptr, SW_SHOW);
 	}
 
 	return 0;
