@@ -2,627 +2,145 @@
 
 
 
-Rasterizer::FrameBuffer::FrameBuffer() : Width(0), Height(0), Color(nullptr), Depth(nullptr), Stencil(nullptr)
+Rasterizer::Context::Context() : ViewPortX(0), ViewPortY(0), ViewPortWidth(0), ViewPortHeight(0), CullingType(_ClockWiseCulling), DepthTestingType(_LowerDepthTesting), BlendingType(_AlphaBlending)
 {
 
 }
 
-Rasterizer::FrameBuffer::FrameBuffer(const FrameBuffer& _Other) : Width(0), Height(0), Color(nullptr), Depth(nullptr), Stencil(nullptr)
+Rasterizer::Context::Context(const Context& _Other) : ViewPortX(_Other.ViewPortX), ViewPortY(_Other.ViewPortY), ViewPortWidth(_Other.ViewPortWidth), ViewPortHeight(_Other.ViewPortHeight), CullingType(_Other.CullingType), DepthTestingType(_Other.DepthTestingType), BlendingType(_Other.BlendingType)
 {
-	Color = new uint8_t[_Other.Width * _Other.Height * 3];
 
-	if (!Color)
+}
+
+Rasterizer::Context::Context(Context&& _Other) noexcept : ViewPortX(_Other.ViewPortX), ViewPortY(_Other.ViewPortY), ViewPortWidth(_Other.ViewPortWidth), ViewPortHeight(_Other.ViewPortHeight), CullingType(_Other.CullingType), DepthTestingType(_Other.DepthTestingType), BlendingType(_Other.BlendingType)
+{
+	_Other.ViewPortX = 0;
+	_Other.ViewPortY = 0;
+	_Other.ViewPortWidth = 0;
+	_Other.ViewPortHeight = 0;
+	_Other.CullingType = _ClockWiseCulling;
+	_Other.DepthTestingType = _LowerDepthTesting;
+	_Other.BlendingType = _AlphaBlending;
+}
+
+Rasterizer::Context::~Context()
+{
+
+}
+
+void Rasterizer::Context::RenderMesh(const VertexBuffer& _VBO, const IndexBuffer& _IBO, const size_t _IBOBegin, const size_t _IBOEnd, const void* _Uniforms, const size_t _LerpersCount, const VertexShaderFnc _VertexShader) const
+{
+	struct VertexShaderOutput
 	{
-		return;
+		Math::Vec4f Position = Math::Vec4f(0.0f, 0.0f, 0.0f, 0.0f);
+		float* Lerpers = nullptr;
+	};
+
+	std::vector<VertexShaderOutput> _VertexShaderOutputs;
+
+	for (size_t _IndexVBO = 0; _IndexVBO < _VBO.GetSize(); _IndexVBO++)
+	{
+		VertexShaderOutput _Output;
+
+		_Output.Lerpers = new float[_LerpersCount];
+
+		if (!_Output.Lerpers)
+		{
+			DEBUG_BREAK();
+
+			for (size_t _Index = 0; _Index < _VertexShaderOutputs.size(); _Index++)
+			{
+				delete[] _VertexShaderOutputs[_Index].Lerpers;
+			}
+
+			return;
+		}
+
+		_Output.Position = _VertexShader(_VBO[_IndexVBO], _Uniforms, _Output.Lerpers);
+
+		_VertexShaderOutputs.push_back(_Output);
 	}
 
-	Depth = new float[_Other.Width * _Other.Height];
-
-	if (!Depth)
+	for (size_t _Index = 0; _Index < _VertexShaderOutputs.size(); _Index++)
 	{
-		delete[] Color;
-		Color = nullptr;
-		return;
+		delete[] _VertexShaderOutputs[_Index].Lerpers;
 	}
 
-	Stencil = new uint64_t[_Other.Width * _Other.Height];
-
-	if (!Stencil)
-	{
-		delete[] Color;
-		Color = nullptr;
-		delete[] Depth;
-		Depth = nullptr;
-		return;
-	}
-
-	for (size_t _Index = 0; _Index < _Other.Width * _Other.Height; _Index++)
-	{
-		Color[_Index * 3 + 0] = _Other.Color[_Index * 3 + 0];
-		Color[_Index * 3 + 1] = _Other.Color[_Index * 3 + 1];
-		Color[_Index * 3 + 2] = _Other.Color[_Index * 3 + 2];
-
-		Depth[_Index] = _Other.Depth[_Index];
-
-		Stencil[_Index] = _Other.Stencil[_Index];
-	}
-
-	Width = _Other.Width;
-	Height = _Other.Height;
+	_VertexShaderOutputs.clear();
 }
 
-Rasterizer::FrameBuffer::FrameBuffer(FrameBuffer&& _Other) noexcept : Width(_Other.Width), Height(_Other.Height), Color(_Other.Color), Depth(_Other.Depth), Stencil(_Other.Stencil)
+void Rasterizer::Context::SetViewPort(const size_t _ViewPortX, const size_t _ViewPortY, const size_t _ViewPortWidth, const size_t _ViewPortHeight)
 {
-	_Other.Width = 0;
-	_Other.Height = 0;
-	_Other.Color = nullptr;
-	_Other.Depth = nullptr;
-	_Other.Stencil = nullptr;
+	ViewPortX = _ViewPortX;
+	ViewPortY = _ViewPortY;
+	ViewPortWidth = _ViewPortWidth;
+	ViewPortHeight = _ViewPortHeight;
 }
 
-Rasterizer::FrameBuffer::~FrameBuffer()
+void Rasterizer::Context::SetCullingType(const uint8_t _CullingType)
 {
-	delete[] Color;
-	delete[] Depth;
-	delete[] Stencil;
+	CullingType = _CullingType;
 }
 
-bool Rasterizer::FrameBuffer::Create(const size_t _Width, const size_t _Height)
+void Rasterizer::Context::SetDepthTestingType(const uint8_t _DepthTestingType)
 {
-	Width = 0;
-	Height = 0;
-	delete[] Color;
-	Color = nullptr;
-	delete[] Depth;
-	Depth = nullptr;
-	delete[] Stencil;
-	Stencil = nullptr;
-
-	Color = new uint8_t[_Width * _Height * 3];
-
-	if (!Color)
-	{
-		return false;
-	}
-
-	Depth = new float[_Width * _Height];
-
-	if (!Depth)
-	{
-		delete[] Color;
-		Color = nullptr;
-		return false;
-	}
-
-	Stencil = new uint64_t[_Width * _Height];
-
-	if (!Stencil)
-	{
-		delete[] Color;
-		Color = nullptr;
-		delete[] Depth;
-		Depth = nullptr;
-		return false;
-	}
-
-	for (size_t _Index = 0; _Index < _Width * _Height; _Index++)
-	{
-		Color[_Index * 3 + 0] = 0;
-		Color[_Index * 3 + 1] = 0;
-		Color[_Index * 3 + 2] = 0;
-
-		Depth[_Index] = 1.0f;
-
-		Stencil[_Index] = 0;
-	}
-
-	Width = _Width;
-	Height = _Height;
-
-	return true;
+	DepthTestingType = _DepthTestingType;
 }
 
-void Rasterizer::FrameBuffer::Destroy()
+void Rasterizer::Context::SetBlendingType(const uint8_t _BlendingType)
 {
-	Width = 0;
-	Height = 0;
-	delete[] Color;
-	delete[] Depth;
-	delete[] Stencil;
+	BlendingType = _BlendingType;
 }
 
-void Rasterizer::FrameBuffer::FillColor(const uint8_t _R, const uint8_t _G, const uint8_t _B)
+void Rasterizer::Context::GetViewPort(size_t& _ViewPortX, size_t& _ViewPortY, size_t& _ViewPortWidth, size_t& _ViewPortHeight) const
 {
-	for (size_t _Index = 0; _Index < Width * Height; _Index++)
-	{
-		Color[_Index * 3 + 0] = _R;
-		Color[_Index * 3 + 1] = _G;
-		Color[_Index * 3 + 2] = _B;
-	}
+	_ViewPortX = ViewPortX;
+	_ViewPortY = ViewPortY;
+	_ViewPortWidth = ViewPortWidth;
+	_ViewPortHeight = ViewPortHeight;
 }
 
-void Rasterizer::FrameBuffer::FillDepth(const float _Depth)
+const uint8_t Rasterizer::Context::GetCullingType() const
 {
-	for (size_t _Index = 0; _Index < Width * Height; _Index++)
-	{
-		Depth[_Index] = _Depth;
-	}
+	return CullingType;
 }
 
-void Rasterizer::FrameBuffer::FillStencil(const uint64_t _Value)
+const uint8_t Rasterizer::Context::GetDepthTestingType() const
 {
-	for (size_t _Index = 0; _Index < Width * Height; _Index++)
-	{
-		Stencil[_Index] = _Value;
-	}
+	return DepthTestingType;
 }
 
-void Rasterizer::FrameBuffer::SetR(const uint8_t _R, const size_t _X, const size_t _Y)
+const uint8_t Rasterizer::Context::GetBlendingType() const
 {
-	Color[(_X + _Y * Width) * 3 + 0] = _R;
+	return BlendingType;
 }
 
-void Rasterizer::FrameBuffer::SetG(const uint8_t _G, const size_t _X, const size_t _Y)
+void Rasterizer::Context::operator= (const Context& _Other)
 {
-	Color[(_X + _Y * Width) * 3 + 1] = _G;
+	ViewPortX = _Other.ViewPortX;
+	ViewPortY = _Other.ViewPortY;
+	ViewPortWidth = _Other.ViewPortWidth;
+	ViewPortHeight = _Other.ViewPortHeight;
+	CullingType = _Other.CullingType;
+	DepthTestingType = _Other.DepthTestingType;
+	BlendingType = _Other.BlendingType;
 }
 
-void Rasterizer::FrameBuffer::SetB(const uint8_t _B, const size_t _X, const size_t _Y)
+void Rasterizer::Context::operator= (Context&& _Other) noexcept
 {
-	Color[(_X + _Y * Width) * 3 + 2] = _B;
-}
-
-void Rasterizer::FrameBuffer::SetDepth(const float _Depth, const size_t _X, const size_t _Y)
-{
-	Depth[_X + _Y * Width] = _Depth;
-}
-
-void Rasterizer::FrameBuffer::SetStencil(const uint64_t _Value, const size_t _X, const size_t _Y)
-{
-	Stencil[_X + _Y * Width] = _Value;
-}
-
-const size_t Rasterizer::FrameBuffer::GetWidth() const
-{
-	return Width;
-}
-
-const size_t Rasterizer::FrameBuffer::GetHeight() const
-{
-	return Height;
-}
-
-const uint8_t Rasterizer::FrameBuffer::GetR(const size_t _X, const size_t _Y) const
-{
-	return Color[(_X + _Y * Width) * 3 + 0];
-}
-
-const uint8_t Rasterizer::FrameBuffer::GetG(const size_t _X, const size_t _Y) const
-{
-	return Color[(_X + _Y * Width) * 3 + 1];
-}
-
-const uint8_t Rasterizer::FrameBuffer::GetB(const size_t _X, const size_t _Y) const
-{
-	return Color[(_X + _Y * Width) * 3 + 2];
-}
-
-const Math::Vec3f Rasterizer::FrameBuffer::GetColor(const size_t _X, const size_t _Y) const
-{
-	return Math::Vec3f((float)(GetR(_X, _Y)) / 255.0f, (float)(GetG(_X, _Y)) / 255.0f, (float)(GetB(_X, _Y)) / 255.0f);
-}
-
-const float Rasterizer::FrameBuffer::GetDepth(const size_t _X, const size_t _Y) const
-{
-	return Depth[_X + _Y * Width];
-}
-
-const uint64_t Rasterizer::FrameBuffer::GetStencil(const size_t _X, const size_t _Y) const
-{
-	return Stencil[_X + _Y * Width];
-}
-
-void Rasterizer::FrameBuffer::operator= (const FrameBuffer& _Other)
-{
-	Width = 0;
-	Height = 0;
-	delete[] Color;
-	Color = nullptr;
-	delete[] Depth;
-	Depth = nullptr;
-	delete[] Stencil;
-	Stencil = nullptr;
-
-	Color = new uint8_t[_Other.Width * _Other.Height * 3];
-
-	if (!Color)
-	{
-		return;
-	}
-
-	Depth = new float[_Other.Width * _Other.Height];
-
-	if (!Depth)
-	{
-		delete[] Color;
-		Color = nullptr;
-		return;
-	}
-
-	Stencil = new uint64_t[_Other.Width * _Other.Height];
-
-	if (!Stencil)
-	{
-		delete[] Color;
-		Color = nullptr;
-		delete[] Depth;
-		Depth = nullptr;
-		return;
-	}
-
-	for (size_t _Index = 0; _Index < _Other.Width * _Other.Height; _Index++)
-	{
-		Color[_Index * 3 + 0] = _Other.Color[_Index * 3 + 0];
-		Color[_Index * 3 + 1] = _Other.Color[_Index * 3 + 1];
-		Color[_Index * 3 + 2] = _Other.Color[_Index * 3 + 2];
-
-		Depth[_Index] = _Other.Depth[_Index];
-
-		Stencil[_Index] = _Other.Stencil[_Index];
-	}
-
-	Width = _Other.Width;
-	Height = _Other.Height;
-}
-
-void Rasterizer::FrameBuffer::operator= (FrameBuffer&& _Other) noexcept
-{
-	delete[] Color;
-	delete[] Depth;
-	delete[] Stencil;
-
-	Width = _Other.Width;
-	Height = _Other.Height;
-	Color = _Other.Color;
-	Depth = _Other.Depth;
-	Stencil = _Other.Stencil;
-
-	_Other.Width = 0;
-	_Other.Height = 0;
-	_Other.Color = nullptr;
-	_Other.Depth = nullptr;
-	_Other.Stencil = nullptr;
-}
-
-
-
-Rasterizer::FrameBufferFloat::FrameBufferFloat() : Width(0), Height(0), Color(nullptr), Depth(nullptr), Stencil(nullptr)
-{
-
-}
-
-Rasterizer::FrameBufferFloat::FrameBufferFloat(const FrameBufferFloat& _Other) : Width(0), Height(0), Color(nullptr), Depth(nullptr), Stencil(nullptr)
-{
-	Color = new float[_Other.Width * _Other.Height * 3];
-
-	if (!Color)
-	{
-		return;
-	}
-
-	Depth = new float[_Other.Width * _Other.Height];
-
-	if (!Depth)
-	{
-		delete[] Color;
-		Color = nullptr;
-		return;
-	}
-
-	Stencil = new uint64_t[_Other.Width * _Other.Height];
-
-	if (!Stencil)
-	{
-		delete[] Color;
-		Color = nullptr;
-		delete[] Depth;
-		Depth = nullptr;
-		return;
-	}
-
-	for (size_t _Index = 0; _Index < _Other.Width * _Other.Height; _Index++)
-	{
-		Color[_Index * 3 + 0] = _Other.Color[_Index * 3 + 0];
-		Color[_Index * 3 + 1] = _Other.Color[_Index * 3 + 1];
-		Color[_Index * 3 + 2] = _Other.Color[_Index * 3 + 2];
-
-		Depth[_Index] = _Other.Depth[_Index];
-
-		Stencil[_Index] = _Other.Stencil[_Index];
-	}
-
-	Width = _Other.Width;
-	Height = _Other.Height;
-}
-
-Rasterizer::FrameBufferFloat::FrameBufferFloat(FrameBufferFloat&& _Other) noexcept : Width(_Other.Width), Height(_Other.Height), Color(_Other.Color), Depth(_Other.Depth), Stencil(_Other.Stencil)
-{
-	_Other.Width = 0;
-	_Other.Height = 0;
-	_Other.Color = nullptr;
-	_Other.Depth = nullptr;
-	_Other.Stencil = nullptr;
-}
-
-Rasterizer::FrameBufferFloat::~FrameBufferFloat()
-{
-	delete[] Color;
-	delete[] Depth;
-	delete[] Stencil;
-}
-
-bool Rasterizer::FrameBufferFloat::Create(const size_t _Width, const size_t _Height)
-{
-	Width = 0;
-	Height = 0;
-	delete[] Color;
-	Color = nullptr;
-	delete[] Depth;
-	Depth = nullptr;
-	delete[] Stencil;
-	Stencil = nullptr;
-
-	Color = new float[_Width * _Height * 3];
-
-	if (!Color)
-	{
-		return false;
-	}
-
-	Depth = new float[_Width * _Height];
-
-	if (!Depth)
-	{
-		delete[] Color;
-		Color = nullptr;
-		return false;
-	}
-
-	Stencil = new uint64_t[_Width * _Height];
-
-	if (!Stencil)
-	{
-		delete[] Color;
-		Color = nullptr;
-		delete[] Depth;
-		Depth = nullptr;
-		return false;
-	}
-
-	for (size_t _Index = 0; _Index < _Width * _Height; _Index++)
-	{
-		Color[_Index * 3 + 0] = 0.0f;
-		Color[_Index * 3 + 1] = 0.0f;
-		Color[_Index * 3 + 2] = 0.0f;
-
-		Depth[_Index] = 1.0f;
-
-		Stencil[_Index] = 0;
-	}
-
-	Width = _Width;
-	Height = _Height;
-
-	return true;
-}
-
-void Rasterizer::FrameBufferFloat::Destroy()
-{
-	Width = 0;
-	Height = 0;
-	delete[] Color;
-	delete[] Depth;
-	delete[] Stencil;
-}
-
-void Rasterizer::FrameBufferFloat::FillColor(const float _R, const float _G, const float _B)
-{
-	for (size_t _Index = 0; _Index < Width * Height; _Index++)
-	{
-		Color[_Index * 3 + 0] = _R;
-		Color[_Index * 3 + 1] = _G;
-		Color[_Index * 3 + 2] = _B;
-	}
-}
-
-void Rasterizer::FrameBufferFloat::FillDepth(const float _Depth)
-{
-	for (size_t _Index = 0; _Index < Width * Height; _Index++)
-	{
-		Depth[_Index] = _Depth;
-	}
-}
-
-void Rasterizer::FrameBufferFloat::FillStencil(const uint64_t _Value)
-{
-	for (size_t _Index = 0; _Index < Width * Height; _Index++)
-	{
-		Stencil[_Index] = _Value;
-	}
-}
-
-void Rasterizer::FrameBufferFloat::SetR(const float _R, const size_t _X, const size_t _Y)
-{
-	Color[(_X + _Y * Width) * 3 + 0] = _R;
-}
-
-void Rasterizer::FrameBufferFloat::SetG(const float _G, const size_t _X, const size_t _Y)
-{
-	Color[(_X + _Y * Width) * 3 + 1] = _G;
-}
-
-void Rasterizer::FrameBufferFloat::SetB(const float _B, const size_t _X, const size_t _Y)
-{
-	Color[(_X + _Y * Width) * 3 + 2] = _B;
-}
-
-void Rasterizer::FrameBufferFloat::SetDepth(const float _Depth, const size_t _X, const size_t _Y)
-{
-	Depth[_X + _Y * Width] = _Depth;
-}
-
-void Rasterizer::FrameBufferFloat::SetStencil(const uint64_t _Value, const size_t _X, const size_t _Y)
-{
-	Stencil[_X + _Y * Width] = _Value;
-}
-
-const size_t Rasterizer::FrameBufferFloat::GetWidth() const
-{
-	return Width;
-}
-
-const size_t Rasterizer::FrameBufferFloat::GetHeight() const
-{
-	return Height;
-}
-
-const float Rasterizer::FrameBufferFloat::GetR(const size_t _X, const size_t _Y) const
-{
-	return Color[(_X + _Y * Width) * 3 + 0];
-}
-
-const float Rasterizer::FrameBufferFloat::GetG(const size_t _X, const size_t _Y) const
-{
-	return Color[(_X + _Y * Width) * 3 + 1];
-}
-
-const float Rasterizer::FrameBufferFloat::GetB(const size_t _X, const size_t _Y) const
-{
-	return Color[(_X + _Y * Width) * 3 + 2];
-}
-
-const Math::Vec3f Rasterizer::FrameBufferFloat::GetColor(const size_t _X, const size_t _Y) const
-{
-	return Math::Vec3f(GetR(_X, _Y), GetG(_X, _Y), GetB(_X, _Y));
-}
-
-const float Rasterizer::FrameBufferFloat::GetDepth(const size_t _X, const size_t _Y) const
-{
-	return Depth[_X + _Y * Width];
-}
-
-const uint64_t Rasterizer::FrameBufferFloat::GetStencil(const size_t _X, const size_t _Y) const
-{
-	return Stencil[_X + _Y * Width];
-}
-
-void Rasterizer::FrameBufferFloat::operator= (const FrameBufferFloat& _Other)
-{
-	Width = 0;
-	Height = 0;
-	delete[] Color;
-	Color = nullptr;
-	delete[] Depth;
-	Depth = nullptr;
-	delete[] Stencil;
-	Stencil = nullptr;
-
-	Color = new float[_Other.Width * _Other.Height * 3];
-
-	if (!Color)
-	{
-		return;
-	}
-
-	Depth = new float[_Other.Width * _Other.Height];
-
-	if (!Depth)
-	{
-		delete[] Color;
-		Color = nullptr;
-		return;
-	}
-
-	Stencil = new uint64_t[_Other.Width * _Other.Height];
-
-	if (!Stencil)
-	{
-		delete[] Color;
-		Color = nullptr;
-		delete[] Depth;
-		Depth = nullptr;
-		return;
-	}
-
-	for (size_t _Index = 0; _Index < _Other.Width * _Other.Height; _Index++)
-	{
-		Color[_Index * 3 + 0] = _Other.Color[_Index * 3 + 0];
-		Color[_Index * 3 + 1] = _Other.Color[_Index * 3 + 1];
-		Color[_Index * 3 + 2] = _Other.Color[_Index * 3 + 2];
-
-		Depth[_Index] = _Other.Depth[_Index];
-
-		Stencil[_Index] = _Other.Stencil[_Index];
-	}
-
-	Width = _Other.Width;
-	Height = _Other.Height;
-}
-
-void Rasterizer::FrameBufferFloat::operator= (FrameBufferFloat&& _Other) noexcept
-{
-	delete[] Color;
-	delete[] Depth;
-	delete[] Stencil;
-
-	Width = _Other.Width;
-	Height = _Other.Height;
-	Color = _Other.Color;
-	Depth = _Other.Depth;
-	Stencil = _Other.Stencil;
-
-	_Other.Width = 0;
-	_Other.Height = 0;
-	_Other.Color = nullptr;
-	_Other.Depth = nullptr;
-	_Other.Stencil = nullptr;
-}
-
-
-
-const Math::Mat4f Rasterizer::Camera::GetViewMatrix() const
-{
-	return
-		Math::Mat4f::GetRotation(AngleTilt, Math::Vec3f(0.0f, 0.0f, 1.0f)) *
-		Math::Mat4f::GetRotation(AngleVertical, Math::Vec3f(1.0f, 0.0f, 0.0f)) *
-		Math::Mat4f::GetRotation(AngleFlat, Math::Vec3f(0.0f, 1.0f, 0.0f)) *
-		Math::Mat4f::GetTranslation(-Position);
-}
-
-const Math::Mat4f Rasterizer::Camera::GetProjectionMatrix(const float _AspectRatio) const
-{
-	if (Perspective)
-	{
-		return Math::Mat4f::GetPerspective(FieldOfView, _AspectRatio, NearPlane, FarPlane);
-	}
-
-	return Math::Mat4f::GetOrtho(-FieldOfView / 2.0f * _AspectRatio, FieldOfView / 2.0f * _AspectRatio, -FieldOfView / 2.0f, FieldOfView / 2.0f, -FarPlane, -NearPlane);
-}
-
-
-
-const Math::Mat4f Rasterizer::Transform::GetModelMatrix() const
-{
-	return
-		Math::Mat4f::GetTranslation(Position) *
-		Math::Mat4f::GetRotation(AngleFlat, Math::Vec3f(0.0f, -1.0f, 0.0f)) *
-		Math::Mat4f::GetRotation(AngleVertical, Math::Vec3f(-1.0f, 0.0f, 0.0f)) *
-		Math::Mat4f::GetRotation(AngleTilt, Math::Vec3f(0.0f, 0.0f, 1.0f)) *
-		Math::Mat4f::GetScale(Scale.x, Scale.y, Scale.z, 1.0f) *
-		Math::Mat4f::GetShear(ShearXByY, 0, 1) *
-		Math::Mat4f::GetShear(ShearXByZ, 0, 2) *
-		Math::Mat4f::GetShear(ShearYByZ, 1, 2) *
-		Math::Mat4f::GetShear(ShearYByX, 1, 0) *
-		Math::Mat4f::GetShear(ShearZByX, 2, 0) *
-		Math::Mat4f::GetShear(ShearZByY, 2, 1);
+	ViewPortX = _Other.ViewPortX;
+	ViewPortY = _Other.ViewPortY;
+	ViewPortWidth = _Other.ViewPortWidth;
+	ViewPortHeight = _Other.ViewPortHeight;
+	CullingType = _Other.CullingType;
+	DepthTestingType = _Other.DepthTestingType;
+	BlendingType = _Other.BlendingType;
+
+	_Other.ViewPortX = 0;
+	_Other.ViewPortY = 0;
+	_Other.ViewPortWidth = 0;
+	_Other.ViewPortHeight = 0;
+	_Other.CullingType = _ClockWiseCulling;
+	_Other.DepthTestingType = _LowerDepthTesting;
+	_Other.BlendingType = _AlphaBlending;
 }

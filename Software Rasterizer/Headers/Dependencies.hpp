@@ -95,10 +95,6 @@ namespace Rasterizer
 
 	class Texture_Float_RGBA;
 
-	class FrameBuffer;
-
-	class FrameBufferFloat;
-
 	struct Material;
 
 	enum LightTypes : const uint8_t;
@@ -120,6 +116,16 @@ namespace Rasterizer
 	struct Mesh;
 
 	class Model;
+
+	enum CullingTypes : uint8_t;
+
+	enum DepthTestingTypes : uint8_t;
+
+	enum BlendingTypes : uint8_t;
+
+	typedef const Math::Vec4f (*VertexShaderFnc)(const VertexData& _Vertex, const void* _Uniforms, float* _OutLerpers);
+
+	class Context;
 
 }
 

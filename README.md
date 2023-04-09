@@ -109,14 +109,6 @@ A texture with 3 floating point components.
 
 A texture with 4 floating point components.
 
-* class Rasterizer::FrameBuffer
-
-Storage for the frame and helper methods.
-
-* class Rasterizer::FrameBufferFloat
-
-Storage for the HDR frame and helper methods.
-
 * struct Rasterizer::Material
 
 Data structure that holds the material properties of a 3D model.
@@ -156,3 +148,7 @@ Quick and dirty hack to pair up a VBO and an IBO.
 * class Rasterizer::Model
 
 A set of meshes that describe a 3D model.
+
+* class Rasterizer::Context
+
+The thing that actually renders.

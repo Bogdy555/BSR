@@ -684,15 +684,12 @@ bool Image::SaveBmp(const wchar_t* _Path, const uint8_t* _Img, const size_t _Wid
 		_NewImg[_Index * 4 + 3] = 0;
 	}
 
-	for (size_t y = 0; y < _Height; y++)
+	if (fwrite(_NewImg, 1, _Width * _Height * 4, _File) != _Width * _Height * 4)
 	{
-		if (fwrite(_NewImg + y * _Width * 4, 1, _Width * 4, _File) != _Width * 4)
-		{
-			delete[] _NewImg;
-			fclose(_File);
-			_wremove(_Path);
-			return false;
-		}
+		delete[] _NewImg;
+		fclose(_File);
+		_wremove(_Path);
+		return false;
 	}
 
 	delete[] _NewImg;

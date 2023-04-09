@@ -327,108 +327,6 @@ namespace Rasterizer
 
 	};
 
-	class FrameBuffer
-	{
-
-	public:
-
-		FrameBuffer();
-		FrameBuffer(const FrameBuffer& _Other);
-		FrameBuffer(FrameBuffer&& _Other) noexcept;
-		~FrameBuffer();
-
-		bool Create(const size_t _Width, const size_t _Height);
-		void Destroy();
-
-		void FillColor(const uint8_t _R, const uint8_t _G, const uint8_t _B);
-		void FillDepth(const float _Depth);
-		void FillStencil(const uint64_t _Value);
-
-		void SetR(const uint8_t _R, const size_t _X, const size_t _Y);
-		void SetG(const uint8_t _G, const size_t _X, const size_t _Y);
-		void SetB(const uint8_t _B, const size_t _X, const size_t _Y);
-
-		void SetDepth(const float _Depth, const size_t _X, const size_t _Y);
-
-		void SetStencil(const uint64_t _Value, const size_t _X, const size_t _Y);
-
-		const size_t GetWidth() const;
-		const size_t GetHeight() const;
-
-		const uint8_t GetR(const size_t _X, const size_t _Y) const;
-		const uint8_t GetG(const size_t _X, const size_t _Y) const;
-		const uint8_t GetB(const size_t _X, const size_t _Y) const;
-
-		const Math::Vec3f GetColor(const size_t _X, const size_t _Y) const;
-
-		const float GetDepth(const size_t _X, const size_t _Y) const;
-
-		const uint64_t GetStencil(const size_t _X, const size_t _Y) const;
-
-		void operator= (const FrameBuffer& _Other);
-		void operator= (FrameBuffer&& _Other) noexcept;
-
-	private:
-
-		size_t Width;
-		size_t Height;
-		uint8_t* Color;
-		float* Depth;
-		uint64_t* Stencil;
-
-	};
-
-	class FrameBufferFloat
-	{
-
-	public:
-
-		FrameBufferFloat();
-		FrameBufferFloat(const FrameBufferFloat& _Other);
-		FrameBufferFloat(FrameBufferFloat&& _Other) noexcept;
-		~FrameBufferFloat();
-
-		bool Create(const size_t _Width, const size_t _Height);
-		void Destroy();
-
-		void FillColor(const float _R, const float _G, const float _B);
-		void FillDepth(const float _Depth);
-		void FillStencil(const uint64_t _Value);
-
-		void SetR(const float _R, const size_t _X, const size_t _Y);
-		void SetG(const float _G, const size_t _X, const size_t _Y);
-		void SetB(const float _B, const size_t _X, const size_t _Y);
-
-		void SetDepth(const float _Depth, const size_t _X, const size_t _Y);
-
-		void SetStencil(const uint64_t _Value, const size_t _X, const size_t _Y);
-
-		const size_t GetWidth() const;
-		const size_t GetHeight() const;
-
-		const float GetR(const size_t _X, const size_t _Y) const;
-		const float GetG(const size_t _X, const size_t _Y) const;
-		const float GetB(const size_t _X, const size_t _Y) const;
-
-		const Math::Vec3f GetColor(const size_t _X, const size_t _Y) const;
-
-		const float GetDepth(const size_t _X, const size_t _Y) const;
-
-		const uint64_t GetStencil(const size_t _X, const size_t _Y) const;
-
-		void operator= (const FrameBufferFloat& _Other);
-		void operator= (FrameBufferFloat&& _Other) noexcept;
-
-	private:
-
-		size_t Width;
-		size_t Height;
-		float* Color;
-		float* Depth;
-		uint64_t* Stencil;
-
-	};
-
 	struct Material
 	{
 		Texture_RGB* Albedo = nullptr;
@@ -635,6 +533,67 @@ namespace Rasterizer
 	private:
 
 		std::vector<Mesh> Meshes;
+
+	};
+
+	enum CullingTypes : uint8_t
+	{
+		_NoCulling = 0,
+		_ClockWiseCulling = 1,
+		_CounterClockWiseCulling = 2
+	};
+
+	enum DepthTestingTypes : uint8_t
+	{
+		_NoDepthTesting = 0,
+		_LowerDepthTesting = 1,
+		_HigherDepthTesting = 2
+	};
+
+	enum BlendingTypes : uint8_t
+	{
+		_NoBlending = 0,
+		_AditiveBlending = 1,
+		_AlphaBlending = 2
+	};
+
+	typedef const Math::Vec4f (*VertexShaderFnc)(const VertexData& _Vertex, const void* _Uniforms, float* _OutLerpers);
+
+	class Context
+	{
+
+	public:
+
+		Context();
+		Context(const Context& _Other);
+		Context(Context&& _Other) noexcept;
+		~Context();
+
+		void RenderMesh(const VertexBuffer& _VBO, const IndexBuffer& _IBO, const size_t _IBOBegin, const size_t _IBOEnd, const void* _Uniforms, const size_t _LerpersCount, const VertexShaderFnc _VertexShader) const;
+
+		void SetViewPort(const size_t _ViewPortX, const size_t _ViewPortY, const size_t _ViewPortWidth, const size_t _ViewPortHeight);
+		void SetCullingType(const uint8_t _CullingType);
+		void SetDepthTestingType(const uint8_t _DepthTestingType);
+		void SetBlendingType(const uint8_t _BlendingType);
+
+		void GetViewPort(size_t& _ViewPortX, size_t& _ViewPortY, size_t& _ViewPortWidth, size_t& _ViewPortHeight) const;
+		const uint8_t GetCullingType() const;
+		const uint8_t GetDepthTestingType() const;
+		const uint8_t GetBlendingType() const;
+
+		void operator= (const Context& _Other);
+		void operator= (Context&& _Other) noexcept;
+
+	private:
+
+		size_t ViewPortX;
+		size_t ViewPortY;
+		size_t ViewPortWidth;
+		size_t ViewPortHeight;
+
+		uint8_t CullingType;
+		uint8_t DepthTestingType;
+		uint8_t BlendingType;
 
 	};
 
