@@ -547,7 +547,9 @@ namespace Rasterizer
 	{
 		_NoDepthTesting = 0,
 		_LowerDepthTesting = 1,
-		_HigherDepthTesting = 2
+		_HigherDepthTesting = 2,
+		_LowerOrEqualDepthTesting = 3,
+		_HigherOrEqualDepthTesting = 4
 	};
 
 	enum BlendingTypes : uint8_t
@@ -557,7 +559,9 @@ namespace Rasterizer
 		_AlphaBlending = 2
 	};
 
-	typedef const Math::Vec4f (*VertexShaderFnc)(const VertexData& _Vertex, const void* _Uniforms, float* _OutLerpers);
+	typedef const Math::Vec4f (*VertexShaderFnc)(const float* _Vertex, const void* _Uniforms, float* _OutLerpers);
+
+	typedef const bool (*GeometryShaderFnc)(const Math::Vec4f& _APosition, const Math::Vec4f& _BPosition, const Math::Vec4f& _CPosition, const float* _ALerpers, const float* _BLerpers, const float* _CLerpers, std::vector<Math::Vec4f>& _PositionsOut, std::vector<float*>& _LerpersOut);
 
 	class Context
 	{
@@ -569,7 +573,7 @@ namespace Rasterizer
 		Context(Context&& _Other) noexcept;
 		~Context();
 
-		void RenderMesh(const VertexBuffer& _VBO, const IndexBuffer& _IBO, const size_t _IBOBegin, const size_t _IBOEnd, const void* _Uniforms, const size_t _LerpersCount, const VertexShaderFnc _VertexShader) const;
+		const bool RenderMesh(const float* _VBO, const size_t _VBOSize, const size_t _VBOStride, const size_t* _IBO, const size_t _IBOBegin, const size_t _IBOEnd, const void* _Uniforms, const size_t _LerpersCount, const VertexShaderFnc _VertexShader, const GeometryShaderFnc _GeometryShader) const;
 
 		void SetViewPort(const size_t _ViewPortX, const size_t _ViewPortY, const size_t _ViewPortWidth, const size_t _ViewPortHeight);
 		void SetCullingType(const uint8_t _CullingType);

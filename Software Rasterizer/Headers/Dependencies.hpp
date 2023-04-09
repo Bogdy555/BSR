@@ -123,7 +123,9 @@ namespace Rasterizer
 
 	enum BlendingTypes : uint8_t;
 
-	typedef const Math::Vec4f (*VertexShaderFnc)(const VertexData& _Vertex, const void* _Uniforms, float* _OutLerpers);
+	typedef const Math::Vec4f (*VertexShaderFnc)(const float* _Vertex, const void* _Uniforms, float* _OutLerpers);
+
+	typedef const bool (*GeometryShaderFnc)(const Math::Vec4f& _APosition, const Math::Vec4f& _BPosition, const Math::Vec4f& _CPosition, const float* _ALerpers, const float* _BLerpers, const float* _CLerpers, std::vector<Math::Vec4f>& _PositionsOut, std::vector<float*>& _LerpersOut);
 
 	class Context;
 
