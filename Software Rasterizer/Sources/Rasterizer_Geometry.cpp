@@ -81,6 +81,16 @@ const size_t Rasterizer::VertexBuffer::GetSize() const
 	return Verteces.size();
 }
 
+float* Rasterizer::VertexBuffer::GetData()
+{
+	return (float*)(Verteces.data());
+}
+
+const float* Rasterizer::VertexBuffer::GetData() const
+{
+	return (const float*)(Verteces.data());
+}
+
 Rasterizer::VertexData& Rasterizer::VertexBuffer::operator[] (const size_t _Index)
 {
 	return Verteces[_Index];
@@ -141,6 +151,16 @@ void Rasterizer::IndexBuffer::Clear()
 const size_t Rasterizer::IndexBuffer::GetSize() const
 {
 	return Indexes.size();
+}
+
+size_t* Rasterizer::IndexBuffer::GetData()
+{
+	return (size_t*)(Indexes.data());
+}
+
+const size_t* Rasterizer::IndexBuffer::GetData() const
+{
+	return (const size_t*)(Indexes.data());
 }
 
 Rasterizer::IndexData& Rasterizer::IndexBuffer::operator[] (const size_t _Index)

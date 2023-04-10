@@ -45,3 +45,13 @@ const double Math::Mix(const double _A, const double _B, const double _Percentag
 {
 	return _A + (_B - _A) * _Percentage;
 }
+
+const float Math::Min(const float _A, const float _B)
+{
+	return _A * (_A <= _B) + _B * (_A > _B);
+}
+
+const float Math::Max(const float _A, const float _B)
+{
+	return _A * (_A >= _B) + _B * (_A < _B);
+}

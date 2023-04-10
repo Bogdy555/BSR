@@ -4,6 +4,10 @@
 
 
 
+#pragma comment(lib, "WinMM.lib")
+
+
+
 #pragma pack(pop)
 
 
@@ -21,6 +25,12 @@
 #include <vector>
 #include <sstream>
 
+#include <chrono>
+
+#include <thread>
+#include <mutex>
+#include <future>
+
 
 
 #pragma pack(push, 1)
@@ -32,6 +42,13 @@
 
 
 template <typename T> class Vector;
+
+namespace Time
+{
+
+	class Timer;
+
+}
 
 namespace String
 {
@@ -95,6 +112,20 @@ namespace Rasterizer
 
 	class Texture_Float_RGBA;
 
+	enum CullingTypes : uint8_t;
+
+	enum DepthTestingTypes : uint8_t;
+
+	enum BlendingTypes : uint8_t;
+
+	typedef const Math::Vec4f (*VertexShaderFnc)(const void* _Vertex, const void* _Uniforms, float* _OutLerpers);
+
+	typedef const bool (*GeometryShaderFnc)(const Math::Vec4f& _APosition, const Math::Vec4f& _BPosition, const Math::Vec4f& _CPosition, const float* _ALerpers, const float* _BLerpers, const float* _CLerpers, const void* _Uniforms, std::vector<Math::Vec4f>& _PositionsOut, std::vector<float*>& _LerpersOut);
+
+	typedef void (*FragmentShaderFnc)(const size_t _X, const size_t _Y, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const float _FragDepth, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType);
+
+	class Context;
+
 	struct Material;
 
 	enum LightTypes : const uint8_t;
@@ -116,18 +147,6 @@ namespace Rasterizer
 	struct Mesh;
 
 	class Model;
-
-	enum CullingTypes : uint8_t;
-
-	enum DepthTestingTypes : uint8_t;
-
-	enum BlendingTypes : uint8_t;
-
-	typedef const Math::Vec4f (*VertexShaderFnc)(const float* _Vertex, const void* _Uniforms, float* _OutLerpers);
-
-	typedef const bool (*GeometryShaderFnc)(const Math::Vec4f& _APosition, const Math::Vec4f& _BPosition, const Math::Vec4f& _CPosition, const float* _ALerpers, const float* _BLerpers, const float* _CLerpers, std::vector<Math::Vec4f>& _PositionsOut, std::vector<float*>& _LerpersOut);
-
-	class Context;
 
 }
 

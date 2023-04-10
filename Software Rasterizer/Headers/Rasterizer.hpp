@@ -327,6 +327,73 @@ namespace Rasterizer
 
 	};
 
+	enum CullingTypes : uint8_t
+	{
+		_NoCulling = 0,
+		_ClockWiseCulling = 1,
+		_CounterClockWiseCulling = 2
+	};
+
+	enum DepthTestingTypes : uint8_t
+	{
+		_NoDepthTesting = 0,
+		_LowerDepthTesting = 1,
+		_HigherDepthTesting = 2,
+		_LowerOrEqualDepthTesting = 3,
+		_HigherOrEqualDepthTesting = 4
+	};
+
+	enum BlendingTypes : uint8_t
+	{
+		_NoBlending = 0,
+		_AditiveBlending = 1,
+		_AlphaBlending = 2
+	};
+
+	typedef const Math::Vec4f (*VertexShaderFnc)(const void* _Vertex, const void* _Uniforms, float* _OutLerpers);
+
+	typedef const bool (*GeometryShaderFnc)(const Math::Vec4f& _APosition, const Math::Vec4f& _BPosition, const Math::Vec4f& _CPosition, const float* _ALerpers, const float* _BLerpers, const float* _CLerpers, const void* _Uniforms, std::vector<Math::Vec4f>& _PositionsOut, std::vector<float*>& _LerpersOut);
+
+	typedef void (*FragmentShaderFnc)(const size_t _X, const size_t _Y, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const float _FragDepth, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType);
+
+	class Context
+	{
+
+	public:
+
+		Context();
+		Context(const Context& _Other);
+		Context(Context&& _Other) noexcept;
+		~Context();
+
+		const bool RenderMesh(const void* _VBO, const size_t _VBOSize, const size_t _VBOStride, const size_t* _IBO, const size_t _IBOBegin, const size_t _IBOEnd, const void* _Uniforms, const size_t _LerpersCount, const VertexShaderFnc _VertexShader, const GeometryShaderFnc _GeometryShader, const FragmentShaderFnc _FragmentShader, void* _FrameBuffer) const;
+
+		void SetViewPort(const size_t _ViewPortX, const size_t _ViewPortY, const size_t _ViewPortWidth, const size_t _ViewPortHeight);
+		void SetCullingType(const uint8_t _CullingType);
+		void SetDepthTestingType(const uint8_t _DepthTestingType);
+		void SetBlendingType(const uint8_t _BlendingType);
+
+		void GetViewPort(size_t& _ViewPortX, size_t& _ViewPortY, size_t& _ViewPortWidth, size_t& _ViewPortHeight) const;
+		const uint8_t GetCullingType() const;
+		const uint8_t GetDepthTestingType() const;
+		const uint8_t GetBlendingType() const;
+
+		void operator= (const Context& _Other);
+		void operator= (Context&& _Other) noexcept;
+
+	private:
+
+		size_t ViewPortX;
+		size_t ViewPortY;
+		size_t ViewPortWidth;
+		size_t ViewPortHeight;
+
+		uint8_t CullingType;
+		uint8_t DepthTestingType;
+		uint8_t BlendingType;
+
+	};
+
 	struct Material
 	{
 		Texture_RGB* Albedo = nullptr;
@@ -450,6 +517,9 @@ namespace Rasterizer
 
 		const size_t GetSize() const;
 
+		float* GetData();
+		const float* GetData() const;
+
 		VertexData& operator[] (const size_t _Index);
 		const VertexData& operator[] (const size_t _Index) const;
 
@@ -484,6 +554,9 @@ namespace Rasterizer
 		void Clear();
 
 		const size_t GetSize() const;
+
+		size_t* GetData();
+		const size_t* GetData() const;
 
 		IndexData& operator[] (const size_t _Index);
 		const IndexData& operator[] (const size_t _Index) const;
@@ -533,71 +606,6 @@ namespace Rasterizer
 	private:
 
 		std::vector<Mesh> Meshes;
-
-	};
-
-	enum CullingTypes : uint8_t
-	{
-		_NoCulling = 0,
-		_ClockWiseCulling = 1,
-		_CounterClockWiseCulling = 2
-	};
-
-	enum DepthTestingTypes : uint8_t
-	{
-		_NoDepthTesting = 0,
-		_LowerDepthTesting = 1,
-		_HigherDepthTesting = 2,
-		_LowerOrEqualDepthTesting = 3,
-		_HigherOrEqualDepthTesting = 4
-	};
-
-	enum BlendingTypes : uint8_t
-	{
-		_NoBlending = 0,
-		_AditiveBlending = 1,
-		_AlphaBlending = 2
-	};
-
-	typedef const Math::Vec4f (*VertexShaderFnc)(const float* _Vertex, const void* _Uniforms, float* _OutLerpers);
-
-	typedef const bool (*GeometryShaderFnc)(const Math::Vec4f& _APosition, const Math::Vec4f& _BPosition, const Math::Vec4f& _CPosition, const float* _ALerpers, const float* _BLerpers, const float* _CLerpers, std::vector<Math::Vec4f>& _PositionsOut, std::vector<float*>& _LerpersOut);
-
-	class Context
-	{
-
-	public:
-
-		Context();
-		Context(const Context& _Other);
-		Context(Context&& _Other) noexcept;
-		~Context();
-
-		const bool RenderMesh(const float* _VBO, const size_t _VBOSize, const size_t _VBOStride, const size_t* _IBO, const size_t _IBOBegin, const size_t _IBOEnd, const void* _Uniforms, const size_t _LerpersCount, const VertexShaderFnc _VertexShader, const GeometryShaderFnc _GeometryShader) const;
-
-		void SetViewPort(const size_t _ViewPortX, const size_t _ViewPortY, const size_t _ViewPortWidth, const size_t _ViewPortHeight);
-		void SetCullingType(const uint8_t _CullingType);
-		void SetDepthTestingType(const uint8_t _DepthTestingType);
-		void SetBlendingType(const uint8_t _BlendingType);
-
-		void GetViewPort(size_t& _ViewPortX, size_t& _ViewPortY, size_t& _ViewPortWidth, size_t& _ViewPortHeight) const;
-		const uint8_t GetCullingType() const;
-		const uint8_t GetDepthTestingType() const;
-		const uint8_t GetBlendingType() const;
-
-		void operator= (const Context& _Other);
-		void operator= (Context&& _Other) noexcept;
-
-	private:
-
-		size_t ViewPortX;
-		size_t ViewPortY;
-		size_t ViewPortWidth;
-		size_t ViewPortHeight;
-
-		uint8_t CullingType;
-		uint8_t DepthTestingType;
-		uint8_t BlendingType;
 
 	};
 

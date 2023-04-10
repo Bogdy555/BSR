@@ -33,6 +33,10 @@ Here I will list all of the classes and structures found in the project and a sh
 
 This class is a container that has exactly the same functionality as the std::vector from STL. It has support for move semantics and it is templated.
 
+* class Time::Timer
+
+Used for elapsed time.
+
 * struct Math::Vec2f
 
 A simple 2 component point struct. It has operator overloading and helpers for convenience.
@@ -109,6 +113,10 @@ A texture with 3 floating point components.
 
 A texture with 4 floating point components.
 
+* class Rasterizer::Context
+
+The thing that actually renders.
+
 * struct Rasterizer::Material
 
 Data structure that holds the material properties of a 3D model.
@@ -148,7 +156,3 @@ Quick and dirty hack to pair up a VBO and an IBO.
 * class Rasterizer::Model
 
 A set of meshes that describe a 3D model.
-
-* class Rasterizer::Context
-
-The thing that actually renders.

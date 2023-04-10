@@ -10,6 +10,8 @@
 
 #include "Dependencies.hpp"
 
+#include "Time.hpp"
+
 #include "String.hpp"
 
 #include "Math.hpp"
