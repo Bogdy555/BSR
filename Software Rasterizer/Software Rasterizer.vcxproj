@@ -206,11 +206,7 @@
     <ClInclude Include="Headers\WinTargetVer.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Files\Cubes.mtl" />
-    <None Include="Files\Cubes.wfobj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Files\Texture.bmp" />
+    <None Include="Files\Scene.wfobj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

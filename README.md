@@ -21,7 +21,17 @@ It works out of the box since I only use relative paths and the project does not
 
 ## Features
 
-Currently the features that are available are the math lib and the asset manager and loader that can load 3D models and textures.
+* Asset loading
+
+* Texture sampling
+
+![Texture sampling original](./ReadMe%20Resources/InputTexture.bmp)
+
+![Texture sampling result](./ReadMe%20Resources/OutputTexture.bmp)
+
+* Rasterizer
+
+![Cool render](./ReadMe%20Resources/Render.bmp)
 
 
 

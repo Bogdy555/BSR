@@ -460,7 +460,7 @@ namespace Rasterizer
 
 		bool Perspective = true;
 
-		float FieldOfView = 120.0f;
+		float FieldOfView = 90.0f * Math::fDegreesToRadians;
 		float NearPlane = 0.001f;
 		float FarPlane = 1000.0f;
 
