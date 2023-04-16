@@ -23,15 +23,13 @@ It works out of the box since I only use relative paths and the project does not
 
 * Asset loading
 
-* Texture sampling
+* Texture sampling with wrapping (repeat, mirror, clamp and black) and filtering (nearest and bi-linear)
 
-![Texture sampling original](./ReadMe%20Resources/InputTexture.bmp)
-
-![Texture sampling result](./ReadMe%20Resources/OutputTexture.bmp)
+![Texture sampling example](./ReadMe%20Resources/TextureSampling.bmp)
 
 * Rasterizer
 
-![Cool render](./ReadMe%20Resources/Render.bmp)
+![Render example](./ReadMe%20Resources/Render.bmp)
 
 
 

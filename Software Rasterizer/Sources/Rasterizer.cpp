@@ -2,7 +2,7 @@
 
 
 
-static const bool PointInside(const Math::Vec2f& _Point, const Math::Vec2f& _A, const Math::Vec2f& _B, const Math::Vec2f& _C)
+static const bool PointInside(const Math::Vec2f& _P, const Math::Vec2f& _A, const Math::Vec2f& _B, const Math::Vec2f& _C)
 {
 	Math::Mat3f _OriginalMat;
 
@@ -16,24 +16,71 @@ static const bool PointInside(const Math::Vec2f& _Point, const Math::Vec2f& _A, 
 
 	_MatABP[0][0] = _A.x; _MatABP[0][1] = _A.y; _MatABP[0][2] = 1.0f;
 	_MatABP[1][0] = _B.x; _MatABP[1][1] = _B.y; _MatABP[1][2] = 1.0f;
-	_MatABP[2][0] = _Point.x; _MatABP[2][1] = _Point.y; _MatABP[2][2] = 1.0f;
+	_MatABP[2][0] = _P.x; _MatABP[2][1] = _P.y; _MatABP[2][2] = 1.0f;
 
 	_MatBCP[0][0] = _B.x; _MatBCP[0][1] = _B.y; _MatBCP[0][2] = 1.0f;
 	_MatBCP[1][0] = _C.x; _MatBCP[1][1] = _C.y; _MatBCP[1][2] = 1.0f;
-	_MatBCP[2][0] = _Point.x; _MatBCP[2][1] = _Point.y; _MatBCP[2][2] = 1.0f;
+	_MatBCP[2][0] = _P.x; _MatBCP[2][1] = _P.y; _MatBCP[2][2] = 1.0f;
 
 	_MatCAP[0][0] = _C.x; _MatCAP[0][1] = _C.y; _MatCAP[0][2] = 1.0f;
 	_MatCAP[1][0] = _A.x; _MatCAP[1][1] = _A.y; _MatCAP[1][2] = 1.0f;
-	_MatCAP[2][0] = _Point.x; _MatCAP[2][1] = _Point.y; _MatCAP[2][2] = 1.0f;
+	_MatCAP[2][0] = _P.x; _MatCAP[2][1] = _P.y; _MatCAP[2][2] = 1.0f;
 
 	return abs(abs(_OriginalMat.Determinant()) - abs(_MatABP.Determinant()) - abs(_MatBCP.Determinant()) - abs(_MatCAP.Determinant())) <= 0.000001f;
 }
 
-
-
-static void LerpAll(const float* _A, const float* _B, const size_t _Length, const float _Percentage, float* _Out)
+static const float GetT1(const Math::Vec2f& _A, const Math::Vec2f& _B, const Math::Vec2f& _C, const Math::Vec2f& _P)
 {
-	for (size_t _Index = 0; _Index < _Length; _Index++)
+	if (_A.x == _B.x)
+	{
+		Math::Vec3f _CP((_P.y - _C.y) / (_P.x - _C.x), -1.0f, _C.y - _C.x * (_P.y - _C.y) / (_P.x - _C.x));
+
+		float _YIntersect = _A.x * _CP.x + _CP.z;
+
+		return Math::Clamp((_YIntersect - _A.y) / (_B.y - _A.y), 0.0f, 1.0f);
+	}
+	else
+	{
+		if (_C.x == _P.x)
+		{
+			float _XIntersect = _C.x;
+
+			return Math::Clamp((_XIntersect - _A.x) / (_B.x - _A.x), 0.0f, 1.0f);
+		}
+		else
+		{
+			Math::Vec3f _AB((_B.y - _A.y) / (_B.x - _A.x), -1.0f, _A.y - _A.x * (_B.y - _A.y) / (_B.x - _A.x));
+			Math::Vec3f _CP((_P.y - _C.y) / (_P.x - _C.x), -1.0f, _C.y - _C.x * (_P.y - _C.y) / (_P.x - _C.x));
+
+			float _XIntersect = (_CP.z - _AB.z) / (_AB.x - _CP.x);
+
+			return Math::Clamp((_XIntersect - _A.x) / (_B.x - _A.x), 0.0f, 1.0f);
+		}
+	}
+
+	DEBUG_BREAK();
+
+	return 0.0f;
+}
+
+static const float GetT2(const Math::Vec2f& _A, const Math::Vec2f& _B, const Math::Vec2f& _C, const Math::Vec2f& _P, const float _T1)
+{
+	Math::Vec2f _IntersectPoint = Math::Vec2f::Mix(_A, _B, _T1);
+
+	return Math::Clamp((_IntersectPoint - _P).Magnitude() / (_C - _IntersectPoint).Magnitude(), 0.0f, 1.0f);
+}
+
+static void MultiplyAll(float* _Out, const size_t _LerpersCount, const float _Value)
+{
+	for (size_t _Index = 0; _Index < _LerpersCount; _Index++)
+	{
+		_Out[_Index] *= _Value;
+	}
+}
+
+static void LerpAll(const float* _A, const float* _B, const size_t _LerpersCount, const float _Percentage, float* _Out)
+{
+	for (size_t _Index = 0; _Index < _LerpersCount; _Index++)
 	{
 		_Out[_Index] = Math::Mix(_A[_Index], _B[_Index], _Percentage);
 	}
@@ -350,36 +397,43 @@ const bool Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _VBOSi
 	{
 		GeometryShaderOutput& _CurrentTriangle = _GeometryShaderOutputs[_IndexTriangle];
 
-		Math::Vec3f _A = Math::Vec3f(_CurrentTriangle.A.Position) / _CurrentTriangle.A.Position.w;
-		Math::Vec3f _B = Math::Vec3f(_CurrentTriangle.B.Position) / _CurrentTriangle.B.Position.w;
-		Math::Vec3f _C = Math::Vec3f(_CurrentTriangle.C.Position) / _CurrentTriangle.C.Position.w;
+		MultiplyAll(_CurrentTriangle.A.Lerpers, _LerpersCount, 1.0f / _CurrentTriangle.A.Position.w);
+		MultiplyAll(_CurrentTriangle.B.Lerpers, _LerpersCount, 1.0f / _CurrentTriangle.B.Position.w);
+		MultiplyAll(_CurrentTriangle.C.Lerpers, _LerpersCount, 1.0f / _CurrentTriangle.C.Position.w);
 
-		bool _FrontFacing = Math::Vec3f::Cross(_B - _A, _C - _A).z > 0.0f;
+		Math::Vec3f _ScreenA = Math::Vec3f(_CurrentTriangle.A.Position) / _CurrentTriangle.A.Position.w;
+		Math::Vec3f _ScreenB = Math::Vec3f(_CurrentTriangle.B.Position) / _CurrentTriangle.B.Position.w;
+		Math::Vec3f _ScreenC = Math::Vec3f(_CurrentTriangle.C.Position) / _CurrentTriangle.C.Position.w;
 
-		size_t _StartX = (size_t)(floorf(Math::Min(Math::Min((_A.x + 1.0f) / 2.0f, (_B.x + 1.0f) / 2.0f), (_C.x + 1.0f) / 2.0f) * (float)(ViewPortWidth)));
-		size_t _StartY = (size_t)(floorf(Math::Min(Math::Min((_A.y + 1.0f) / 2.0f, (_B.y + 1.0f) / 2.0f), (_C.y + 1.0f) / 2.0f) * (float)(ViewPortHeight)));
+		bool _FrontFacing = Math::Vec3f::Cross(_ScreenB - _ScreenA, _ScreenC - _ScreenA).z > 0.0f;
 
-		size_t _EndX = (size_t)(ceilf(Math::Max(Math::Max((_A.x + 1.0f) / 2.0f, (_B.x + 1.0f) / 2.0f), (_C.x + 1.0f) / 2.0f) * (float)(ViewPortWidth))) + 1;
-		size_t _EndY = (size_t)(ceilf(Math::Max(Math::Max((_A.y + 1.0f) / 2.0f, (_B.y + 1.0f) / 2.0f), (_C.y + 1.0f) / 2.0f) * (float)(ViewPortHeight))) + 1;
+		size_t _StartX = (size_t)(floorf(Math::Min(Math::Min((_ScreenA.x + 1.0f) / 2.0f, (_ScreenB.x + 1.0f) / 2.0f), (_ScreenC.x + 1.0f) / 2.0f) * (float)(ViewPortWidth)));
+		size_t _StartY = (size_t)(floorf(Math::Min(Math::Min((_ScreenA.y + 1.0f) / 2.0f, (_ScreenB.y + 1.0f) / 2.0f), (_ScreenC.y + 1.0f) / 2.0f) * (float)(ViewPortHeight)));
+
+		size_t _EndX = (size_t)(ceilf(Math::Max(Math::Max((_ScreenA.x + 1.0f) / 2.0f, (_ScreenB.x + 1.0f) / 2.0f), (_ScreenC.x + 1.0f) / 2.0f) * (float)(ViewPortWidth))) + 1;
+		size_t _EndY = (size_t)(ceilf(Math::Max(Math::Max((_ScreenA.y + 1.0f) / 2.0f, (_ScreenB.y + 1.0f) / 2.0f), (_ScreenC.y + 1.0f) / 2.0f) * (float)(ViewPortHeight))) + 1;
 
 		for (size_t _Y = ViewPortY + _StartY; _Y < ViewPortY + _EndY; _Y++)
 		{
 			for (size_t _X = ViewPortX + _StartX; _X < ViewPortX + _EndX; _X++)
 			{
-				Math::Vec2f _Point = Math::Vec2f(((float)(_X) / (float)(ViewPortWidth) + 0.5f / (float)(ViewPortWidth)) * 2.0f - 1.0f, ((float)(_Y) / (float)(ViewPortHeight) + 0.5f / (float)(ViewPortHeight)) * 2.0f - 1.0f);
+				Math::Vec2f _ScreenP = Math::Vec2f(((float)(_X - ViewPortX) / (float)(ViewPortWidth) + 0.5f / (float)(ViewPortWidth)) * 2.0f - 1.0f, ((float)(_Y - ViewPortY) / (float)(ViewPortHeight) + 0.5f / (float)(ViewPortHeight)) * 2.0f - 1.0f);
 
-				if (PointInside(_Point, Math::Vec2f(_A), Math::Vec2f(_B), Math::Vec2f(_C)))
+				if (PointInside(_ScreenP, Math::Vec2f(_ScreenA), Math::Vec2f(_ScreenB), Math::Vec2f(_ScreenC)))
 				{
-					float _T1 = 0.0f;
-					float _T2 = 0.0f;
+					float _T1 = GetT1(Math::Vec2f(_ScreenA), Math::Vec2f(_ScreenB), Math::Vec2f(_ScreenC), _ScreenP);
+					float _T2 = GetT2(Math::Vec2f(_ScreenA), Math::Vec2f(_ScreenB), Math::Vec2f(_ScreenC), _ScreenP, _T1);
+
+					float _PerspectiveCorrection = Math::Mix(Math::Mix(1.0f / _CurrentTriangle.A.Position.w, 1.0f / _CurrentTriangle.B.Position.w, _T1), 1.0f / _CurrentTriangle.C.Position.w, _T2);
 
 					LerpAll(_CurrentTriangle.A.Lerpers, _CurrentTriangle.B.Lerpers, _LerpersCount, _T1, _FragmentLerpers);
 					LerpAll(_FragmentLerpers, _CurrentTriangle.C.Lerpers, _LerpersCount, _T2, _FragmentLerpers);
+					MultiplyAll(_FragmentLerpers, _LerpersCount, 1.0f / _PerspectiveCorrection);
 
-					Math::Vec4f _FragCoord = Math::Vec4f::Mix(Math::Vec4f::Mix(_CurrentTriangle.A.Position, _CurrentTriangle.B.Position, _T1), _CurrentTriangle.C.Position, _T2);
-					float _FragDepth = (_FragCoord.z / _FragCoord.w + 1.0f) / 2.0f;
+					Math::Vec4f _FragCoord = Math::Vec4f(_ScreenP.x, _ScreenP.y, Math::Mix(Math::Mix(_ScreenA.z, _ScreenB.z, _T1), _ScreenC.z, _T2), _PerspectiveCorrection);
+					_FragCoord.z = (_FragCoord.z + 1.0f) / 2.0f;
 
-					_FragmentShader(_X, _Y, _FragmentLerpers, _Uniforms, _FrameBuffer, _FragCoord, _FragDepth, _FrontFacing, DepthTestingType, BlendingType);
+					_FragmentShader(_X, _Y, _X - ViewPortX, _Y - ViewPortY, _FragmentLerpers, _Uniforms, _FrameBuffer, _FragCoord, _FrontFacing, DepthTestingType, BlendingType);
 				}
 			}
 		}
