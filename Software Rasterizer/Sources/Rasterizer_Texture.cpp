@@ -236,12 +236,12 @@ const Math::Vec4f Rasterizer::Texture_R::SampleRGBA(const Math::Vec2f& _TextureC
 	return Math::Vec4f(_R, _R, _R, 1.0f);
 }
 
-void Rasterizer::Texture_R::AddMip(const Image::Image& _Image)
+bool Rasterizer::Texture_R::AddMip(const Image::Image& _Image)
 {
 	if (!_Image.Data || !_Image.Width || !_Image.Height)
 	{
 		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
-		return;
+		return false;
 	}
 
 	Image::Image _NewImage;
@@ -253,7 +253,7 @@ void Rasterizer::Texture_R::AddMip(const Image::Image& _Image)
 	if (!_NewImage.Data)
 	{
 		DEBUG_BREAK();
-		return;
+		return false;
 	}
 
 	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
@@ -269,6 +269,8 @@ void Rasterizer::Texture_R::AddMip(const Image::Image& _Image)
 	Textures[Textures.size() - 1].Data = _NewImage.Data;
 	Textures[Textures.size() - 1].Width = _NewImage.Width;
 	Textures[Textures.size() - 1].Height = _NewImage.Height;
+
+	return true;
 }
 
 void Rasterizer::Texture_R::AddDirectMip(Image::Image&& _Image)
@@ -419,12 +421,12 @@ const Math::Vec4f Rasterizer::Texture_RG::SampleRGBA(const Math::Vec2f& _Texture
 	return Math::Vec4f(_RG, 0.0f, 1.0f);
 }
 
-void Rasterizer::Texture_RG::AddMip(const Image::Image& _Image)
+bool Rasterizer::Texture_RG::AddMip(const Image::Image& _Image)
 {
 	if (!_Image.Data || !_Image.Width || !_Image.Height)
 	{
 		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
-		return;
+		return false;
 	}
 
 	Image::Image _NewImage;
@@ -436,7 +438,7 @@ void Rasterizer::Texture_RG::AddMip(const Image::Image& _Image)
 	if (!_NewImage.Data)
 	{
 		DEBUG_BREAK();
-		return;
+		return false;
 	}
 
 	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
@@ -453,6 +455,8 @@ void Rasterizer::Texture_RG::AddMip(const Image::Image& _Image)
 	Textures[Textures.size() - 1].Data = _NewImage.Data;
 	Textures[Textures.size() - 1].Width = _NewImage.Width;
 	Textures[Textures.size() - 1].Height = _NewImage.Height;
+
+	return true;
 }
 
 void Rasterizer::Texture_RG::AddDirectMip(Image::Image&& _Image)
@@ -604,12 +608,12 @@ const Math::Vec4f Rasterizer::Texture_RGB::SampleRGBA(const Math::Vec2f& _Textur
 	return Math::Vec4f(_RGB, 1.0f);
 }
 
-void Rasterizer::Texture_RGB::AddMip(const Image::Image& _Image)
+bool Rasterizer::Texture_RGB::AddMip(const Image::Image& _Image)
 {
 	if (!_Image.Data || !_Image.Width || !_Image.Height)
 	{
 		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
-		return;
+		return false;
 	}
 
 	Image::Image _NewImage;
@@ -621,7 +625,7 @@ void Rasterizer::Texture_RGB::AddMip(const Image::Image& _Image)
 	if (!_NewImage.Data)
 	{
 		DEBUG_BREAK();
-		return;
+		return false;
 	}
 
 	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
@@ -639,6 +643,8 @@ void Rasterizer::Texture_RGB::AddMip(const Image::Image& _Image)
 	Textures[Textures.size() - 1].Data = _NewImage.Data;
 	Textures[Textures.size() - 1].Width = _NewImage.Width;
 	Textures[Textures.size() - 1].Height = _NewImage.Height;
+
+	return true;
 }
 
 void Rasterizer::Texture_RGB::AddDirectMip(Image::Image&& _Image)
@@ -784,12 +790,12 @@ const Math::Vec4f Rasterizer::Texture_RGBA::SampleRGBA(const Math::Vec2f& _Textu
 	return Math::Vec4f::Mix(_ResultHighRes, _ResultLowRes, _NewMipLevel - floorf(_NewMipLevel));
 }
 
-void Rasterizer::Texture_RGBA::AddMip(const Image::Image& _Image)
+bool Rasterizer::Texture_RGBA::AddMip(const Image::Image& _Image)
 {
 	if (!_Image.Data || !_Image.Width || !_Image.Height)
 	{
 		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
-		return;
+		return false;
 	}
 
 	Image::Image _NewImage;
@@ -801,7 +807,7 @@ void Rasterizer::Texture_RGBA::AddMip(const Image::Image& _Image)
 	if (!_NewImage.Data)
 	{
 		DEBUG_BREAK();
-		return;
+		return false;
 	}
 
 	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
@@ -820,6 +826,8 @@ void Rasterizer::Texture_RGBA::AddMip(const Image::Image& _Image)
 	Textures[Textures.size() - 1].Data = _NewImage.Data;
 	Textures[Textures.size() - 1].Width = _NewImage.Width;
 	Textures[Textures.size() - 1].Height = _NewImage.Height;
+
+	return true;
 }
 
 void Rasterizer::Texture_RGBA::AddDirectMip(Image::Image&& _Image)
@@ -973,12 +981,12 @@ const Math::Vec4f Rasterizer::Texture_Float_R::SampleRGBA(const Math::Vec2f& _Te
 	return Math::Vec4f(_R, _R, _R, 1.0f);
 }
 
-void Rasterizer::Texture_Float_R::AddMip(const Image::ImageFloat& _Image)
+bool Rasterizer::Texture_Float_R::AddMip(const Image::ImageFloat& _Image)
 {
 	if (!_Image.Data || !_Image.Width || !_Image.Height)
 	{
 		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
-		return;
+		return false;
 	}
 
 	Image::ImageFloat _NewImage;
@@ -990,7 +998,7 @@ void Rasterizer::Texture_Float_R::AddMip(const Image::ImageFloat& _Image)
 	if (!_NewImage.Data)
 	{
 		DEBUG_BREAK();
-		return;
+		return false;
 	}
 
 	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
@@ -1006,6 +1014,8 @@ void Rasterizer::Texture_Float_R::AddMip(const Image::ImageFloat& _Image)
 	Textures[Textures.size() - 1].Data = _NewImage.Data;
 	Textures[Textures.size() - 1].Width = _NewImage.Width;
 	Textures[Textures.size() - 1].Height = _NewImage.Height;
+
+	return true;
 }
 
 void Rasterizer::Texture_Float_R::AddDirectMip(Image::ImageFloat&& _Image)
@@ -1156,12 +1166,12 @@ const Math::Vec4f Rasterizer::Texture_Float_RG::SampleRGBA(const Math::Vec2f& _T
 	return Math::Vec4f(_RG, 0.0f, 1.0f);
 }
 
-void Rasterizer::Texture_Float_RG::AddMip(const Image::ImageFloat& _Image)
+bool Rasterizer::Texture_Float_RG::AddMip(const Image::ImageFloat& _Image)
 {
 	if (!_Image.Data || !_Image.Width || !_Image.Height)
 	{
 		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
-		return;
+		return false;
 	}
 
 	Image::ImageFloat _NewImage;
@@ -1173,7 +1183,7 @@ void Rasterizer::Texture_Float_RG::AddMip(const Image::ImageFloat& _Image)
 	if (!_NewImage.Data)
 	{
 		DEBUG_BREAK();
-		return;
+		return false;
 	}
 
 	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
@@ -1190,6 +1200,8 @@ void Rasterizer::Texture_Float_RG::AddMip(const Image::ImageFloat& _Image)
 	Textures[Textures.size() - 1].Data = _NewImage.Data;
 	Textures[Textures.size() - 1].Width = _NewImage.Width;
 	Textures[Textures.size() - 1].Height = _NewImage.Height;
+
+	return true;
 }
 
 void Rasterizer::Texture_Float_RG::AddDirectMip(Image::ImageFloat&& _Image)
@@ -1341,12 +1353,12 @@ const Math::Vec4f Rasterizer::Texture_Float_RGB::SampleRGBA(const Math::Vec2f& _
 	return Math::Vec4f(_RGB, 1.0f);
 }
 
-void Rasterizer::Texture_Float_RGB::AddMip(const Image::ImageFloat& _Image)
+bool Rasterizer::Texture_Float_RGB::AddMip(const Image::ImageFloat& _Image)
 {
 	if (!_Image.Data || !_Image.Width || !_Image.Height)
 	{
 		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
-		return;
+		return false;
 	}
 
 	Image::ImageFloat _NewImage;
@@ -1358,7 +1370,7 @@ void Rasterizer::Texture_Float_RGB::AddMip(const Image::ImageFloat& _Image)
 	if (!_NewImage.Data)
 	{
 		DEBUG_BREAK();
-		return;
+		return false;
 	}
 
 	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
@@ -1376,6 +1388,8 @@ void Rasterizer::Texture_Float_RGB::AddMip(const Image::ImageFloat& _Image)
 	Textures[Textures.size() - 1].Data = _NewImage.Data;
 	Textures[Textures.size() - 1].Width = _NewImage.Width;
 	Textures[Textures.size() - 1].Height = _NewImage.Height;
+
+	return true;
 }
 
 void Rasterizer::Texture_Float_RGB::AddDirectMip(Image::ImageFloat&& _Image)
@@ -1521,12 +1535,12 @@ const Math::Vec4f Rasterizer::Texture_Float_RGBA::SampleRGBA(const Math::Vec2f& 
 	return Math::Vec4f::Mix(_ResultHighRes, _ResultLowRes, _NewMipLevel - floorf(_NewMipLevel));
 }
 
-void Rasterizer::Texture_Float_RGBA::AddMip(const Image::ImageFloat& _Image)
+bool Rasterizer::Texture_Float_RGBA::AddMip(const Image::ImageFloat& _Image)
 {
 	if (!_Image.Data || !_Image.Width || !_Image.Height)
 	{
 		DEBUG_BREAK_MSG(STRING_TYPE("Can not add an empty image to the texture mip chain."));
-		return;
+		return false;
 	}
 
 	Image::ImageFloat _NewImage;
@@ -1538,7 +1552,7 @@ void Rasterizer::Texture_Float_RGBA::AddMip(const Image::ImageFloat& _Image)
 	if (!_NewImage.Data)
 	{
 		DEBUG_BREAK();
-		return;
+		return false;
 	}
 
 	for (size_t _Y = 0; _Y < _Image.Height; _Y++)
@@ -1557,6 +1571,8 @@ void Rasterizer::Texture_Float_RGBA::AddMip(const Image::ImageFloat& _Image)
 	Textures[Textures.size() - 1].Data = _NewImage.Data;
 	Textures[Textures.size() - 1].Width = _NewImage.Width;
 	Textures[Textures.size() - 1].Height = _NewImage.Height;
+
+	return true;
 }
 
 void Rasterizer::Texture_Float_RGBA::AddDirectMip(Image::ImageFloat&& _Image)

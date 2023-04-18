@@ -18,7 +18,6 @@ AssetManager::~AssetManager()
 	{
 		delete[] Assets[_Index].Name;
 	}
-	Assets.clear();
 }
 
 bool AssetManager::AddAsset(void* _Data, const wchar_t* _Name)
@@ -139,5 +138,7 @@ const Asset& AssetManager::operator[] (const size_t _Index) const
 
 void AssetManager::operator= (AssetManager&& _Other) noexcept
 {
+	RemoveAllAssets();
+
 	Assets = std::move(_Other.Assets);
 }

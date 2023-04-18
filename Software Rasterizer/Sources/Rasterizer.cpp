@@ -86,6 +86,53 @@ static void LerpAll(const float* _A, const float* _B, const size_t _LerpersCount
 	}
 }
 
+static const float GetMSAA(const float _DeltaX, const float _DeltaY, const size_t _Width, const size_t _Height, const size_t _X, const size_t _Y, const uint8_t* _BackImage, const Math::Vec2f& _P, const Math::Vec2f& _A, const Math::Vec2f& _B, const Math::Vec2f& _C)
+{
+	if (_BackImage[_X + _Y * _Width])
+	{
+		bool _NeedsMSAA = false;
+
+		if (_X > 0)
+		{
+			if (_BackImage[_X - 1 + _Y * _Width] == 0)
+			{
+				_NeedsMSAA = true;
+			}
+		}
+
+		if (_X < _Width - 1)
+		{
+			if (_BackImage[_X + 1 + _Y * _Width] == 0)
+			{
+				_NeedsMSAA = true;
+			}
+		}
+
+		if (_Y > 0)
+		{
+			if (_BackImage[_X + (_Y - 1) * _Width] == 0)
+			{
+				_NeedsMSAA = true;
+			}
+		}
+
+		if (_Y < _Height - 1)
+		{
+			if (_BackImage[_X + (_Y + 1) * _Width] == 0)
+			{
+				_NeedsMSAA = true;
+			}
+		}
+
+		if (!_NeedsMSAA)
+		{
+			return 1.0f;
+		}
+	}
+
+	return ((float)(PointInside(_P, _A, _B, _C)) + (float)(PointInside(_P + Math::Vec2f(-_DeltaX, -_DeltaY), _A, _B, _C)) + (float)(PointInside(_P + Math::Vec2f(-_DeltaX, _DeltaY), _A, _B, _C)) + (float)(PointInside(_P + Math::Vec2f(_DeltaX, -_DeltaY), _A, _B, _C)) + (float)(PointInside(_P + Math::Vec2f(_DeltaX, _DeltaY), _A, _B, _C))) / 5.0f;
+}
+
 
 
 Rasterizer::Context::Context() : ViewPortX(0), ViewPortY(0), ViewPortWidth(0), ViewPortHeight(0), CullingType(_ClockWiseCulling), DepthTestingType(_LowerOrEqualDepthTesting), BlendingType(_AlphaBlending)
@@ -114,7 +161,7 @@ Rasterizer::Context::~Context()
 
 }
 
-const bool Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _VBOSize, const size_t _VBOStride, const size_t* _IBO, const size_t _IBOBegin, const size_t _IBOEnd, const void* _Uniforms, const size_t _LerpersCount, const VertexShaderFnc _VertexShader, const GeometryShaderFnc _GeometryShader, const FragmentShaderFnc _FragmentShader, void* _FrameBuffer) const
+const bool Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _VBOSize, const size_t _VBOStride, const size_t* _IBO, const size_t _IBOBegin, const size_t _IBOEnd, const void* _Uniforms, const size_t _LerpersCountVertToGeom, const size_t _LerpersCountGeomToFrag, const VertexShaderFnc _VertexShader, const GeometryShaderFnc _GeometryShader, const FragmentShaderFnc _FragmentShader, void* _FrameBuffer) const
 {
 	struct VertexShaderOutput
 	{
@@ -128,9 +175,9 @@ const bool Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _VBOSi
 	{
 		VertexShaderOutput _Output;
 
-		if (_LerpersCount)
+		if (_LerpersCountVertToGeom)
 		{
-			_Output.Lerpers = new float[_LerpersCount];
+			_Output.Lerpers = new float[_LerpersCountVertToGeom];
 
 			if (!_Output.Lerpers)
 			{
@@ -227,15 +274,17 @@ const bool Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _VBOSi
 	}
 	else
 	{
+		ASSERT_MSG(_LerpersCountVertToGeom == _LerpersCountGeomToFrag, STRING_TYPE("No geometry shader assigned so the count for vertex to geometry lerpers should be the same as the count of lerpers from geometry shader to fragment shader."));
+
 		for (size_t _IndexIBO = _IBOBegin; _IndexIBO < _IBOEnd; _IndexIBO += 3)
 		{
 			GeometryShaderOutput _Output;
 
-			if (_LerpersCount)
+			if (_LerpersCountGeomToFrag)
 			{
-				_Output.A.Lerpers = new float[_LerpersCount];
-				_Output.B.Lerpers = new float[_LerpersCount];
-				_Output.C.Lerpers = new float[_LerpersCount];
+				_Output.A.Lerpers = new float[_LerpersCountGeomToFrag];
+				_Output.B.Lerpers = new float[_LerpersCountGeomToFrag];
+				_Output.C.Lerpers = new float[_LerpersCountGeomToFrag];
 
 				if (!_Output.A.Lerpers || !_Output.B.Lerpers || !_Output.C.Lerpers)
 				{
@@ -260,7 +309,7 @@ const bool Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _VBOSi
 					return false;
 				}
 
-				for (size_t _IndexCopy = 0; _IndexCopy < _LerpersCount; _IndexCopy++)
+				for (size_t _IndexCopy = 0; _IndexCopy < _LerpersCountGeomToFrag; _IndexCopy++)
 				{
 					_Output.A.Lerpers[_IndexCopy] = _VertexShaderOutputs[_IBO[_IndexIBO + 0]].Lerpers[_IndexCopy];
 					_Output.B.Lerpers[_IndexCopy] = _VertexShaderOutputs[_IBO[_IndexIBO + 1]].Lerpers[_IndexCopy];
@@ -374,14 +423,30 @@ const bool Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _VBOSi
 	}
 	}
 
+	uint8_t* _BackImage = new uint8_t[ViewPortWidth * ViewPortHeight];
+
+	if (!_BackImage)
+	{
+		for (size_t _IndexDelete = 0; _IndexDelete < _GeometryShaderOutputs.size(); _IndexDelete++)
+		{
+			delete[] _GeometryShaderOutputs[_IndexDelete].A.Lerpers;
+			delete[] _GeometryShaderOutputs[_IndexDelete].B.Lerpers;
+			delete[] _GeometryShaderOutputs[_IndexDelete].C.Lerpers;
+		}
+
+		return false;
+	}
+
 	float* _FragmentLerpers = nullptr;
 
-	if (_LerpersCount)
+	if (_LerpersCountGeomToFrag)
 	{
-		_FragmentLerpers = new float[_LerpersCount];
+		_FragmentLerpers = new float[_LerpersCountGeomToFrag];
 
 		if (!_FragmentLerpers)
 		{
+			delete[] _BackImage;
+
 			for (size_t _IndexDelete = 0; _IndexDelete < _GeometryShaderOutputs.size(); _IndexDelete++)
 			{
 				delete[] _GeometryShaderOutputs[_IndexDelete].A.Lerpers;
@@ -393,13 +458,52 @@ const bool Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _VBOSi
 		}
 	}
 
+	for (size_t _Y = 0; _Y < ViewPortHeight; _Y++)
+	{
+		for (size_t _X = 0; _X < ViewPortWidth; _X++)
+		{
+			_BackImage[_X + _Y * ViewPortWidth] = 0;
+		}
+	}
+
 	for (size_t _IndexTriangle = 0; _IndexTriangle < _GeometryShaderOutputs.size(); _IndexTriangle++)
 	{
 		GeometryShaderOutput& _CurrentTriangle = _GeometryShaderOutputs[_IndexTriangle];
 
-		MultiplyAll(_CurrentTriangle.A.Lerpers, _LerpersCount, 1.0f / _CurrentTriangle.A.Position.w);
-		MultiplyAll(_CurrentTriangle.B.Lerpers, _LerpersCount, 1.0f / _CurrentTriangle.B.Position.w);
-		MultiplyAll(_CurrentTriangle.C.Lerpers, _LerpersCount, 1.0f / _CurrentTriangle.C.Position.w);
+		Math::Vec3f _ScreenA = Math::Vec3f(_CurrentTriangle.A.Position) / _CurrentTriangle.A.Position.w;
+		Math::Vec3f _ScreenB = Math::Vec3f(_CurrentTriangle.B.Position) / _CurrentTriangle.B.Position.w;
+		Math::Vec3f _ScreenC = Math::Vec3f(_CurrentTriangle.C.Position) / _CurrentTriangle.C.Position.w;
+
+		size_t _StartX = (size_t)(floorf(Math::Min(Math::Min((_ScreenA.x + 1.0f) / 2.0f, (_ScreenB.x + 1.0f) / 2.0f), (_ScreenC.x + 1.0f) / 2.0f) * (float)(ViewPortWidth)));
+		size_t _StartY = (size_t)(floorf(Math::Min(Math::Min((_ScreenA.y + 1.0f) / 2.0f, (_ScreenB.y + 1.0f) / 2.0f), (_ScreenC.y + 1.0f) / 2.0f) * (float)(ViewPortHeight)));
+
+		size_t _EndX = (size_t)(ceilf(Math::Max(Math::Max((_ScreenA.x + 1.0f) / 2.0f, (_ScreenB.x + 1.0f) / 2.0f), (_ScreenC.x + 1.0f) / 2.0f) * (float)(ViewPortWidth))) + 1;
+		size_t _EndY = (size_t)(ceilf(Math::Max(Math::Max((_ScreenA.y + 1.0f) / 2.0f, (_ScreenB.y + 1.0f) / 2.0f), (_ScreenC.y + 1.0f) / 2.0f) * (float)(ViewPortHeight))) + 1;
+
+		for (size_t _Y = _StartY; _Y < _EndY; _Y++)
+		{
+			for (size_t _X = _StartX; _X < _EndX; _X++)
+			{
+				Math::Vec2f _ScreenP = Math::Vec2f(((float)(_X) / (float)(ViewPortWidth) + 0.5f / (float)(ViewPortWidth)) * 2.0f - 1.0f, ((float)(_Y) / (float)(ViewPortHeight) + 0.5f / (float)(ViewPortHeight)) * 2.0f - 1.0f);
+
+				if (PointInside(_ScreenP, Math::Vec2f(_ScreenA), Math::Vec2f(_ScreenB), Math::Vec2f(_ScreenC)))
+				{
+					_BackImage[_X + _Y * ViewPortWidth] = 1;
+				}
+			}
+		}
+	}
+
+	float _DeltaX = 2.0f * 0.25f / (float)(ViewPortWidth);
+	float _DeltaY = 2.0f * 0.25f / (float)(ViewPortHeight);
+
+	for (size_t _IndexTriangle = 0; _IndexTriangle < _GeometryShaderOutputs.size(); _IndexTriangle++)
+	{
+		GeometryShaderOutput& _CurrentTriangle = _GeometryShaderOutputs[_IndexTriangle];
+
+		MultiplyAll(_CurrentTriangle.A.Lerpers, _LerpersCountGeomToFrag, 1.0f / _CurrentTriangle.A.Position.w);
+		MultiplyAll(_CurrentTriangle.B.Lerpers, _LerpersCountGeomToFrag, 1.0f / _CurrentTriangle.B.Position.w);
+		MultiplyAll(_CurrentTriangle.C.Lerpers, _LerpersCountGeomToFrag, 1.0f / _CurrentTriangle.C.Position.w);
 
 		Math::Vec3f _ScreenA = Math::Vec3f(_CurrentTriangle.A.Position) / _CurrentTriangle.A.Position.w;
 		Math::Vec3f _ScreenB = Math::Vec3f(_CurrentTriangle.B.Position) / _CurrentTriangle.B.Position.w;
@@ -419,25 +523,29 @@ const bool Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _VBOSi
 			{
 				Math::Vec2f _ScreenP = Math::Vec2f(((float)(_X - ViewPortX) / (float)(ViewPortWidth) + 0.5f / (float)(ViewPortWidth)) * 2.0f - 1.0f, ((float)(_Y - ViewPortY) / (float)(ViewPortHeight) + 0.5f / (float)(ViewPortHeight)) * 2.0f - 1.0f);
 
-				if (PointInside(_ScreenP, Math::Vec2f(_ScreenA), Math::Vec2f(_ScreenB), Math::Vec2f(_ScreenC)))
+				if (PointInside(_ScreenP, Math::Vec2f(_ScreenA), Math::Vec2f(_ScreenB), Math::Vec2f(_ScreenC)) || PointInside(_ScreenP + Math::Vec2f(-_DeltaX, -_DeltaY), Math::Vec2f(_ScreenA), Math::Vec2f(_ScreenB), Math::Vec2f(_ScreenC)) || PointInside(_ScreenP + Math::Vec2f(-_DeltaX, _DeltaY), Math::Vec2f(_ScreenA), Math::Vec2f(_ScreenB), Math::Vec2f(_ScreenC)) || PointInside(_ScreenP + Math::Vec2f(_DeltaX, -_DeltaY), Math::Vec2f(_ScreenA), Math::Vec2f(_ScreenB), Math::Vec2f(_ScreenC)) || PointInside(_ScreenP + Math::Vec2f(_DeltaX, _DeltaY), Math::Vec2f(_ScreenA), Math::Vec2f(_ScreenB), Math::Vec2f(_ScreenC)))
 				{
 					float _T1 = GetT1(Math::Vec2f(_ScreenA), Math::Vec2f(_ScreenB), Math::Vec2f(_ScreenC), _ScreenP);
 					float _T2 = GetT2(Math::Vec2f(_ScreenA), Math::Vec2f(_ScreenB), Math::Vec2f(_ScreenC), _ScreenP, _T1);
 
 					float _PerspectiveCorrection = Math::Mix(Math::Mix(1.0f / _CurrentTriangle.A.Position.w, 1.0f / _CurrentTriangle.B.Position.w, _T1), 1.0f / _CurrentTriangle.C.Position.w, _T2);
 
-					LerpAll(_CurrentTriangle.A.Lerpers, _CurrentTriangle.B.Lerpers, _LerpersCount, _T1, _FragmentLerpers);
-					LerpAll(_FragmentLerpers, _CurrentTriangle.C.Lerpers, _LerpersCount, _T2, _FragmentLerpers);
-					MultiplyAll(_FragmentLerpers, _LerpersCount, 1.0f / _PerspectiveCorrection);
+					LerpAll(_CurrentTriangle.A.Lerpers, _CurrentTriangle.B.Lerpers, _LerpersCountGeomToFrag, _T1, _FragmentLerpers);
+					LerpAll(_FragmentLerpers, _CurrentTriangle.C.Lerpers, _LerpersCountGeomToFrag, _T2, _FragmentLerpers);
+					MultiplyAll(_FragmentLerpers, _LerpersCountGeomToFrag, 1.0f / _PerspectiveCorrection);
 
 					Math::Vec4f _FragCoord = Math::Vec4f(_ScreenP.x, _ScreenP.y, Math::Mix(Math::Mix(_ScreenA.z, _ScreenB.z, _T1), _ScreenC.z, _T2), _PerspectiveCorrection);
 					_FragCoord.z = (_FragCoord.z + 1.0f) / 2.0f;
 
-					_FragmentShader(_X, _Y, _X - ViewPortX, _Y - ViewPortY, _FragmentLerpers, _Uniforms, _FrameBuffer, _FragCoord, _FrontFacing, DepthTestingType, BlendingType);
+					float _MSAA = GetMSAA(_DeltaX, _DeltaY, ViewPortWidth, ViewPortHeight, _X - ViewPortX, _Y - ViewPortY, _BackImage, _ScreenP, Math::Vec2f(_ScreenA), Math::Vec2f(_ScreenB), Math::Vec2f(_ScreenC));
+
+					_FragmentShader(_X, _Y, _X - ViewPortX, _Y - ViewPortY, _FragmentLerpers, _Uniforms, _FrameBuffer, _FragCoord, _FrontFacing, _MSAA, DepthTestingType, BlendingType);
 				}
 			}
 		}
 	}
+
+	delete[] _BackImage;
 
 	delete[] _FragmentLerpers;
 
@@ -447,8 +555,6 @@ const bool Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _VBOSi
 		delete[] _GeometryShaderOutputs[_IndexDelete].B.Lerpers;
 		delete[] _GeometryShaderOutputs[_IndexDelete].C.Lerpers;
 	}
-
-	_GeometryShaderOutputs.clear();
 
 	return true;
 }
@@ -527,4 +633,93 @@ void Rasterizer::Context::operator= (Context&& _Other) noexcept
 	_Other.CullingType = _ClockWiseCulling;
 	_Other.DepthTestingType = _LowerOrEqualDepthTesting;
 	_Other.BlendingType = _AlphaBlending;
+}
+
+const bool Rasterizer::Context::DepthTest(const float _NewDepth, const float _OldDepth, const uint8_t _DepthTestingType)
+{
+	switch (_DepthTestingType)
+	{
+	case _NoDepthTesting:
+	{
+		break;
+	}
+	case _LowerDepthTesting:
+	{
+		if (_NewDepth >= _OldDepth)
+		{
+			return false;
+		}
+
+		break;
+	}
+	case _HigherDepthTesting:
+	{
+		if (_NewDepth <= _OldDepth)
+		{
+			return false;
+		}
+
+		break;
+	}
+	case _LowerOrEqualDepthTesting:
+	{
+		if (_NewDepth > _OldDepth)
+		{
+			return false;
+		}
+
+		break;
+	}
+	case _HigherOrEqualDepthTesting:
+	{
+		if (_NewDepth < _OldDepth)
+		{
+			return false;
+		}
+
+		break;
+	}
+	default:
+	{
+		return false;
+	}
+	}
+
+	return true;
+}
+
+const Math::Vec3f Rasterizer::Context::Blend(const Math::Vec3f& _OldColor, const Math::Vec4f& _Color, const float _MSAA, const uint8_t _BlendingType, const bool _Clamp)
+{
+	switch (_BlendingType)
+	{
+	case _NoBlending:
+	{
+		if (_Clamp)
+		{
+			return Math::Vec3f::Clamp(_OldColor * (1.0f - _MSAA) + Math::Vec3f(_Color) * _MSAA, Math::Vec3f(0.0f, 0.0f, 0.0f), Math::Vec3f(1.0f, 1.0f, 1.0f));
+		}
+
+		return _OldColor * (1.0f - _MSAA) + Math::Vec3f(_Color) * _MSAA;
+	}
+	case _AditiveBlending:
+	{
+		if (_Clamp)
+		{
+			return Math::Vec3f::Clamp(_OldColor + Math::Vec3f(_Color) * _Color.w * _MSAA, Math::Vec3f(0.0f, 0.0f, 0.0f), Math::Vec3f(1.0f, 1.0f, 1.0f));
+		}
+
+		return _OldColor + Math::Vec3f(_Color) * _Color.w * _MSAA;
+	}
+	case _AlphaBlending:
+	{
+		if (_Clamp)
+		{
+			return Math::Vec3f::Clamp(_OldColor * (1.0f - _Color.w * _MSAA) + Math::Vec3f(_Color) * _Color.w * _MSAA, Math::Vec3f(0.0f, 0.0f, 0.0f), Math::Vec3f(1.0f, 1.0f, 1.0f));
+		}
+
+		return _OldColor * (1.0f - _Color.w * _MSAA) + Math::Vec3f(_Color) * _Color.w * _MSAA;
+	}
+	}
+
+	return Math::Vec3f(0.0f, 0.0f, 0.0f);
 }

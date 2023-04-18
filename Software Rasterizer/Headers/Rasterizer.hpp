@@ -70,7 +70,7 @@ namespace Rasterizer
 		const float SampleR(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
 		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void AddMip(const Image::Image& _Image);
+		bool AddMip(const Image::Image& _Image);
 		void AddDirectMip(Image::Image&& _Image);
 		void RemoveMip(const size_t _Index);
 		void RemoveAllMips();
@@ -104,7 +104,7 @@ namespace Rasterizer
 		const Math::Vec2f SampleRG(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
 		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void AddMip(const Image::Image& _Image);
+		bool AddMip(const Image::Image& _Image);
 		void AddDirectMip(Image::Image&& _Image);
 		void RemoveMip(const size_t _Index);
 		void RemoveAllMips();
@@ -138,7 +138,7 @@ namespace Rasterizer
 		const Math::Vec3f SampleRGB(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
 		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void AddMip(const Image::Image& _Image);
+		bool AddMip(const Image::Image& _Image);
 		void AddDirectMip(Image::Image&& _Image);
 		void RemoveMip(const size_t _Index);
 		void RemoveAllMips();
@@ -171,7 +171,7 @@ namespace Rasterizer
 
 		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void AddMip(const Image::Image& _Image);
+		bool AddMip(const Image::Image& _Image);
 		void AddDirectMip(Image::Image&& _Image);
 		void RemoveMip(const size_t _Index);
 		void RemoveAllMips();
@@ -205,7 +205,7 @@ namespace Rasterizer
 		const float SampleR(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
 		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void AddMip(const Image::ImageFloat& _Image);
+		bool AddMip(const Image::ImageFloat& _Image);
 		void AddDirectMip(Image::ImageFloat&& _Image);
 		void RemoveMip(const size_t _Index);
 		void RemoveAllMips();
@@ -239,7 +239,7 @@ namespace Rasterizer
 		const Math::Vec2f SampleRG(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
 		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void AddMip(const Image::ImageFloat& _Image);
+		bool AddMip(const Image::ImageFloat& _Image);
 		void AddDirectMip(Image::ImageFloat&& _Image);
 		void RemoveMip(const size_t _Index);
 		void RemoveAllMips();
@@ -273,7 +273,7 @@ namespace Rasterizer
 		const Math::Vec3f SampleRGB(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
 		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void AddMip(const Image::ImageFloat& _Image);
+		bool AddMip(const Image::ImageFloat& _Image);
 		void AddDirectMip(Image::ImageFloat&& _Image);
 		void RemoveMip(const size_t _Index);
 		void RemoveAllMips();
@@ -306,7 +306,7 @@ namespace Rasterizer
 
 		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void AddMip(const Image::ImageFloat& _Image);
+		bool AddMip(const Image::ImageFloat& _Image);
 		void AddDirectMip(Image::ImageFloat&& _Image);
 		void RemoveMip(const size_t _Index);
 		void RemoveAllMips();
@@ -354,7 +354,7 @@ namespace Rasterizer
 
 	typedef const bool (*GeometryShaderFnc)(const Math::Vec4f& _APosition, const Math::Vec4f& _BPosition, const Math::Vec4f& _CPosition, const float* _ALerpers, const float* _BLerpers, const float* _CLerpers, const void* _Uniforms, std::vector<Math::Vec4f>& _PositionsOut, std::vector<float*>& _LerpersOut);
 
-	typedef void (*FragmentShaderFnc)(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType);
+	typedef void (*FragmentShaderFnc)(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const float _MSAA, const uint8_t _DepthTestingType, const uint8_t _BlendingType);
 
 	class Context
 	{
@@ -366,7 +366,7 @@ namespace Rasterizer
 		Context(Context&& _Other) noexcept;
 		~Context();
 
-		const bool RenderMesh(const void* _VBO, const size_t _VBOSize, const size_t _VBOStride, const size_t* _IBO, const size_t _IBOBegin, const size_t _IBOEnd, const void* _Uniforms, const size_t _LerpersCount, const VertexShaderFnc _VertexShader, const GeometryShaderFnc _GeometryShader, const FragmentShaderFnc _FragmentShader, void* _FrameBuffer) const;
+		const bool RenderMesh(const void* _VBO, const size_t _VBOSize, const size_t _VBOStride, const size_t* _IBO, const size_t _IBOBegin, const size_t _IBOEnd, const void* _Uniforms, const size_t _LerpersCountVertToGeom, const size_t _LerpersCountGeomToFrag, const VertexShaderFnc _VertexShader, const GeometryShaderFnc _GeometryShader, const FragmentShaderFnc _FragmentShader, void* _FrameBuffer) const;
 
 		void SetViewPort(const size_t _ViewPortX, const size_t _ViewPortY, const size_t _ViewPortWidth, const size_t _ViewPortHeight);
 		void SetCullingType(const uint8_t _CullingType);
@@ -380,6 +380,9 @@ namespace Rasterizer
 
 		void operator= (const Context& _Other);
 		void operator= (Context&& _Other) noexcept;
+
+		static const bool DepthTest(const float _NewDepth, const float _OldDepth, const uint8_t _DepthTestingType);
+		static const Math::Vec3f Blend(const Math::Vec3f& _OldColor, const Math::Vec4f& _Color, const float _MSAA, const uint8_t _BlendingType, const bool _Clamp = true);
 
 	private:
 
@@ -583,7 +586,7 @@ namespace Rasterizer
 	public:
 
 		Model();
-		Model(const Model& _Other);
+		Model(const Model& _Other) = delete;
 		Model(Model&& _Other) noexcept;
 		~Model();
 
@@ -600,7 +603,7 @@ namespace Rasterizer
 		Mesh& operator[] (const size_t _Index);
 		const Mesh& operator[] (const size_t _Index) const;
 
-		void operator= (const Model& _Other);
+		void operator= (const Model& _Other) = delete;
 		void operator= (Model&& _Other) noexcept;
 
 	private:

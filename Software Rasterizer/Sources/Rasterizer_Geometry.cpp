@@ -190,11 +190,6 @@ Rasterizer::Model::Model() : Meshes()
 
 }
 
-Rasterizer::Model::Model(const Model& _Other) : Meshes(_Other.Meshes)
-{
-
-}
-
 Rasterizer::Model::Model(Model&& _Other) noexcept : Meshes(std::move(_Other.Meshes))
 {
 
@@ -224,7 +219,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 		size_t TextureCoords = (size_t)(-1);
 	};
 
-	Meshes.clear();
+	Clear();
 
 	if (!_Path)
 	{
@@ -828,7 +823,27 @@ void Rasterizer::Model::PushBack(const Mesh& _Mesh)
 		}
 	}
 
-	Meshes.push_back(_Mesh);
+	Mesh _NewMesh;
+
+	if (_Mesh.Name)
+	{
+		size_t _StrLen = String::Length(_Mesh.Name);
+
+		_NewMesh.Name = new wchar_t[_StrLen + 1];
+
+		if (!_NewMesh.Name)
+		{
+			DEBUG_BREAK();
+			return;
+		}
+
+		wcscpy_s(_NewMesh.Name, _StrLen + 1, _Mesh.Name);
+	}
+
+	_NewMesh.VBO = _Mesh.VBO;
+	_NewMesh.IBO = _Mesh.IBO;
+
+	Meshes.emplace_back(_NewMesh);
 }
 
 void Rasterizer::Model::EmplaceBack(Mesh&& _Mesh) noexcept
@@ -848,7 +863,6 @@ void Rasterizer::Model::EmplaceBack(Mesh&& _Mesh) noexcept
 void Rasterizer::Model::Erase(const size_t _Index)
 {
 	delete[] Meshes[_Index].Name;
-
 	Meshes.erase(Meshes.begin() + _Index);
 }
 
@@ -877,12 +891,9 @@ const Rasterizer::Mesh& Rasterizer::Model::operator[] (const size_t _Index) cons
 	return Meshes[_Index];
 }
 
-void Rasterizer::Model::operator= (const Model& _Other)
-{
-	Meshes = _Other.Meshes;
-}
-
 void Rasterizer::Model::operator= (Model&& _Other) noexcept
 {
+	Clear();
+
 	Meshes = std::move(_Other.Meshes);
 }

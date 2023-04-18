@@ -29,17 +29,23 @@ const Math::Vec4f VertexShader(const void* _Vertex, const void* _Uniforms, float
 
 
 
-void FragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType)
+void FragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const float _MSAA, const uint8_t _DepthTestingType, const uint8_t _BlendingType)
 {
-	if (_FragCoord.z <= ((FrameBuffer*)(_FrameBuffer))->DepthBuffer.Data[_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width])
+	if (!Rasterizer::Context::DepthTest(_FragCoord.z, ((FrameBuffer*)(_FrameBuffer))->DepthBuffer.Data[_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width], _DepthTestingType))
 	{
-		((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 0] = (uint8_t)(_FragCoord.z * 255.0f);
-		((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 1] = (uint8_t)(_FragCoord.z * 255.0f);
-		((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 2] = (uint8_t)(_FragCoord.z * 255.0f);
-		((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 3] = 255;
-
-		((FrameBuffer*)(_FrameBuffer))->DepthBuffer.Data[_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width] = _FragCoord.z;
+		return;
 	}
+
+	((FrameBuffer*)(_FrameBuffer))->DepthBuffer.Data[_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width] = _FragCoord.z;
+
+	Math::Vec4f _Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+	Math::Vec3f _Result = Rasterizer::Context::Blend(Math::Vec3f((float)(((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 0]) / 255.0f, (float)(((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 1]) / 255.0f, (float)(((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 2]) / 255.0f), _Color, _MSAA, _BlendingType, true);
+
+	((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 0] = (uint8_t)(_Result.x * 255.0f);
+	((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 1] = (uint8_t)(_Result.y * 255.0f);
+	((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 2] = (uint8_t)(_Result.z * 255.0f);
+	((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 3] = 255;
 }
 
 
@@ -85,9 +91,9 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
 	for (size_t _Index = 0; _Index < _FrameBuffer.ColorBuffer.Width * _FrameBuffer.ColorBuffer.Height; _Index++)
 	{
-		_FrameBuffer.ColorBuffer.Data[_Index * 4 + 0] = 255;
-		_FrameBuffer.ColorBuffer.Data[_Index * 4 + 1] = 255;
-		_FrameBuffer.ColorBuffer.Data[_Index * 4 + 2] = 255;
+		_FrameBuffer.ColorBuffer.Data[_Index * 4 + 0] = 0;
+		_FrameBuffer.ColorBuffer.Data[_Index * 4 + 1] = 0;
+		_FrameBuffer.ColorBuffer.Data[_Index * 4 + 2] = 0;
 		_FrameBuffer.ColorBuffer.Data[_Index * 4 + 3] = 255;
 
 		_FrameBuffer.DepthBuffer.Data[_Index] = 1.0f;
@@ -112,7 +118,7 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
 	for (size_t _IndexMesh = 0; _IndexMesh < _Model.GetSize(); _IndexMesh++)
 	{
-		if (!_Context.RenderMesh(_Model[_IndexMesh].VBO.GetData(), _Model[_IndexMesh].VBO.GetSize(), sizeof(Rasterizer::VertexData), _Model[_IndexMesh].IBO.GetData(), 0, _Model[_IndexMesh].IBO.GetSize() * 3, &_Uniforms, 0, VertexShader, nullptr, FragmentShader, &_FrameBuffer))
+		if (!_Context.RenderMesh(_Model[_IndexMesh].VBO.GetData(), _Model[_IndexMesh].VBO.GetSize(), sizeof(Rasterizer::VertexData), _Model[_IndexMesh].IBO.GetData(), 0, _Model[_IndexMesh].IBO.GetSize() * 3, &_Uniforms, 0, 0, VertexShader, nullptr, FragmentShader, &_FrameBuffer))
 		{
 			delete[] _FrameBuffer.DepthBuffer.Data;
 			delete[] _FrameBuffer.ColorBuffer.Data;
@@ -120,7 +126,7 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 		}
 	}
 
-	if (!Image::SaveBmp(L".\\Test.bmp", _FrameBuffer.ColorBuffer.Data, _FrameBuffer.ColorBuffer.Width, _FrameBuffer.ColorBuffer.Height))
+	if (!Image::SaveBmp(L".\\Render.bmp", _FrameBuffer.ColorBuffer.Data, _FrameBuffer.ColorBuffer.Width, _FrameBuffer.ColorBuffer.Height))
 	{
 		delete[] _FrameBuffer.DepthBuffer.Data;
 		delete[] _FrameBuffer.ColorBuffer.Data;
@@ -130,7 +136,7 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 	delete[] _FrameBuffer.DepthBuffer.Data;
 	delete[] _FrameBuffer.ColorBuffer.Data;
 
-	ShellExecute(NULL, nullptr, L".\\Test.bmp", nullptr, nullptr, SW_SHOW);
+	ShellExecute(NULL, nullptr, L".\\Render.bmp", nullptr, nullptr, SW_SHOW);
 
 	return 0;
 }
