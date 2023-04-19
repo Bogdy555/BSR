@@ -29,7 +29,7 @@ const Math::Vec4f VertexShader(const void* _Vertex, const void* _Uniforms, float
 
 
 
-void FragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const float _MSAA, const uint8_t _DepthTestingType, const uint8_t _BlendingType)
+void FragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType)
 {
 	if (!Rasterizer::Context::DepthTest(_FragCoord.z, ((FrameBuffer*)(_FrameBuffer))->DepthBuffer.Data[_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width], _DepthTestingType))
 	{
@@ -40,7 +40,7 @@ void FragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX, c
 
 	Math::Vec4f _Color(1.0f, 1.0f, 1.0f, 1.0f);
 
-	Math::Vec3f _Result = Rasterizer::Context::Blend(Math::Vec3f((float)(((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 0]) / 255.0f, (float)(((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 1]) / 255.0f, (float)(((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 2]) / 255.0f), _Color, _MSAA, _BlendingType, true);
+	Math::Vec3f _Result = Rasterizer::Context::Blend(Math::Vec3f((float)(((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 0]) / 255.0f, (float)(((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 1]) / 255.0f, (float)(((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 2]) / 255.0f), _Color, _BlendingType, true);
 
 	((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 0] = (uint8_t)(_Result.x * 255.0f);
 	((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 1] = (uint8_t)(_Result.y * 255.0f);

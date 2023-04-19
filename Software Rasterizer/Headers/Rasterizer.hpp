@@ -354,7 +354,7 @@ namespace Rasterizer
 
 	typedef const bool (*GeometryShaderFnc)(const Math::Vec4f& _APosition, const Math::Vec4f& _BPosition, const Math::Vec4f& _CPosition, const float* _ALerpers, const float* _BLerpers, const float* _CLerpers, const void* _Uniforms, std::vector<Math::Vec4f>& _PositionsOut, std::vector<float*>& _LerpersOut);
 
-	typedef void (*FragmentShaderFnc)(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const float _MSAA, const uint8_t _DepthTestingType, const uint8_t _BlendingType);
+	typedef void (*FragmentShaderFnc)(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType);
 
 	class Context
 	{
@@ -382,7 +382,7 @@ namespace Rasterizer
 		void operator= (Context&& _Other) noexcept;
 
 		static const bool DepthTest(const float _NewDepth, const float _OldDepth, const uint8_t _DepthTestingType);
-		static const Math::Vec3f Blend(const Math::Vec3f& _OldColor, const Math::Vec4f& _Color, const float _MSAA, const uint8_t _BlendingType, const bool _Clamp = true);
+		static const Math::Vec3f Blend(const Math::Vec3f& _OldColor, const Math::Vec4f& _Color, const uint8_t _BlendingType, const bool _Clamp = true);
 
 	private:
 

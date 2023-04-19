@@ -31,10 +31,6 @@ It works out of the box since I only use relative paths and the project does not
 
 ![Render example](./ReadMe%20Resources/Render.bmp)
 
-* MSAA
-
-![MSAA example](./ReadMe%20Resources/MSAA.bmp)
-
 
 
 ## Classes and structs
