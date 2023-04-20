@@ -38,7 +38,7 @@ void FragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX, c
 
 	((FrameBuffer*)(_FrameBuffer))->DepthBuffer.Data[_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width] = _FragCoord.z;
 
-	Math::Vec4f _Color(1.0f, 1.0f, 1.0f, 1.0f);
+	Math::Vec4f _Color(_FragCoord.z, _FragCoord.z, _FragCoord.z, 1.0f);
 
 	Math::Vec3f _Result = Rasterizer::Context::Blend(Math::Vec3f((float)(((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 0]) / 255.0f, (float)(((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 1]) / 255.0f, (float)(((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Data[(_X + _Y * ((FrameBuffer*)(_FrameBuffer))->ColorBuffer.Width) * 4 + 2]) / 255.0f), _Color, _BlendingType, true);
 
@@ -91,9 +91,9 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
 	for (size_t _Index = 0; _Index < _FrameBuffer.ColorBuffer.Width * _FrameBuffer.ColorBuffer.Height; _Index++)
 	{
-		_FrameBuffer.ColorBuffer.Data[_Index * 4 + 0] = 0;
-		_FrameBuffer.ColorBuffer.Data[_Index * 4 + 1] = 0;
-		_FrameBuffer.ColorBuffer.Data[_Index * 4 + 2] = 0;
+		_FrameBuffer.ColorBuffer.Data[_Index * 4 + 0] = 255;
+		_FrameBuffer.ColorBuffer.Data[_Index * 4 + 1] = 255;
+		_FrameBuffer.ColorBuffer.Data[_Index * 4 + 2] = 255;
 		_FrameBuffer.ColorBuffer.Data[_Index * 4 + 3] = 255;
 
 		_FrameBuffer.DepthBuffer.Data[_Index] = 1.0f;
