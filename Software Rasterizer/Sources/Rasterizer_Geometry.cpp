@@ -21,6 +21,11 @@ const Math::Mat4f Rasterizer::Camera::GetProjectionMatrix(const float _AspectRat
 	return Math::Mat4f::GetOrtho(-FieldOfView / 2.0f * _AspectRatio, FieldOfView / 2.0f * _AspectRatio, -FieldOfView / 2.0f, FieldOfView / 2.0f, -NearPlane, -FarPlane);
 }
 
+const Math::Vec3f Rasterizer::Camera::GetForwardVector()
+{
+	return Math::Mat3f::GetRotation(-AngleFlat, Math::Vec3f(0.0f, 1.0f, 0.0f)) * Math::Mat3f::GetRotation(-AngleVertical, Math::Vec3f(1.0f, 0.0f, 0.0f)) * Math::Vec3f(0.0f, 0.0f, -1.0f);
+}
+
 
 
 const Math::Mat4f Rasterizer::Transform::GetModelMatrix() const
@@ -181,6 +186,78 @@ void Rasterizer::IndexBuffer::operator= (const IndexBuffer& _Other)
 void Rasterizer::IndexBuffer::operator= (IndexBuffer&& _Other) noexcept
 {
 	Indexes = std::move(_Other.Indexes);
+}
+
+
+
+void Rasterizer::Mesh::GenerateCube(Mesh& _Mesh)
+{
+	_Mesh.VBO.Clear();
+	_Mesh.IBO.Clear();
+
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, 0.5f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, 0.5f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, -0.5f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, 0.5f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, -0.5f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, -0.5f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, -0.5f), Math::Vec3f(0.0f, 0.0f, -1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, -0.5f), Math::Vec3f(0.0f, 0.0f, -1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, -0.5f), Math::Vec3f(0.0f, 0.0f, -1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, -0.5f), Math::Vec3f(0.0f, 0.0f, -1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, -0.5f), Math::Vec3f(0.0f, 0.0f, -1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, -0.5f), Math::Vec3f(0.0f, 0.0f, -1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, -0.5f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, -0.5f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, 0.5f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, -0.5f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, 0.5f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, 0.5f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, 0.5f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, 0.5f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, 0.5f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, 0.5f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, 0.5f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, 0.5f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, -0.5f), Math::Vec3f(0.0f, -1.0f, 0.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, -0.5f), Math::Vec3f(0.0f, -1.0f, 0.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, 0.5f), Math::Vec3f(0.0f, -1.0f, 0.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, -0.5f), Math::Vec3f(0.0f, -1.0f, 0.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, 0.5f), Math::Vec3f(0.0f, -1.0f, 0.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, 0.5f), Math::Vec3f(0.0f, -1.0f, 0.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, -0.5f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, -0.5f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, 0.5f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, -0.5f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, 0.5f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, 0.5f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 1.0f)));
+
+	_Mesh.IBO.PushBack(IndexData(0, 1, 2));
+	_Mesh.IBO.PushBack(IndexData(3, 4, 5));
+	_Mesh.IBO.PushBack(IndexData(6, 7, 8));
+	_Mesh.IBO.PushBack(IndexData(9, 10, 11));
+	_Mesh.IBO.PushBack(IndexData(12, 13, 14));
+	_Mesh.IBO.PushBack(IndexData(15, 16, 17));
+	_Mesh.IBO.PushBack(IndexData(18, 19, 20));
+	_Mesh.IBO.PushBack(IndexData(21, 22, 23));
+	_Mesh.IBO.PushBack(IndexData(24, 25, 26));
+	_Mesh.IBO.PushBack(IndexData(27, 28, 29));
+	_Mesh.IBO.PushBack(IndexData(30, 31, 32));
+	_Mesh.IBO.PushBack(IndexData(33, 34, 35));
+}
+
+void Rasterizer::Mesh::GenerateQuad(Mesh& _Mesh)
+{
+	_Mesh.VBO.Clear();
+	_Mesh.IBO.Clear();
+
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, 0.0f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, 0.0f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, 0.0f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, 0.0f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
+
+	_Mesh.IBO.PushBack(IndexData(0, 2, 1));
+	_Mesh.IBO.PushBack(IndexData(1, 2, 3));
 }
 
 

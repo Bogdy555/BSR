@@ -469,6 +469,7 @@ namespace Rasterizer
 
 		const Math::Mat4f GetViewMatrix() const;
 		const Math::Mat4f GetProjectionMatrix(const float _AspectRatio) const;
+		const Math::Vec3f GetForwardVector();
 
 	};
 
@@ -575,9 +576,14 @@ namespace Rasterizer
 
 	struct Mesh
 	{
+
 		wchar_t* Name = nullptr;
 		VertexBuffer VBO;
 		IndexBuffer IBO;
+
+		static void GenerateCube(Mesh& _Mesh);
+		static void GenerateQuad(Mesh& _Mesh);
+
 	};
 
 	class Model

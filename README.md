@@ -17,6 +17,12 @@ It is necessary to be compiled with MSVC. The C++ version used is C++20.
 
 It works out of the box since I only use relative paths and the project does not have external dependencies.
 
+## Copy right
+
+I am not the author of the amazing PBR materials, nor the HDR sIBL environment maps. I got them from https://freepbr.com and http://www.hdrlabs.com/sibl/archive.html. I only use them to test my software and I do not own any ownership over them.
+
+The actual software is free for anyone as long as it is not used commercially, but as an educational resource or an external dependency for personal projects. With that said, I do not assume responsibility for anything that might happen because of using this software. All rights reserved.
+
 
 
 ## Features

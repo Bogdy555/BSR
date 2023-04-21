@@ -24,6 +24,7 @@
 
 #include <vector>
 #include <sstream>
+#include <memory>
 
 #include <chrono>
 

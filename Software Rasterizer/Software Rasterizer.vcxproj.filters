@@ -88,6 +88,78 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Files\Scene.wfobj" />
+    <None Include="Files\3D Models\Objects.wfobj" />
+    <None Include="Files\Environments\ParkingLot.hdr" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Files\Materials\Aluminum\Albedo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Aluminum\Metalness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Aluminum\Normal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Aluminum\Roughness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Container\Albedo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Container\AmbientOcclusion.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Container\Metalness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Container\Normal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Container\Roughness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Gold\Albedo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Gold\Metalness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Gold\Normal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Gold\Roughness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Iron\Albedo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Iron\Metalness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Iron\Normal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Iron\Roughness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Plastic\Albedo Red.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Plastic\Albedo Green.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Plastic\Metalness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Plastic\Roughness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Plastic\Normal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Plastic\AmbientOcclusion.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

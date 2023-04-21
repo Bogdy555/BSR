@@ -26,7 +26,7 @@ static const bool PointInside(const Math::Vec2f& _P, const Math::Vec2f& _A, cons
 	_MatCAP[1][0] = _A.x; _MatCAP[1][1] = _A.y; _MatCAP[1][2] = 1.0f;
 	_MatCAP[2][0] = _P.x; _MatCAP[2][1] = _P.y; _MatCAP[2][2] = 1.0f;
 
-	return abs(abs(_OriginalMat.Determinant()) - abs(_MatABP.Determinant()) - abs(_MatBCP.Determinant()) - abs(_MatCAP.Determinant())) <= 0.000001f;
+	return abs(abs(_OriginalMat.Determinant()) - abs(_MatABP.Determinant()) - abs(_MatBCP.Determinant()) - abs(_MatCAP.Determinant())) <= 0.00001f;
 }
 
 static const float GetT1(const Math::Vec2f& _A, const Math::Vec2f& _B, const Math::Vec2f& _C, const Math::Vec2f& _P)

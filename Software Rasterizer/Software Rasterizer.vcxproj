@@ -206,7 +206,33 @@
     <ClInclude Include="Headers\WinTargetVer.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Files\Scene.wfobj" />
+    <None Include="Files\3D Models\Objects.wfobj" />
+    <None Include="Files\Environments\ParkingLot.hdr" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Files\Materials\Aluminum\Albedo.bmp" />
+    <Image Include="Files\Materials\Aluminum\Metalness.bmp" />
+    <Image Include="Files\Materials\Aluminum\Normal.bmp" />
+    <Image Include="Files\Materials\Aluminum\Roughness.bmp" />
+    <Image Include="Files\Materials\Container\Albedo.bmp" />
+    <Image Include="Files\Materials\Container\AmbientOcclusion.bmp" />
+    <Image Include="Files\Materials\Container\Metalness.bmp" />
+    <Image Include="Files\Materials\Container\Normal.bmp" />
+    <Image Include="Files\Materials\Container\Roughness.bmp" />
+    <Image Include="Files\Materials\Gold\Albedo.bmp" />
+    <Image Include="Files\Materials\Gold\Metalness.bmp" />
+    <Image Include="Files\Materials\Gold\Normal.bmp" />
+    <Image Include="Files\Materials\Gold\Roughness.bmp" />
+    <Image Include="Files\Materials\Iron\Albedo.bmp" />
+    <Image Include="Files\Materials\Iron\Metalness.bmp" />
+    <Image Include="Files\Materials\Iron\Normal.bmp" />
+    <Image Include="Files\Materials\Iron\Roughness.bmp" />
+    <Image Include="Files\Materials\Plastic\Albedo Green.bmp" />
+    <Image Include="Files\Materials\Plastic\Albedo Red.bmp" />
+    <Image Include="Files\Materials\Plastic\AmbientOcclusion.bmp" />
+    <Image Include="Files\Materials\Plastic\Metalness.bmp" />
+    <Image Include="Files\Materials\Plastic\Normal.bmp" />
+    <Image Include="Files\Materials\Plastic\Roughness.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
