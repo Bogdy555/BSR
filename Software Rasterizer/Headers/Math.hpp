@@ -68,6 +68,8 @@ namespace Math
 		static const Vec2f Mix(const Vec2f& _A, const Vec2f& _B, const float _Percentage);
 		static const Vec2f Pow(const Vec2f& _Base, const Vec2f& _Pow);
 		static const Vec2f Exp(const Vec2f& _Pow);
+		static const Vec2f Min(const Vec2f& _A, const Vec2f& _B);
+		static const Vec2f Max(const Vec2f& _A, const Vec2f& _B);
 
 	};
 
@@ -132,6 +134,8 @@ namespace Math
 		static const Vec3f Mix(const Vec3f& _A, const Vec3f& _B, const float _Percentage);
 		static const Vec3f Pow(const Vec3f& _Base, const Vec3f& _Pow);
 		static const Vec3f Exp(const Vec3f& _Pow);
+		static const Vec3f Min(const Vec3f& _A, const Vec3f& _B);
+		static const Vec3f Max(const Vec3f& _A, const Vec3f& _B);
 
 	};
 
@@ -198,6 +202,8 @@ namespace Math
 		static const Vec4f Mix(const Vec4f& _A, const Vec4f& _B, const float _Percentage);
 		static const Vec4f Pow(const Vec4f& _Base, const Vec4f& _Pow);
 		static const Vec4f Exp(const Vec4f& _Pow);
+		static const Vec4f Min(const Vec4f& _A, const Vec4f& _B);
+		static const Vec4f Max(const Vec4f& _A, const Vec4f& _B);
 
 	};
 

@@ -126,6 +126,38 @@ void CleanUpAssets()
 
 
 
+	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"White Texture_R"))));
+	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"White Texture_R"));
+	SceneAssets.RemoveAsset(L"White Texture_R");
+
+
+
+	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 0"));
+	SceneAssets.RemoveAsset(L"Material 0");
+
+	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 1"));
+	SceneAssets.RemoveAsset(L"Material 1");
+
+	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 2"));
+	SceneAssets.RemoveAsset(L"Material 2");
+
+	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 3"));
+	SceneAssets.RemoveAsset(L"Material 3");
+
+	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 4"));
+	SceneAssets.RemoveAsset(L"Material 4");
+
+	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 5"));
+	SceneAssets.RemoveAsset(L"Material 5");
+
+	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 6"));
+	SceneAssets.RemoveAsset(L"Material 6");
+
+	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 7"));
+	SceneAssets.RemoveAsset(L"Material 7");
+
+
+
 	ASSERT(SceneAssets.GetAssetsCount() == 0);
 }
 
@@ -1093,10 +1125,259 @@ bool LoadAssets()
 		delete[] _Image.Data;
 	}
 
+	{
+		uint32_t _White = 0xFFFFFFFF;
+
+		Image::Image _Image;
+
+		_Image.Width = 1;
+		_Image.Height = 1;
+		_Image.Data = (uint8_t*)(&_White);
+
+		Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
+
+		if (!_Texture)
+		{
+			CleanUpAssets();
+			return false;
+		}
+
+		if (!_Texture->AddMip(_Image))
+		{
+			delete _Texture;
+			CleanUpAssets();
+			return false;
+		}
+
+		if (!SceneAssets.AddAsset(_Texture, L"White Texture_R"))
+		{
+			delete _Texture;
+			CleanUpAssets();
+			return false;
+		}
+	}
+
+	{
+		Rasterizer::Material* _Material = new Rasterizer::Material;
+
+		if (!_Material)
+		{
+			CleanUpAssets();
+			return false;
+		}
+
+		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Container albedo"));
+		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container metalness"));
+		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container roughness"));
+		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container ambient occlusion"));
+		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Container normal"));
+
+		if (!SceneAssets.AddAsset(_Material, L"Material 0"))
+		{
+			delete _Material;
+			CleanUpAssets();
+			return false;
+		}
+	}
+
+	{
+		Rasterizer::Material* _Material = new Rasterizer::Material;
+
+		if (!_Material)
+		{
+			CleanUpAssets();
+			return false;
+		}
+
+		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Gold albedo"));
+		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Gold metalness"));
+		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Gold roughness"));
+		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"White Texture_R"));
+		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Gold normal"));
+
+		if (!SceneAssets.AddAsset(_Material, L"Material 1"))
+		{
+			delete _Material;
+			CleanUpAssets();
+			return false;
+		}
+	}
+
+	{
+		Rasterizer::Material* _Material = new Rasterizer::Material;
+
+		if (!_Material)
+		{
+			CleanUpAssets();
+			return false;
+		}
+
+		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Aluminum albedo"));
+		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Aluminum metalness"));
+		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Aluminum roughness"));
+		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"White Texture_R"));
+		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Aluminum normal"));
+
+		if (!SceneAssets.AddAsset(_Material, L"Material 2"))
+		{
+			delete _Material;
+			CleanUpAssets();
+			return false;
+		}
+	}
+
+	{
+		Rasterizer::Material* _Material = new Rasterizer::Material;
+
+		if (!_Material)
+		{
+			CleanUpAssets();
+			return false;
+		}
+
+		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Plastic albedo green"));
+		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic metalness"));
+		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic roughness"));
+		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic ambient occlusion"));
+		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Plastic normal"));
+
+		if (!SceneAssets.AddAsset(_Material, L"Material 3"))
+		{
+			delete _Material;
+			CleanUpAssets();
+			return false;
+		}
+	}
+
+	{
+		Rasterizer::Material* _Material = new Rasterizer::Material;
+
+		if (!_Material)
+		{
+			CleanUpAssets();
+			return false;
+		}
+
+		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Iron albedo"));
+		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Iron metalness"));
+		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Iron roughness"));
+		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"White Texture_R"));
+		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Iron normal"));
+
+		if (!SceneAssets.AddAsset(_Material, L"Material 4"))
+		{
+			delete _Material;
+			CleanUpAssets();
+			return false;
+		}
+	}
+
+	{
+		Rasterizer::Material* _Material = new Rasterizer::Material;
+
+		if (!_Material)
+		{
+			CleanUpAssets();
+			return false;
+		}
+
+		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Plastic albedo red"));
+		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic metalness"));
+		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic roughness"));
+		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic ambient occlusion"));
+		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Plastic normal"));
+
+		if (!SceneAssets.AddAsset(_Material, L"Material 5"))
+		{
+			delete _Material;
+			CleanUpAssets();
+			return false;
+		}
+	}
+
+	{
+		Rasterizer::Material* _Material = new Rasterizer::Material;
+
+		if (!_Material)
+		{
+			CleanUpAssets();
+			return false;
+		}
+
+		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Container albedo"));
+		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container metalness"));
+		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container roughness"));
+		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container ambient occlusion"));
+		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Container normal"));
+
+		if (!SceneAssets.AddAsset(_Material, L"Material 6"))
+		{
+			delete _Material;
+			CleanUpAssets();
+			return false;
+		}
+	}
+
+	{
+		Rasterizer::Material* _Material = new Rasterizer::Material;
+
+		if (!_Material)
+		{
+			CleanUpAssets();
+			return false;
+		}
+
+		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Container albedo"));
+		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container metalness"));
+		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container roughness"));
+		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container ambient occlusion"));
+		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Container normal"));
+
+		if (!SceneAssets.AddAsset(_Material, L"Material 7"))
+		{
+			delete _Material;
+			CleanUpAssets();
+			return false;
+		}
+	}
+
 	return true;
 }
 
 
+
+Math::Vec2f SampleEquirectangularMap(Math::Vec3f _Dir)
+{
+	return Math::Vec2f(atan2(_Dir.z, _Dir.x), asin(_Dir.y)) * Math::Vec2f(0.1591f, 0.3183f) + Math::Vec2f(0.5f, 0.5f);
+}
+
+Math::Vec3f SampleNormal(const Rasterizer::Material _Material, const Math::Vec2f _TextureCoords, const Math::Vec3f _TrueNormal, const Math::Vec3f _TrueTangent)
+{
+	if (_TrueTangent == Math::Vec3f(0.0f, 0.0f, 0.0f))
+	{
+		return _TrueNormal.Normalized();
+	}
+
+	if (_Material.NormalMap == nullptr)
+	{
+		return _TrueNormal.Normalized();
+	}
+
+	Math::Vec3f _N = _TrueNormal.Normalized();
+	Math::Vec3f _T = _TrueTangent.Normalized();
+	_T = (_T - _N * Math::Vec3f::Dot(_N, _T)).Normalized();
+	Math::Vec3f _B = Math::Vec3f::Cross(_N, _T);
+
+	Math::Mat3f _TBN;
+
+	_TBN[0][0] = _T.x; _TBN[0][1] = _B.x; _TBN[0][2] = _N.x;
+	_TBN[1][0] = _T.y; _TBN[1][1] = _B.y; _TBN[1][2] = _N.y;
+	_TBN[2][0] = _T.z; _TBN[2][1] = _B.z; _TBN[2][2] = _N.z;
+
+	Math::Vec3f _NMap = _Material.NormalMap->SampleRGB(_TextureCoords) * 2.0f - 1.0f;
+
+	return (_TBN * _NMap).Normalized();
+}
 
 struct FrameBuffer
 {
@@ -1115,11 +1396,6 @@ struct CubeMapLerpers
 {
 	Math::Vec3f Position;
 };
-
-Math::Vec2f SampleEquirectangularMap(Math::Vec3f _Dir)
-{
-	return Math::Vec2f(atan2(_Dir.z, _Dir.x), asin(_Dir.y)) * Math::Vec2f(0.1591f, 0.3183f) + Math::Vec2f(0.5f, 0.5f);
-}
 
 const Math::Vec4f CubeMapVertexShader(const void* _Vertex, const void* _Uniforms, float* _OutLerpers)
 {
@@ -1158,6 +1434,8 @@ void CubeMapFragmentShader(const size_t _X, const size_t _Y, const size_t _ViewP
 
 struct PBRUniforms
 {
+	float Exposure = 1.0f;
+
 	Math::Mat4f Mvp;
 	Math::Mat4f Model;
 	Math::Mat4f View;
@@ -1169,7 +1447,8 @@ struct PBRUniforms
 
 	Rasterizer::Transform Transform;
 
-	//Material
+	Rasterizer::Material Material;
+
 	//Iradiance and radiance map
 	//Lights vector
 	//LUT texture
@@ -1214,7 +1493,13 @@ void PBRFragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX
 
 	_TrueFrameBuffer->DepthBuffer.Data[_X + _Y * _TrueFrameBuffer->DepthBuffer.Width] = _FragCoord.z;
 
-	Math::Vec4f _Color = Math::Vec4f(Math::Vec3f::Dot(Math::Vec3f(0.0f, 0.0f, 1.0f), _PBRLerpers->Normal.Normalized()), Math::Vec3f::Dot(Math::Vec3f(0.0f, 0.0f, 1.0f), _PBRLerpers->Normal.Normalized()), Math::Vec3f::Dot(Math::Vec3f(0.0f, 0.0f, 1.0f), _PBRLerpers->Normal.Normalized()), 1.0f);
+	Math::Vec3f _Albedo = Math::Vec3f::Pow(_PBRUniforms->Material.Albedo->SampleRGB(_PBRLerpers->TextureCoords), Math::Vec3f(2.2f, 2.2f, 2.2f));
+	Math::Vec3f _Normal = SampleNormal(_PBRUniforms->Material, _PBRLerpers->TextureCoords, _PBRLerpers->Normal, _PBRLerpers->Tangent);
+
+	Math::Vec4f _Color = Math::Vec4f(_Albedo * Math::Vec3f::Dot(_Normal, Math::Vec3f(0.0f, 0.0f, 1.0f)), 1.0f);
+
+	_Color = Math::Vec4f(Math::Vec3f(1.0f, 1.0f, 1.0f) - Math::Vec3f::Exp(-Math::Vec3f(_Color) * _PBRUniforms->Exposure), 1.0f);
+	_Color = Math::Vec4f(Math::Vec3f::Pow(Math::Vec3f(_Color), Math::Vec3f(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f)), 1.0f);
 
 	_Color = Math::Vec4f(Rasterizer::Context::Blend(Math::Vec3f(0.0f, 0.0f, 0.0f), _Color, _BlendingType), 1.0f);
 
@@ -1306,6 +1591,7 @@ bool RenderScene(Image::Image& _RenderResult)
 
 		PBRUniforms _Uniforms;
 
+		_Uniforms.Exposure = _Exposure;
 		_Uniforms.Model = _Transform.GetModelMatrix();
 		_Uniforms.View = _Camera.GetViewMatrix();
 		_Uniforms.Projection = _Camera.GetProjectionMatrix(_AspectRatio);
@@ -1314,6 +1600,9 @@ bool RenderScene(Image::Image& _RenderResult)
 		_Uniforms.Camera = _Camera;
 		_Uniforms.CameraForwardVector = _Camera.GetForwardVector();
 		_Uniforms.Transform = _Transform;
+		std::wstring _MaterialName(L"Material 0");
+		_MaterialName[9] += (wchar_t)(_Index);
+		_Uniforms.Material = *(Rasterizer::Material*)(SceneAssets.GetAssetData(_MaterialName.c_str()));
 
 		if (!_Context.RenderMesh(_Mesh.VBO.GetData(), _Mesh.VBO.GetSize(), sizeof(Rasterizer::VertexData), _Mesh.IBO.GetData(), 0, _Mesh.IBO.GetSize() * 3, &_Uniforms, sizeof(PBRLerpers) / sizeof(float), sizeof(PBRLerpers) / sizeof(float), PBRVertexShader, nullptr, PBRFragmentShader, &_FrameBuffer))
 		{

@@ -238,6 +238,16 @@ const Math::Vec2f Math::Vec2f::Exp(const Vec2f& _Pow)
 	return Vec2f(expf(_Pow.x), expf(_Pow.y));
 }
 
+const Math::Vec2f Math::Vec2f::Min(const Vec2f& _A, const Vec2f& _B)
+{
+	return Vec2f(Math::Min(_A.x, _B.x), Math::Min(_A.y, _B.y));
+}
+
+const Math::Vec2f Math::Vec2f::Max(const Vec2f& _A, const Vec2f& _B)
+{
+	return Vec2f(Math::Max(_A.x, _B.x), Math::Max(_A.y, _B.y));
+}
+
 
 
 Math::Vec3f::Vec3f(const float _x, const float _y, const float _z) : x(_x), y(_y), z(_z)
@@ -501,6 +511,16 @@ const Math::Vec3f Math::Vec3f::Pow(const Vec3f& _Base, const Vec3f& _Pow)
 const Math::Vec3f Math::Vec3f::Exp(const Vec3f& _Pow)
 {
 	return Vec3f(expf(_Pow.x), expf(_Pow.y), expf(_Pow.z));
+}
+
+const Math::Vec3f Math::Vec3f::Min(const Vec3f& _A, const Vec3f& _B)
+{
+	return Vec3f(Math::Min(_A.x, _B.x), Math::Min(_A.y, _B.y), Math::Min(_A.z, _B.z));
+}
+
+const Math::Vec3f Math::Vec3f::Max(const Vec3f& _A, const Vec3f& _B)
+{
+	return Vec3f(Math::Max(_A.x, _B.x), Math::Max(_A.y, _B.y), Math::Max(_A.z, _B.z));
 }
 
 
@@ -788,4 +808,14 @@ const Math::Vec4f Math::Vec4f::Pow(const Vec4f& _Base, const Vec4f& _Pow)
 const Math::Vec4f Math::Vec4f::Exp(const Vec4f& _Pow)
 {
 	return Vec4f(expf(_Pow.x), expf(_Pow.y), expf(_Pow.z), expf(_Pow.w));
+}
+
+const Math::Vec4f Math::Vec4f::Min(const Vec4f& _A, const Vec4f& _B)
+{
+	return Vec4f(Math::Min(_A.x, _B.x), Math::Min(_A.y, _B.y), Math::Min(_A.z, _B.z), Math::Min(_A.w, _B.w));
+}
+
+const Math::Vec4f Math::Vec4f::Max(const Vec4f& _A, const Vec4f& _B)
+{
+	return Vec4f(Math::Max(_A.x, _B.x), Math::Max(_A.y, _B.y), Math::Max(_A.z, _B.z), Math::Max(_A.w, _B.w));
 }
