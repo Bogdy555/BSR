@@ -248,6 +248,11 @@ const Math::Vec2f Math::Vec2f::Max(const Vec2f& _A, const Vec2f& _B)
 	return Vec2f(Math::Max(_A.x, _B.x), Math::Max(_A.y, _B.y));
 }
 
+const Math::Vec2f Math::Vec2f::Reflect(const Vec2f& _Vec, const Vec2f& _Normal)
+{
+	return _Vec - _Normal * 2.0f * Dot(_Vec, _Normal) / _Normal.Magnitude() / _Normal.Magnitude();
+}
+
 
 
 Math::Vec3f::Vec3f(const float _x, const float _y, const float _z) : x(_x), y(_y), z(_z)
@@ -521,6 +526,11 @@ const Math::Vec3f Math::Vec3f::Min(const Vec3f& _A, const Vec3f& _B)
 const Math::Vec3f Math::Vec3f::Max(const Vec3f& _A, const Vec3f& _B)
 {
 	return Vec3f(Math::Max(_A.x, _B.x), Math::Max(_A.y, _B.y), Math::Max(_A.z, _B.z));
+}
+
+const Math::Vec3f Math::Vec3f::Reflect(const Vec3f& _Vec, const Vec3f& _Normal)
+{
+	return _Vec - _Normal * 2.0f * Dot(_Vec, _Normal) / _Normal.Magnitude() / _Normal.Magnitude();
 }
 
 
@@ -818,4 +828,9 @@ const Math::Vec4f Math::Vec4f::Min(const Vec4f& _A, const Vec4f& _B)
 const Math::Vec4f Math::Vec4f::Max(const Vec4f& _A, const Vec4f& _B)
 {
 	return Vec4f(Math::Max(_A.x, _B.x), Math::Max(_A.y, _B.y), Math::Max(_A.z, _B.z), Math::Max(_A.w, _B.w));
+}
+
+const Math::Vec4f Math::Vec4f::Reflect(const Vec4f& _Vec, const Vec4f& _Normal)
+{
+	return _Vec - _Normal * 2.0f * Dot(_Vec, _Normal) / _Normal.Magnitude() / _Normal.Magnitude();
 }

@@ -207,9 +207,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Files\3D Models\Objects.wfobj" />
-    <None Include="Files\Environments\ParkingLot.hdr" />
+    <None Include="Files\Environments\ParkingLot\Environment.hdr" />
+    <None Include="Files\Environments\ParkingLot\Iradiance.hdr" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Files\Intern\BRDFLookUp.bmp" />
     <Image Include="Files\Materials\Aluminum\Albedo.bmp" />
     <Image Include="Files\Materials\Aluminum\Metalness.bmp" />
     <Image Include="Files\Materials\Aluminum\Normal.bmp" />

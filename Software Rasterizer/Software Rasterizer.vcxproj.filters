@@ -89,7 +89,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Files\3D Models\Objects.wfobj" />
-    <None Include="Files\Environments\ParkingLot.hdr" />
+    <None Include="Files\Environments\ParkingLot\Environment.hdr" />
+    <None Include="Files\Environments\ParkingLot\Iradiance.hdr" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Files\Materials\Aluminum\Albedo.bmp">
@@ -159,6 +160,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Files\Materials\Plastic\AmbientOcclusion.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Intern\BRDFLookUp.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

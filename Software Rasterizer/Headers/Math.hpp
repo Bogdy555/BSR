@@ -70,6 +70,7 @@ namespace Math
 		static const Vec2f Exp(const Vec2f& _Pow);
 		static const Vec2f Min(const Vec2f& _A, const Vec2f& _B);
 		static const Vec2f Max(const Vec2f& _A, const Vec2f& _B);
+		static const Vec2f Reflect(const Vec2f& _Vec, const Vec2f& _Normal);
 
 	};
 
@@ -136,6 +137,7 @@ namespace Math
 		static const Vec3f Exp(const Vec3f& _Pow);
 		static const Vec3f Min(const Vec3f& _A, const Vec3f& _B);
 		static const Vec3f Max(const Vec3f& _A, const Vec3f& _B);
+		static const Vec3f Reflect(const Vec3f& _Vec, const Vec3f& _Normal);
 
 	};
 
@@ -204,6 +206,7 @@ namespace Math
 		static const Vec4f Exp(const Vec4f& _Pow);
 		static const Vec4f Min(const Vec4f& _A, const Vec4f& _B);
 		static const Vec4f Max(const Vec4f& _A, const Vec4f& _B);
+		static const Vec4f Reflect(const Vec4f& _Vec, const Vec4f& _Normal);
 
 	};
 
