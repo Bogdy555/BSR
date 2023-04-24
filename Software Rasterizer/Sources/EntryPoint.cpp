@@ -7,8 +7,6 @@ constexpr size_t Height = 1080;
 
 
 
-#define MAX_LOD_ROUGHNESS 4
-
 const Math::Vec2f SampleEquirectangularMap(const Math::Vec3f& _Dir)
 {
 	return Math::Vec2f(atan2(_Dir.z, _Dir.x), asin(_Dir.y)) * Math::Vec2f(0.1591f, 0.3183f) + Math::Vec2f(0.5f, 0.5f);
@@ -110,7 +108,8 @@ const Math::Vec3f ImageBasedLightCalculation(const Rasterizer::Texture_Float_RGB
 	Math::Vec3f _kDiffuse = (Math::Vec3f(1.0f, 1.0f, 1.0f) - _FresnelSchlickRoughness) * (1.0f - _Metalness);
 
 	Math::Vec3f _Iradiance = _IradianceTexture.SampleRGB(SampleEquirectangularMap(_Normal));
-	Math::Vec3f _Environment = _EnvironmentTexture.SampleRGB(SampleEquirectangularMap(Math::Vec3f::Reflect(-_PositionToCamera, _Normal)), _Roughness * (float)(MAX_LOD_ROUGHNESS));
+	Math::Vec3f _Environment = _EnvironmentTexture.SampleRGB(SampleEquirectangularMap(Math::Vec3f::Reflect(-_PositionToCamera, _Normal)));
+	_Environment = Math::Vec3f::Mix(_Environment, _Iradiance, _Roughness);
 	Math::Vec2f _BRDFLookUp = _BRDFLookUpTexture.SampleRG(Math::Vec2f(Math::Max(Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f), _Roughness));
 
 	Math::Vec3f _Diffuse = _kDiffuse * _Iradiance * _Albedo;
@@ -350,6 +349,8 @@ bool LoadAssets()
 			return false;
 		}
 
+		_Texture->SetWrapType(Rasterizer::_WrapClamp);
+
 		if (!_Texture->AddMip(_Image))
 		{
 			delete _Texture;
@@ -388,6 +389,8 @@ bool LoadAssets()
 			CleanUpAssets();
 			return false;
 		}
+
+		_Texture->SetWrapType(Rasterizer::_WrapClamp);
 
 		if (!_Texture->AddMip(_Image))
 		{
@@ -1840,7 +1843,11 @@ bool RenderScene(Image::Image& _RenderResult)
 
 int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance, _In_ LPWSTR _CmdLine, _In_ int _ShowCmd)
 {
+	Time::Timer _ProfilerTimer;
+
 	LOG_LINE(STRING_TYPE("Loading the assets"));
+
+	_ProfilerTimer.Start();
 
 	if (!LoadAssets())
 	{
@@ -1848,7 +1855,14 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 		return -1;
 	}
 
+	_ProfilerTimer.Stop();
+
+	LOG(STRING_TYPE("Time: "));
+	LOG_LINE(_ProfilerTimer);
+
 	LOG_LINE(STRING_TYPE("Rendering the scene"));
+
+	_ProfilerTimer.Start();
 
 	Image::Image _RenderResult;
 
@@ -1870,6 +1884,14 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 		CleanUpAssets();
 		return -1;
 	}
+
+	_ProfilerTimer.Stop();
+
+	LOG(STRING_TYPE("Time: "));
+	LOG_LINE(_ProfilerTimer);
+
+	LOG(STRING_TYPE("FPS: "));
+	LOG_LINE(1.0f / _ProfilerTimer);
 
 	LOG_LINE(STRING_TYPE("Saving the result"));
 
