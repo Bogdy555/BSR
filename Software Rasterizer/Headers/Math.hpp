@@ -16,7 +16,8 @@ namespace Math
 
 		float x, y;
 
-		Vec2f(const float _x = 0.0f, const float _y = 0.0f);
+		Vec2f();
+		Vec2f(const float _x, const float _y);
 		Vec2f(const Vec2f& _Other);
 		Vec2f(Vec2f&& _Other) noexcept;
 		~Vec2f();
@@ -79,10 +80,11 @@ namespace Math
 
 		float x, y, z;
 
-		Vec3f(const float _x = 0.0f, const float _y = 0.0f, const float _z = 0.0f);
+		Vec3f();
+		Vec3f(const float _x, const float _y, const float _z);
 		Vec3f(const Vec3f& _Other);
 		Vec3f(Vec3f&& _Other) noexcept;
-		explicit Vec3f(const Vec2f& _Other, const float _z = 0.0f);
+		explicit Vec3f(const Vec2f& _Other, const float _z);
 		~Vec3f();
 
 		explicit operator const Vec2f() const;
@@ -146,11 +148,12 @@ namespace Math
 
 		float x, y, z, w;
 
-		Vec4f(const float _x = 0.0f, const float _y = 0.0f, const float _z = 0.0f, const float _w = 0.0f);
+		Vec4f();
+		Vec4f(const float _x, const float _y, const float _z, const float _w);
 		Vec4f(const Vec4f& _Other);
 		Vec4f(Vec4f&& _Other) noexcept;
-		explicit Vec4f(const Vec2f& _Other, const float _z = 0.0f, const float _w = 0.0f);
-		explicit Vec4f(const Vec3f& _Other, const float _w = 0.0f);
+		explicit Vec4f(const Vec2f& _Other, const float _z, const float _w);
+		explicit Vec4f(const Vec3f& _Other, const float _w);
 		~Vec4f();
 
 		explicit operator const Vec2f() const;

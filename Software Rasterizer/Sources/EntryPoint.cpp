@@ -89,17 +89,64 @@ const Math::Vec3f FresnelSchlickRoughness(const Math::Vec3f& _PositionToCamera, 
 
 const Math::Vec3f DirectionalLightCalculation(const Rasterizer::Light& _Light, const Math::Vec3f& _PositionToCamera, const Math::Vec3f& _Position, const Math::Vec3f& _Normal, const Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const Math::Vec3f& _BaseReflectivity)
 {
-	return Math::Vec3f(0.0f, 0.0f, 0.0f);
+	Math::Vec3f _PositionToLight = -_Light.Direction;
+	Math::Vec3f _HalfWayVec = (_PositionToCamera + _PositionToLight).Normalized();
+	Math::Vec3f _Radiance = _Light.Color * _Light.Intensity;
+
+	float _NormalDistributionFunctionGGX = NormalDistributionFunctionGGX(_Normal, _HalfWayVec, _Roughness);
+	float _GeometrySmith = GeometrySmith(_Normal, _PositionToCamera, _PositionToLight, _Roughness);
+	Math::Vec3f _FresnelSchlick = FresnelSchlick(_PositionToCamera, _HalfWayVec, _BaseReflectivity);
+	Math::Vec3f _kDiffuse = (Math::Vec3f(1.0f, 1.0f, 1.0f) - _FresnelSchlick) * (1.0f - _Metalness);
+
+	Math::Vec3f _Diffuse = _kDiffuse * _Albedo / Math::fPi;
+	Math::Vec3f _Specular = _FresnelSchlick * _NormalDistributionFunctionGGX * _GeometrySmith / (4.0f * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f) * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f) + 0.0001f);
+
+	return (_Diffuse + _Specular) * _Radiance * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f);
 }
 
 const Math::Vec3f PointLightCalculation(const Rasterizer::Light& _Light, const Math::Vec3f& _PositionToCamera, const Math::Vec3f& _Position, const Math::Vec3f& _Normal, const Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const Math::Vec3f& _BaseReflectivity)
 {
-	return Math::Vec3f(0.0f, 0.0f, 0.0f);
+	Math::Vec3f _PositionToLight = (_Light.Position - _Position).Normalized();
+	Math::Vec3f _HalfWayVec = (_PositionToCamera + _PositionToLight).Normalized();
+	float _Distance = (_Position - _Light.Position).Magnitude();
+	float _Attenuation = 1.0f / (_Distance * _Distance);
+	Math::Vec3f _Radiance = _Light.Color * _Light.Intensity * _Attenuation;
+
+	float _NormalDistributionFunctionGGX = NormalDistributionFunctionGGX(_Normal, _HalfWayVec, _Roughness);
+	float _GeometrySmith = GeometrySmith(_Normal, _PositionToCamera, _PositionToLight, _Roughness);
+	Math::Vec3f _FresnelSchlick = FresnelSchlick(_PositionToCamera, _HalfWayVec, _BaseReflectivity);
+	Math::Vec3f _kDiffuse = (Math::Vec3f(1.0f, 1.0f, 1.0f) - _FresnelSchlick) * (1.0f - _Metalness);
+
+	Math::Vec3f _Diffuse = _kDiffuse * _Albedo / Math::fPi;
+	Math::Vec3f _Specular = _FresnelSchlick * _NormalDistributionFunctionGGX * _GeometrySmith / (4.0f * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f) * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f) + 0.0001f);
+
+	return (_Diffuse + _Specular) * _Radiance * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f);
 }
 
 const Math::Vec3f SpotLightCalculation(const Rasterizer::Light& _Light, const Math::Vec3f& _PositionToCamera, const Math::Vec3f& _Position, const Math::Vec3f& _Normal, const Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const Math::Vec3f& _BaseReflectivity)
 {
-	return Math::Vec3f(0.0f, 0.0f, 0.0f);
+	Math::Vec3f _PositionToLight = (_Light.Position - _Position).Normalized();
+	Math::Vec3f _HalfWayVec = (_PositionToCamera + _PositionToLight).Normalized();
+	float _Distance = (_Position - _Light.Position).Magnitude();
+	float _Attenuation = 1.0f / (_Distance * _Distance);
+	Math::Vec3f _Radiance = _Light.Color * _Light.Intensity * _Attenuation;
+
+	float _NormalDistributionFunctionGGX = NormalDistributionFunctionGGX(_Normal, _HalfWayVec, _Roughness);
+	float _GeometrySmith = GeometrySmith(_Normal, _PositionToCamera, _PositionToLight, _Roughness);
+	Math::Vec3f _FresnelSchlick = FresnelSchlick(_PositionToCamera, _HalfWayVec, _BaseReflectivity);
+	Math::Vec3f _kDiffuse = (Math::Vec3f(1.0f, 1.0f, 1.0f) - _FresnelSchlick) * (1.0f - _Metalness);
+
+	Math::Vec3f _Diffuse = _kDiffuse * _Albedo / Math::fPi;
+	Math::Vec3f _Specular = _FresnelSchlick * _NormalDistributionFunctionGGX * _GeometrySmith / (4.0f * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f) * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f) + 0.0001f);
+
+	Math::Vec3f _Result = (_Diffuse + _Specular) * _Radiance * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f);
+
+	float _CosTheta = cosf(_Light.Theta);
+	float _CosThetaPlusThetaFade = cosf(_Light.Theta + _Light.ThetaFade);
+	float _Cos = Math::Vec3f::Dot(_Light.Direction, -_PositionToLight);
+	float _MixT = Math::Clamp((_Cos - _CosThetaPlusThetaFade) / (_CosTheta - _CosThetaPlusThetaFade), 0.0f, 1.0f);
+
+	return Math::Vec3f::Mix(Math::Vec3f(0.0f, 0.0f, 0.0f), _Result, _MixT);
 }
 
 const Math::Vec3f ImageBasedLightCalculation(const Rasterizer::Texture_Float_RGB& _EnvironmentTexture, const Rasterizer::Texture_Float_RGB& _IradianceTexture, const Rasterizer::Texture_RG& _BRDFLookUpTexture, const Math::Vec3f& _PositionToCamera, const Math::Vec3f& _Position, const Math::Vec3f& _Normal, const Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const Math::Vec3f& _BaseReflectivity)
@@ -143,1169 +190,452 @@ const Math::Vec3f LightCalculation(const Rasterizer::Light& _Light, const Math::
 
 AssetManager SceneAssets;
 
+void CleanUpModel(const wchar_t* _AssetName)
+{
+	delete (Rasterizer::Model*)(SceneAssets.GetAssetData(_AssetName));
+	SceneAssets.RemoveAsset(_AssetName);
+}
+
+void CleanUpTexture_Float_RGB(const wchar_t* _AssetName)
+{
+	ASSERT(dynamic_cast<Rasterizer::Texture_Float_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(_AssetName))) || SceneAssets.GetAssetData(_AssetName) == nullptr);
+	delete (Rasterizer::Texture_Float_RGB*)(SceneAssets.GetAssetData(_AssetName));
+	SceneAssets.RemoveAsset(_AssetName);
+}
+
+void CleanUpTexture_RGB(const wchar_t* _AssetName)
+{
+	ASSERT(dynamic_cast<Rasterizer::Texture_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(_AssetName))) || SceneAssets.GetAssetData(_AssetName) == nullptr);
+	delete (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(_AssetName));
+	SceneAssets.RemoveAsset(_AssetName);
+}
+
+void CleanUpTexture_R(const wchar_t* _AssetName)
+{
+	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(_AssetName))) || SceneAssets.GetAssetData(_AssetName) == nullptr);
+	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(_AssetName));
+	SceneAssets.RemoveAsset(_AssetName);
+}
+
+void CleanUpMaterial(const wchar_t* _AssetName)
+{
+	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(_AssetName));
+	SceneAssets.RemoveAsset(_AssetName);
+}
+
+void CleanUpTexture_RG(const wchar_t* _AssetName)
+{
+	ASSERT(dynamic_cast<Rasterizer::Texture_RG*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(_AssetName))) || SceneAssets.GetAssetData(_AssetName) == nullptr);
+	delete (Rasterizer::Texture_RG*)(SceneAssets.GetAssetData(_AssetName));
+	SceneAssets.RemoveAsset(_AssetName);
+}
+
 void CleanUpAssets()
 {
-	delete (Rasterizer::Model*)(SceneAssets.GetAssetData(L"Model"));
-	SceneAssets.RemoveAsset(L"Model");
+	CleanUpModel(L"Model");
 
+	CleanUpTexture_Float_RGB(L"Environment texture");
+	CleanUpTexture_Float_RGB(L"Iradiance texture");
 
+	CleanUpTexture_RGB(L"Aluminum albedo");
+	CleanUpTexture_R(L"Aluminum metalness");
+	CleanUpTexture_RGB(L"Aluminum normal");
+	CleanUpTexture_R(L"Aluminum roughness");
 
-	ASSERT(dynamic_cast<Rasterizer::Texture_Float_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Environment texture"))) || SceneAssets.GetAssetData(L"Environment texture") == nullptr);
-	delete (Rasterizer::Texture_Float_RGB*)(SceneAssets.GetAssetData(L"Environment texture"));
-	SceneAssets.RemoveAsset(L"Environment texture");
+	CleanUpTexture_RGB(L"Container albedo");
+	CleanUpTexture_R(L"Container ambient occlusion");
+	CleanUpTexture_R(L"Container metalness");
+	CleanUpTexture_RGB(L"Container normal");
+	CleanUpTexture_R(L"Container roughness");
 
-	ASSERT(dynamic_cast<Rasterizer::Texture_Float_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Iradiance texture"))) || SceneAssets.GetAssetData(L"Iradiance texture") == nullptr);
-	delete (Rasterizer::Texture_Float_RGB*)(SceneAssets.GetAssetData(L"Iradiance texture"));
-	SceneAssets.RemoveAsset(L"Iradiance texture");
+	CleanUpTexture_RGB(L"Gold albedo");
+	CleanUpTexture_R(L"Gold metalness");
+	CleanUpTexture_RGB(L"Gold normal");
+	CleanUpTexture_R(L"Gold roughness");
 
+	CleanUpTexture_RGB(L"Iron albedo");
+	CleanUpTexture_R(L"Iron metalness");
+	CleanUpTexture_RGB(L"Iron normal");
+	CleanUpTexture_R(L"Iron roughness");
 
+	CleanUpTexture_RGB(L"Plastic albedo green");
+	CleanUpTexture_RGB(L"Plastic albedo red");
+	CleanUpTexture_R(L"Plastic ambient occlusion");
+	CleanUpTexture_R(L"Plastic metalness");
+	CleanUpTexture_RGB(L"Plastic normal");
+	CleanUpTexture_R(L"Plastic roughness");
 
-	ASSERT(dynamic_cast<Rasterizer::Texture_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Aluminum albedo"))) || SceneAssets.GetAssetData(L"Aluminum albedo") == nullptr);
-	delete (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Aluminum albedo"));
-	SceneAssets.RemoveAsset(L"Aluminum albedo");
+	CleanUpTexture_R(L"White Texture_R");
 
-	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Aluminum metalness"))) || SceneAssets.GetAssetData(L"Aluminum metalness") == nullptr);
-	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Aluminum metalness"));
-	SceneAssets.RemoveAsset(L"Aluminum metalness");
+	CleanUpMaterial(L"Material 0");
+	CleanUpMaterial(L"Material 1");
+	CleanUpMaterial(L"Material 2");
+	CleanUpMaterial(L"Material 3");
+	CleanUpMaterial(L"Material 4");
+	CleanUpMaterial(L"Material 5");
+	CleanUpMaterial(L"Material 6");
+	CleanUpMaterial(L"Material 7");
 
-	ASSERT(dynamic_cast<Rasterizer::Texture_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Aluminum normal"))) || SceneAssets.GetAssetData(L"Aluminum normal") == nullptr);
-	delete (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Aluminum normal"));
-	SceneAssets.RemoveAsset(L"Aluminum normal");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Aluminum roughness"))) || SceneAssets.GetAssetData(L"Aluminum roughness") == nullptr);
-	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Aluminum roughness"));
-	SceneAssets.RemoveAsset(L"Aluminum roughness");
-
-
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Container albedo"))) || SceneAssets.GetAssetData(L"Container albedo") == nullptr);
-	delete (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Container albedo"));
-	SceneAssets.RemoveAsset(L"Container albedo");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Container ambient occlusion"))) || SceneAssets.GetAssetData(L"Container ambient occlusion") == nullptr);
-	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container ambient occlusion"));
-	SceneAssets.RemoveAsset(L"Container ambient occlusion");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Container metalness"))) || SceneAssets.GetAssetData(L"Container metalness") == nullptr);
-	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container metalness"));
-	SceneAssets.RemoveAsset(L"Container metalness");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Container normal"))) || SceneAssets.GetAssetData(L"Container normal") == nullptr);
-	delete (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Container normal"));
-	SceneAssets.RemoveAsset(L"Container normal");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Container roughness"))) || SceneAssets.GetAssetData(L"Container roughness") == nullptr);
-	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container roughness"));
-	SceneAssets.RemoveAsset(L"Container roughness");
-
-
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Gold albedo"))) || SceneAssets.GetAssetData(L"Gold albedo") == nullptr);
-	delete (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Gold albedo"));
-	SceneAssets.RemoveAsset(L"Gold albedo");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Gold metalness"))) || SceneAssets.GetAssetData(L"Gold metalness") == nullptr);
-	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Gold metalness"));
-	SceneAssets.RemoveAsset(L"Gold metalness");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Gold normal"))) || SceneAssets.GetAssetData(L"Gold normal") == nullptr);
-	delete (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Gold normal"));
-	SceneAssets.RemoveAsset(L"Gold normal");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Gold roughness"))) || SceneAssets.GetAssetData(L"Gold roughness") == nullptr);
-	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Gold roughness"));
-	SceneAssets.RemoveAsset(L"Gold roughness");
-
-
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Iron albedo"))) || SceneAssets.GetAssetData(L"Iron albedo") == nullptr);
-	delete (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Iron albedo"));
-	SceneAssets.RemoveAsset(L"Iron albedo");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Iron metalness"))) || SceneAssets.GetAssetData(L"Iron metalness") == nullptr);
-	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Iron metalness"));
-	SceneAssets.RemoveAsset(L"Iron metalness");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Iron normal"))) || SceneAssets.GetAssetData(L"Iron normal") == nullptr);
-	delete (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Iron normal"));
-	SceneAssets.RemoveAsset(L"Iron normal");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Iron roughness"))) || SceneAssets.GetAssetData(L"Iron roughness") == nullptr);
-	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Iron roughness"));
-	SceneAssets.RemoveAsset(L"Iron roughness");
-
-
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Plastic albedo green"))) || SceneAssets.GetAssetData(L"Plastic albedo green") == nullptr);
-	delete (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Plastic albedo green"));
-	SceneAssets.RemoveAsset(L"Plastic albedo green");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Plastic albedo red"))) || SceneAssets.GetAssetData(L"Plastic albedo red") == nullptr);
-	delete (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Plastic albedo red"));
-	SceneAssets.RemoveAsset(L"Plastic albedo red");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Plastic ambient occlusion"))) || SceneAssets.GetAssetData(L"Plastic ambient occlusion") == nullptr);
-	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic ambient occlusion"));
-	SceneAssets.RemoveAsset(L"Plastic ambient occlusion");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Plastic metalness"))) || SceneAssets.GetAssetData(L"Plastic metalness") == nullptr);
-	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic metalness"));
-	SceneAssets.RemoveAsset(L"Plastic metalness");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Plastic normal"))) || SceneAssets.GetAssetData(L"Plastic normal") == nullptr);
-	delete (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Plastic normal"));
-	SceneAssets.RemoveAsset(L"Plastic normal");
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"Plastic roughness"))) || SceneAssets.GetAssetData(L"Plastic roughness") == nullptr);
-	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic roughness"));
-	SceneAssets.RemoveAsset(L"Plastic roughness");
-
-
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"White Texture_R"))) || SceneAssets.GetAssetData(L"White Texture_R") == nullptr);
-	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"White Texture_R"));
-	SceneAssets.RemoveAsset(L"White Texture_R");
-
-
-
-	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 0"));
-	SceneAssets.RemoveAsset(L"Material 0");
-
-	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 1"));
-	SceneAssets.RemoveAsset(L"Material 1");
-
-	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 2"));
-	SceneAssets.RemoveAsset(L"Material 2");
-
-	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 3"));
-	SceneAssets.RemoveAsset(L"Material 3");
-
-	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 4"));
-	SceneAssets.RemoveAsset(L"Material 4");
-
-	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 5"));
-	SceneAssets.RemoveAsset(L"Material 5");
-
-	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 6"));
-	SceneAssets.RemoveAsset(L"Material 6");
-
-	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(L"Material 7"));
-	SceneAssets.RemoveAsset(L"Material 7");
-
-
-
-	ASSERT(dynamic_cast<Rasterizer::Texture_RG*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(L"BRDF lookup"))) || SceneAssets.GetAssetData(L"BRDF lookup") == nullptr);
-	delete (Rasterizer::Texture_RG*)(SceneAssets.GetAssetData(L"BRDF lookup"));
-	SceneAssets.RemoveAsset(L"BRDF lookup");
-
-
+	CleanUpTexture_RG(L"BRDF lookup");
 
 	ASSERT(SceneAssets.GetAssetsCount() == 0);
 }
 
+bool LoadModel(const wchar_t* _FilePath, const wchar_t* _AssetName)
+{
+	Rasterizer::Model* _Model = new Rasterizer::Model;
+
+	if (!_Model)
+	{
+		CleanUpAssets();
+		return false;
+	}
+
+	if (!_Model->Load(_FilePath))
+	{
+		delete _Model;
+		CleanUpAssets();
+		return false;
+	}
+
+	if (!SceneAssets.AddAsset(_Model, _AssetName))
+	{
+		delete _Model;
+		CleanUpAssets();
+		return false;
+	}
+
+	return true;
+}
+
+bool LoadTexture_Float_RGB(const wchar_t* _FilePath, const wchar_t* _AssetName)
+{
+	Image::ImageFloat _Image;
+
+	_Image.Data = Image::LoadHdr(_FilePath, _Image.Width, _Image.Height);
+
+	if (!_Image.Data)
+	{
+		CleanUpAssets();
+		return false;
+	}
+
+	Rasterizer::Texture_Float_RGB* _Texture = new Rasterizer::Texture_Float_RGB;
+
+	if (!_Texture)
+	{
+		delete[] _Image.Data;
+		CleanUpAssets();
+		return false;
+	}
+
+	_Texture->SetWrapType(Rasterizer::_WrapClamp);
+
+	if (!_Texture->AddMip(_Image))
+	{
+		delete _Texture;
+		delete[] _Image.Data;
+		CleanUpAssets();
+		return false;
+	}
+
+	if (!SceneAssets.AddAsset(_Texture, _AssetName))
+	{
+		delete _Texture;
+		delete[] _Image.Data;
+		CleanUpAssets();
+		return false;
+	}
+
+	delete[] _Image.Data;
+
+	return true;
+}
+
+bool LoadTexture_RGB(const wchar_t* _FilePath, const wchar_t* _AssetName)
+{
+	Image::Image _Image;
+
+	_Image.Data = Image::LoadBmp(_FilePath, _Image.Width, _Image.Height);
+
+	if (!_Image.Data)
+	{
+		CleanUpAssets();
+		return false;
+	}
+
+	Rasterizer::Texture_RGB* _Texture = new Rasterizer::Texture_RGB;
+
+	if (!_Texture)
+	{
+		delete[] _Image.Data;
+		CleanUpAssets();
+		return false;
+	}
+
+	if (!_Texture->AddMip(_Image))
+	{
+		delete _Texture;
+		delete[] _Image.Data;
+		CleanUpAssets();
+		return false;
+	}
+
+	if (!SceneAssets.AddAsset(_Texture, _AssetName))
+	{
+		delete _Texture;
+		delete[] _Image.Data;
+		CleanUpAssets();
+		return false;
+	}
+
+	delete[] _Image.Data;
+
+	return true;
+}
+
+bool LoadTexture_R(const wchar_t* _FilePath, const wchar_t* _AssetName)
+{
+	Image::Image _Image;
+
+	_Image.Data = Image::LoadBmp(_FilePath, _Image.Width, _Image.Height);
+
+	if (!_Image.Data)
+	{
+		CleanUpAssets();
+		return false;
+	}
+
+	Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
+
+	if (!_Texture)
+	{
+		delete[] _Image.Data;
+		CleanUpAssets();
+		return false;
+	}
+
+	if (!_Texture->AddMip(_Image))
+	{
+		delete _Texture;
+		delete[] _Image.Data;
+		CleanUpAssets();
+		return false;
+	}
+
+	if (!SceneAssets.AddAsset(_Texture, _AssetName))
+	{
+		delete _Texture;
+		delete[] _Image.Data;
+		CleanUpAssets();
+		return false;
+	}
+
+	delete[] _Image.Data;
+
+	return true;
+}
+
+bool LoadTexture_RG(const wchar_t* _FilePath, const wchar_t* _AssetName)
+{
+	Image::Image _Image;
+
+	_Image.Data = Image::LoadBmp(_FilePath, _Image.Width, _Image.Height);
+
+	if (!_Image.Data)
+	{
+		CleanUpAssets();
+		return false;
+	}
+
+	Rasterizer::Texture_RG* _Texture = new Rasterizer::Texture_RG;
+
+	if (!_Texture)
+	{
+		delete[] _Image.Data;
+		CleanUpAssets();
+		return false;
+	}
+
+	_Texture->SetWrapType(Rasterizer::_WrapClamp);
+
+	if (!_Texture->AddMip(_Image))
+	{
+		delete _Texture;
+		delete[] _Image.Data;
+		CleanUpAssets();
+		return false;
+	}
+
+	if (!SceneAssets.AddAsset(_Texture, _AssetName))
+	{
+		delete _Texture;
+		delete[] _Image.Data;
+		CleanUpAssets();
+		return false;
+	}
+
+	delete[] _Image.Data;
+
+	return true;
+}
+
+bool GenerateMaterialAsset(const wchar_t* _AssetName, const wchar_t* _Albedo, const wchar_t* _Metalness, const wchar_t* _Roughness, const wchar_t* _AmbientOcclusion, const wchar_t* _NormalMap)
+{
+	Rasterizer::Material* _Material = new Rasterizer::Material;
+
+	if (!_Material)
+	{
+		CleanUpAssets();
+		return false;
+	}
+
+	_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(_Albedo));
+	_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(_Metalness));
+	_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(_Roughness));
+	_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(_AmbientOcclusion));
+	_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(_NormalMap));
+
+	if (!SceneAssets.AddAsset(_Material, _AssetName))
+	{
+		delete _Material;
+		CleanUpAssets();
+		return false;
+	}
+
+	return true;
+}
+
 bool LoadAssets()
 {
+	if (!LoadModel(L".\\3D Models\\Objects.wfobj", L"Model"))
 	{
-		Rasterizer::Model* _Model = new Rasterizer::Model;
-
-		if (!_Model)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Model->Load(L".\\3D Models\\Objects.wfobj"))
-		{
-			delete _Model;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Model, L"Model"))
-		{
-			delete _Model;
-			CleanUpAssets();
-			return false;
-		}
+		return false;
 	}
 
+	if (!LoadTexture_Float_RGB(L".\\Environments\\ParkingLot\\Environment.hdr", L"Environment texture"))
 	{
-		Image::ImageFloat _Image;
-
-		_Image.Data = Image::LoadHdr(L".\\Environments\\ParkingLot\\Environment.hdr", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_Float_RGB* _Texture = new Rasterizer::Texture_Float_RGB;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		_Texture->SetWrapType(Rasterizer::_WrapClamp);
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Environment texture"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_Float_RGB(L".\\Environments\\ParkingLot\\Iradiance.hdr", L"Iradiance texture"))
 	{
-		Image::ImageFloat _Image;
-
-		_Image.Data = Image::LoadHdr(L".\\Environments\\ParkingLot\\Iradiance.hdr", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_Float_RGB* _Texture = new Rasterizer::Texture_Float_RGB;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		_Texture->SetWrapType(Rasterizer::_WrapClamp);
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Iradiance texture"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_RGB(L".\\Materials\\Aluminum\\Albedo.bmp", L"Aluminum albedo"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Aluminum\\Albedo.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_RGB* _Texture = new Rasterizer::Texture_RGB;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Aluminum albedo"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_R(L".\\Materials\\Aluminum\\Metalness.bmp", L"Aluminum metalness"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Aluminum\\Metalness.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Aluminum metalness"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_RGB(L".\\Materials\\Aluminum\\Normal.bmp", L"Aluminum normal"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Aluminum\\Normal.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_RGB* _Texture = new Rasterizer::Texture_RGB;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Aluminum normal"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_R(L".\\Materials\\Aluminum\\Roughness.bmp", L"Aluminum roughness"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Aluminum\\Roughness.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Aluminum roughness"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_RGB(L".\\Materials\\Container\\Albedo.bmp", L"Container albedo"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Container\\Albedo.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_RGB* _Texture = new Rasterizer::Texture_RGB;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Container albedo"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_R(L".\\Materials\\Container\\AmbientOcclusion.bmp", L"Container ambient occlusion"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Container\\AmbientOcclusion.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Container ambient occlusion"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_R(L".\\Materials\\Container\\Metalness.bmp", L"Container metalness"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Container\\Metalness.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Container metalness"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_RGB(L".\\Materials\\Container\\Normal.bmp", L"Container normal"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Container\\Normal.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_RGB* _Texture = new Rasterizer::Texture_RGB;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Container normal"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_R(L".\\Materials\\Container\\Roughness.bmp", L"Container roughness"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Container\\Roughness.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Container roughness"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_RGB(L".\\Materials\\Gold\\Albedo.bmp", L"Gold albedo"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Gold\\Albedo.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_RGB* _Texture = new Rasterizer::Texture_RGB;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Gold albedo"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_R(L".\\Materials\\Gold\\Metalness.bmp", L"Gold metalness"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Gold\\Metalness.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Gold metalness"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_RGB(L".\\Materials\\Gold\\Normal.bmp", L"Gold normal"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Gold\\Normal.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_RGB* _Texture = new Rasterizer::Texture_RGB;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Gold normal"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_R(L".\\Materials\\Gold\\Roughness.bmp", L"Gold roughness"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Gold\\Roughness.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Gold roughness"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_RGB(L".\\Materials\\Iron\\Albedo.bmp", L"Iron albedo"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Iron\\Albedo.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_RGB* _Texture = new Rasterizer::Texture_RGB;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Iron albedo"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_R(L".\\Materials\\Iron\\Metalness.bmp", L"Iron metalness"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Iron\\Metalness.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Iron metalness"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_RGB(L".\\Materials\\Iron\\Normal.bmp", L"Iron normal"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Iron\\Normal.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_RGB* _Texture = new Rasterizer::Texture_RGB;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Iron normal"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_R(L".\\Materials\\Iron\\Roughness.bmp", L"Iron roughness"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Iron\\Roughness.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Iron roughness"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_RGB(L".\\Materials\\Plastic\\Albedo Green.bmp", L"Plastic albedo green"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Plastic\\Albedo Green.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_RGB* _Texture = new Rasterizer::Texture_RGB;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Plastic albedo green"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_RGB(L".\\Materials\\Plastic\\Albedo Red.bmp", L"Plastic albedo red"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Plastic\\Albedo Red.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_RGB* _Texture = new Rasterizer::Texture_RGB;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Plastic albedo red"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_R(L".\\Materials\\Plastic\\AmbientOcclusion.bmp", L"Plastic ambient occlusion"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Plastic\\AmbientOcclusion.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Plastic ambient occlusion"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_R(L".\\Materials\\Plastic\\Metalness.bmp", L"Plastic metalness"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Plastic\\Metalness.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Plastic metalness"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_RGB(L".\\Materials\\Plastic\\Normal.bmp", L"Plastic normal"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Plastic\\Normal.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_RGB* _Texture = new Rasterizer::Texture_RGB;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Plastic normal"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
+	if (!LoadTexture_R(L".\\Materials\\Plastic\\Roughness.bmp", L"Plastic roughness"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Materials\\Plastic\\Roughness.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"Plastic roughness"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
 	{
@@ -1340,229 +670,49 @@ bool LoadAssets()
 		}
 	}
 
+	if (!GenerateMaterialAsset(L"Material 0", L"Container albedo", L"Container metalness", L"Container roughness", L"Container ambient occlusion", L"Container normal"))
 	{
-		Rasterizer::Material* _Material = new Rasterizer::Material;
-
-		if (!_Material)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Container albedo"));
-		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container metalness"));
-		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container roughness"));
-		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container ambient occlusion"));
-		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Container normal"));
-
-		if (!SceneAssets.AddAsset(_Material, L"Material 0"))
-		{
-			delete _Material;
-			CleanUpAssets();
-			return false;
-		}
+		return false;
 	}
 
+	if (!GenerateMaterialAsset(L"Material 1", L"Gold albedo", L"Gold metalness", L"Gold roughness", L"White Texture_R", L"Gold normal"))
 	{
-		Rasterizer::Material* _Material = new Rasterizer::Material;
-
-		if (!_Material)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Gold albedo"));
-		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Gold metalness"));
-		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Gold roughness"));
-		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"White Texture_R"));
-		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Gold normal"));
-
-		if (!SceneAssets.AddAsset(_Material, L"Material 1"))
-		{
-			delete _Material;
-			CleanUpAssets();
-			return false;
-		}
+		return false;
 	}
 
+	if (!GenerateMaterialAsset(L"Material 2", L"Aluminum albedo", L"Aluminum metalness", L"Aluminum roughness", L"White Texture_R", L"Aluminum normal"))
 	{
-		Rasterizer::Material* _Material = new Rasterizer::Material;
-
-		if (!_Material)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Aluminum albedo"));
-		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Aluminum metalness"));
-		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Aluminum roughness"));
-		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"White Texture_R"));
-		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Aluminum normal"));
-
-		if (!SceneAssets.AddAsset(_Material, L"Material 2"))
-		{
-			delete _Material;
-			CleanUpAssets();
-			return false;
-		}
+		return false;
 	}
 
+	if (!GenerateMaterialAsset(L"Material 3", L"Plastic albedo green", L"Plastic metalness", L"Plastic roughness", L"Plastic ambient occlusion", L"Plastic normal"))
 	{
-		Rasterizer::Material* _Material = new Rasterizer::Material;
-
-		if (!_Material)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Plastic albedo green"));
-		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic metalness"));
-		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic roughness"));
-		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic ambient occlusion"));
-		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Plastic normal"));
-
-		if (!SceneAssets.AddAsset(_Material, L"Material 3"))
-		{
-			delete _Material;
-			CleanUpAssets();
-			return false;
-		}
+		return false;
 	}
 
+	if (!GenerateMaterialAsset(L"Material 4", L"Iron albedo", L"Iron metalness", L"Iron roughness", L"White Texture_R", L"Iron normal"))
 	{
-		Rasterizer::Material* _Material = new Rasterizer::Material;
-
-		if (!_Material)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Iron albedo"));
-		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Iron metalness"));
-		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Iron roughness"));
-		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"White Texture_R"));
-		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Iron normal"));
-
-		if (!SceneAssets.AddAsset(_Material, L"Material 4"))
-		{
-			delete _Material;
-			CleanUpAssets();
-			return false;
-		}
+		return false;
 	}
 
+	if (!GenerateMaterialAsset(L"Material 5", L"Plastic albedo red", L"Plastic metalness", L"Plastic roughness", L"Plastic ambient occlusion", L"Plastic normal"))
 	{
-		Rasterizer::Material* _Material = new Rasterizer::Material;
-
-		if (!_Material)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Plastic albedo red"));
-		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic metalness"));
-		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic roughness"));
-		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Plastic ambient occlusion"));
-		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Plastic normal"));
-
-		if (!SceneAssets.AddAsset(_Material, L"Material 5"))
-		{
-			delete _Material;
-			CleanUpAssets();
-			return false;
-		}
+		return false;
 	}
 
+	if (!GenerateMaterialAsset(L"Material 6", L"Container albedo", L"Container metalness", L"Container roughness", L"Container ambient occlusion", L"Container normal"))
 	{
-		Rasterizer::Material* _Material = new Rasterizer::Material;
-
-		if (!_Material)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Container albedo"));
-		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container metalness"));
-		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container roughness"));
-		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container ambient occlusion"));
-		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Container normal"));
-
-		if (!SceneAssets.AddAsset(_Material, L"Material 6"))
-		{
-			delete _Material;
-			CleanUpAssets();
-			return false;
-		}
+		return false;
 	}
 
+	if (!GenerateMaterialAsset(L"Material 7", L"Container albedo", L"Container metalness", L"Container roughness", L"Container ambient occlusion", L"Container normal"))
 	{
-		Rasterizer::Material* _Material = new Rasterizer::Material;
-
-		if (!_Material)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Container albedo"));
-		_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container metalness"));
-		_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container roughness"));
-		_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(L"Container ambient occlusion"));
-		_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"Container normal"));
-
-		if (!SceneAssets.AddAsset(_Material, L"Material 7"))
-		{
-			delete _Material;
-			CleanUpAssets();
-			return false;
-		}
+		return false;
 	}
 
+	if (!LoadTexture_RG(L".\\Intern\\BRDFLookUp.bmp", L"BRDF lookup"))
 	{
-		Image::Image _Image;
-
-		_Image.Data = Image::LoadBmp(L".\\Intern\\BRDFLookUp.bmp", _Image.Width, _Image.Height);
-
-		if (!_Image.Data)
-		{
-			CleanUpAssets();
-			return false;
-		}
-
-		Rasterizer::Texture_RG* _Texture = new Rasterizer::Texture_RG;
-
-		if (!_Texture)
-		{
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		_Texture->SetWrapType(Rasterizer::_WrapClamp);
-
-		if (!_Texture->AddMip(_Image))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		if (!SceneAssets.AddAsset(_Texture, L"BRDF lookup"))
-		{
-			delete _Texture;
-			delete[] _Image.Data;
-			CleanUpAssets();
-			return false;
-		}
-
-		delete[] _Image.Data;
+		return false;
 	}
 
 	return true;

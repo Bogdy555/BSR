@@ -448,8 +448,6 @@ namespace Rasterizer
 		float ThetaFade = 0.0f;
 		Math::Vec3f Color = Math::Vec3f(1.0f, 1.0f, 1.0f);
 		float Intensity = 1.0f;
-		std::vector<Texture_R*> ShadowMaps;
-		float Radius = 0.0f;
 	};
 
 	struct Camera

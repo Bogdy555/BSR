@@ -2,6 +2,11 @@
 
 
 
+Math::Vec2f::Vec2f() : x(0.0f), y(0.0f)
+{
+
+}
+
 Math::Vec2f::Vec2f(const float _x, const float _y) : x(_x), y(_y)
 {
 
@@ -254,6 +259,11 @@ const Math::Vec2f Math::Vec2f::Reflect(const Vec2f& _Vec, const Vec2f& _Normal)
 }
 
 
+
+Math::Vec3f::Vec3f() : x(0.0f), y(0.0f), z(0.0f)
+{
+
+}
 
 Math::Vec3f::Vec3f(const float _x, const float _y, const float _z) : x(_x), y(_y), z(_z)
 {
@@ -534,6 +544,11 @@ const Math::Vec3f Math::Vec3f::Reflect(const Vec3f& _Vec, const Vec3f& _Normal)
 }
 
 
+
+Math::Vec4f::Vec4f() : x(0.0f), y(0.0f), z(0.0f), w(0.0f)
+{
+
+}
 
 Math::Vec4f::Vec4f(const float _x, const float _y, const float _z, const float _w) : x(_x), y(_y), z(_z), w(_w)
 {
