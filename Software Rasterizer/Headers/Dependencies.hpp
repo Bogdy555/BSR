@@ -88,6 +88,10 @@ namespace Image
 
 }
 
+struct WindowCreationDescriptor;
+
+class Window;
+
 namespace Rasterizer
 {
 

@@ -190,6 +190,7 @@
     <ClCompile Include="Sources\Rasterizer_Texture.cpp" />
     <ClCompile Include="Sources\String.cpp" />
     <ClCompile Include="Sources\Time.cpp" />
+    <ClCompile Include="Sources\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\AssetManager.hpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="Headers\Templates.hpp" />
     <ClInclude Include="Headers\Time.hpp" />
     <ClInclude Include="Headers\Vector.hpp" />
+    <ClInclude Include="Headers\Window.hpp" />
     <ClInclude Include="Headers\WinTargetVer.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -20,6 +20,8 @@
 
 #include "Image.hpp"
 
+#include "Window.hpp"
+
 #include "Rasterizer.hpp"
 
 

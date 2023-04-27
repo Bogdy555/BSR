@@ -27,15 +27,13 @@ The actual software is free for anyone as long as it is not used commercially, b
 
 ## Features
 
-* Asset loading
+* Rasterizer
+
+![Render example](./ReadMe%20Resources/Render.bmp)
 
 * Texture sampling with wrapping (repeat, mirror, clamp and black) and filtering (nearest and bi-linear)
 
 ![Texture sampling example](./ReadMe%20Resources/TextureSampling.bmp)
-
-* Rasterizer
-
-![Render example](./ReadMe%20Resources/Render.bmp)
 
 
 
@@ -126,6 +124,14 @@ A texture with 3 floating point components.
 * class Texture_Float_RGBA : public Texture
 
 A texture with 4 floating point components.
+
+* struct WindowCreationDescriptor
+
+A structure that packs all of the parameteres required for creating a window.
+
+* class Window
+
+A class that manages the threads for the grapthic windows used.
 
 * class Rasterizer::Context
 
