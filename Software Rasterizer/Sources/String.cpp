@@ -1,8 +1,8 @@
-#include "..\Headers\Main.hpp"
+#include "..\Headers\BSR.hpp"
 
 
 
-const size_t String::Length(const wchar_t* _Str)
+const size_t BSR::String::Length(const wchar_t* _Str)
 {
 	if (!_Str)
 	{
@@ -19,7 +19,7 @@ const size_t String::Length(const wchar_t* _Str)
 	return _Index;
 }
 
-const bool String::TheSame(const wchar_t* _Str1, const wchar_t* _Str2)
+const bool BSR::String::TheSame(const wchar_t* _Str1, const wchar_t* _Str2)
 {
 	if (_Str1 == _Str2)
 	{
@@ -50,7 +50,7 @@ const bool String::TheSame(const wchar_t* _Str1, const wchar_t* _Str2)
 	return true;
 }
 
-const bool String::Contains(const wchar_t* _Str, const wchar_t _Chr)
+const bool BSR::String::Contains(const wchar_t* _Str, const wchar_t _Chr)
 {
 	if (!_Str)
 	{
@@ -70,7 +70,7 @@ const bool String::Contains(const wchar_t* _Str, const wchar_t _Chr)
 	return false;
 }
 
-const wchar_t* String::TokenizeWhiteSpace(wchar_t* _Str)
+const wchar_t* BSR::String::TokenizeWhiteSpace(wchar_t* _Str)
 {
 	static thread_local wchar_t* _CurrentTokenStr = nullptr;
 	static thread_local size_t _CurrentTokenStrLen = 0;
@@ -143,7 +143,7 @@ const wchar_t* String::TokenizeWhiteSpace(wchar_t* _Str)
 	return _CurrentTokenStr + _CurrentIndex;
 }
 
-const wchar_t* String::TokenizeSlashes(wchar_t* _Str)
+const wchar_t* BSR::String::TokenizeSlashes(wchar_t* _Str)
 {
 	static thread_local wchar_t* _CurrentTokenStr = nullptr;
 	static thread_local size_t _CurrentTokenStrLen = 0;
@@ -216,7 +216,7 @@ const wchar_t* String::TokenizeSlashes(wchar_t* _Str)
 	return _CurrentTokenStr + _CurrentIndex;
 }
 
-const size_t String::Count(const wchar_t* _Str, const wchar_t _Chr)
+const size_t BSR::String::Count(const wchar_t* _Str, const wchar_t _Chr)
 {
 	if (!_Str)
 	{

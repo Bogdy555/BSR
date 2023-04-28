@@ -1,44 +1,49 @@
-#ifndef Time_hpp
+#ifndef BSR_Time_hpp
 
-#define Time_hpp
-
-
-
-#include "Main.hpp"
+#define BSR_Time_hpp
 
 
 
-namespace Time
+#include "BSR.hpp"
+
+
+
+namespace BSR
 {
 
-	class Timer
+	namespace Time
 	{
 
-	public:
+		class Timer
+		{
 
-		Timer();
-		Timer(const Timer& _Other);
-		Timer(Timer&& _Other) noexcept;
-		~Timer();
+		public:
 
-		void Start();
+			Timer();
+			Timer(const Timer& _Other);
+			Timer(Timer&& _Other) noexcept;
+			~Timer();
+
+			void Start();
+			void Stop();
+			void Restart();
+
+			operator const float() const;
+
+			void operator= (const Timer& _Other);
+			void operator= (Timer&& _Other) noexcept;
+
+		private:
+
+			std::chrono::system_clock::time_point Begin;
+			std::chrono::system_clock::time_point End;
+
+		};
+
+		bool Init();
 		void Stop();
-		void Restart();
 
-		operator const float() const;
-
-		void operator= (const Timer& _Other);
-		void operator= (Timer&& _Other) noexcept;
-
-	private:
-
-		std::chrono::system_clock::time_point Begin;
-		std::chrono::system_clock::time_point End;
-
-	};
-
-	bool Init();
-	void Stop();
+	}
 
 }
 

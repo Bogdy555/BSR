@@ -1,18 +1,18 @@
-#include "..\Headers\Main.hpp"
+#include "..\Headers\BSR.hpp"
 
 
 
-AssetManager::AssetManager() : Assets()
+BSR::AssetManager::AssetManager() : Assets()
 {
 
 }
 
-AssetManager::AssetManager(AssetManager&& _Other) noexcept : Assets(std::move(Assets))
+BSR::AssetManager::AssetManager(AssetManager&& _Other) noexcept : Assets(std::move(Assets))
 {
 
 }
 
-AssetManager::~AssetManager()
+BSR::AssetManager::~AssetManager()
 {
 	for (size_t _Index = 0; _Index < Assets.size(); _Index++)
 	{
@@ -20,7 +20,7 @@ AssetManager::~AssetManager()
 	}
 }
 
-bool AssetManager::AddAsset(void* _Data, const wchar_t* _Name)
+bool BSR::AssetManager::AddAsset(void* _Data, const wchar_t* _Name)
 {
 	if (!_Data || !_Name)
 	{
@@ -54,7 +54,7 @@ bool AssetManager::AddAsset(void* _Data, const wchar_t* _Name)
 	return true;
 }
 
-void AssetManager::RemoveAsset(const wchar_t* _Name)
+void BSR::AssetManager::RemoveAsset(const wchar_t* _Name)
 {
 	for (size_t _Index = 0; _Index < Assets.size(); _Index++)
 	{
@@ -67,13 +67,13 @@ void AssetManager::RemoveAsset(const wchar_t* _Name)
 	}
 }
 
-void AssetManager::RemoveAsset(const size_t _Index)
+void BSR::AssetManager::RemoveAsset(const size_t _Index)
 {
 	delete[] Assets[_Index].Name;
 	Assets.erase(Assets.begin() + _Index);
 }
 
-void AssetManager::RemoveAllAssets()
+void BSR::AssetManager::RemoveAllAssets()
 {
 	for (size_t _Index = 0; _Index < Assets.size(); _Index++)
 	{
@@ -82,12 +82,12 @@ void AssetManager::RemoveAllAssets()
 	Assets.clear();
 }
 
-const size_t AssetManager::GetAssetsCount() const
+const size_t BSR::AssetManager::GetAssetsCount() const
 {
 	return Assets.size();
 }
 
-const size_t AssetManager::GetAssetIndex(const wchar_t* _Name) const
+const size_t BSR::AssetManager::GetAssetIndex(const wchar_t* _Name) const
 {
 	for (size_t _Index = 0; _Index < Assets.size(); _Index++)
 	{
@@ -100,7 +100,7 @@ const size_t AssetManager::GetAssetIndex(const wchar_t* _Name) const
 	return (size_t)(-1);
 }
 
-void* AssetManager::GetAssetData(const wchar_t* _Name)
+void* BSR::AssetManager::GetAssetData(const wchar_t* _Name)
 {
 	for (size_t _Index = 0; _Index < Assets.size(); _Index++)
 	{
@@ -113,7 +113,7 @@ void* AssetManager::GetAssetData(const wchar_t* _Name)
 	return nullptr;
 }
 
-const void* AssetManager::GetAssetData(const wchar_t* _Name) const
+const void* BSR::AssetManager::GetAssetData(const wchar_t* _Name) const
 {
 	for (size_t _Index = 0; _Index < Assets.size(); _Index++)
 	{
@@ -126,17 +126,17 @@ const void* AssetManager::GetAssetData(const wchar_t* _Name) const
 	return nullptr;
 }
 
-Asset& AssetManager::operator[] (const size_t _Index)
+BSR::Asset& BSR::AssetManager::operator[] (const size_t _Index)
 {
 	return Assets[_Index];
 }
 
-const Asset& AssetManager::operator[] (const size_t _Index) const
+const BSR::Asset& BSR::AssetManager::operator[] (const size_t _Index) const
 {
 	return Assets[_Index];
 }
 
-void AssetManager::operator= (AssetManager&& _Other) noexcept
+void BSR::AssetManager::operator= (AssetManager&& _Other) noexcept
 {
 	RemoveAllAssets();
 

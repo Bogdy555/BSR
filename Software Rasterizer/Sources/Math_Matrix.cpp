@@ -1,20 +1,20 @@
-#include "..\Headers\Main.hpp"
+#include "..\Headers\BSR.hpp"
 
 
 
-Math::Mat2f::Mat2f() : Matrix()
+BSR::Math::Mat2f::Mat2f() : Matrix()
 {
 	Matrix[0][0] = 1.0f; Matrix[0][1] = 0.0f;
 	Matrix[1][0] = 0.0f; Matrix[1][1] = 1.0f;
 }
 
-Math::Mat2f::Mat2f(const Mat2f& _Other) : Matrix()
+BSR::Math::Mat2f::Mat2f(const Mat2f& _Other) : Matrix()
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1];
 }
 
-Math::Mat2f::Mat2f(Mat2f&& _Other) noexcept : Matrix()
+BSR::Math::Mat2f::Mat2f(Mat2f&& _Other) noexcept : Matrix()
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1];
@@ -23,44 +23,44 @@ Math::Mat2f::Mat2f(Mat2f&& _Other) noexcept : Matrix()
 	_Other[1][0] = 0.0f; _Other[1][1] = 1.0f;
 }
 
-Math::Mat2f::~Mat2f()
+BSR::Math::Mat2f::~Mat2f()
 {
 
 }
 
-float* Math::Mat2f::Data()
+float* BSR::Math::Mat2f::Data()
 {
 	return (float*)(Matrix);
 }
 
-const float* Math::Mat2f::Data() const
+const float* BSR::Math::Mat2f::Data() const
 {
 	return (const float*)(Matrix);
 }
 
-const float Math::Mat2f::Determinant() const
+const float BSR::Math::Mat2f::Determinant() const
 {
 	return Matrix[0][0] * Matrix[1][1] - Matrix[0][1] * Matrix[1][0];
 }
 
-const float Math::Mat2f::Trace() const
+const float BSR::Math::Mat2f::Trace() const
 {
 	return Matrix[0][0] + Matrix[1][1];
 }
 
-const Math::Mat2f& Math::Mat2f::Transpose()
+const BSR::Math::Mat2f& BSR::Math::Mat2f::Transpose()
 {
 	Swap(Matrix[0][1], Matrix[1][0]);
 
 	return *this;
 }
 
-const Math::Mat2f Math::Mat2f::Transposed() const
+const BSR::Math::Mat2f BSR::Math::Mat2f::Transposed() const
 {
 	return Mat2f(*this).Transpose();
 }
 
-const Math::Mat2f& Math::Mat2f::Inverse()
+const BSR::Math::Mat2f& BSR::Math::Mat2f::Inverse()
 {
 	Mat2f _Matrix;
 
@@ -74,17 +74,17 @@ const Math::Mat2f& Math::Mat2f::Inverse()
 	return *this;
 }
 
-const Math::Mat2f Math::Mat2f::Inversed() const
+const BSR::Math::Mat2f BSR::Math::Mat2f::Inversed() const
 {
 	return Mat2f(*this).Inverse();
 }
 
-const Math::Mat2f& Math::Mat2f::operator+ () const
+const BSR::Math::Mat2f& BSR::Math::Mat2f::operator+ () const
 {
 	return *this;
 }
 
-const Math::Mat2f Math::Mat2f::operator- () const
+const BSR::Math::Mat2f BSR::Math::Mat2f::operator- () const
 {
 	Mat2f _Matrix;
 
@@ -94,7 +94,7 @@ const Math::Mat2f Math::Mat2f::operator- () const
 	return _Matrix;
 }
 
-const Math::Vec2f Math::Mat2f::operator* (const Vec2f& _Vec) const
+const BSR::Math::Vec2f BSR::Math::Mat2f::operator* (const Vec2f& _Vec) const
 {
 	return Vec2f
 	(
@@ -103,7 +103,7 @@ const Math::Vec2f Math::Mat2f::operator* (const Vec2f& _Vec) const
 	);
 }
 
-const Math::Mat2f Math::Mat2f::operator+ (const Mat2f& _Other) const
+const BSR::Math::Mat2f BSR::Math::Mat2f::operator+ (const Mat2f& _Other) const
 {
 	Mat2f _Matrix(*this);
 
@@ -113,7 +113,7 @@ const Math::Mat2f Math::Mat2f::operator+ (const Mat2f& _Other) const
 	return _Matrix;
 }
 
-const Math::Mat2f& Math::Mat2f::operator+= (const Mat2f& _Other)
+const BSR::Math::Mat2f& BSR::Math::Mat2f::operator+= (const Mat2f& _Other)
 {
 	Matrix[0][0] += _Other[0][0]; Matrix[0][1] += _Other[0][1];
 	Matrix[1][0] += _Other[1][0]; Matrix[1][1] += _Other[1][1];
@@ -121,7 +121,7 @@ const Math::Mat2f& Math::Mat2f::operator+= (const Mat2f& _Other)
 	return *this;
 }
 
-const Math::Mat2f Math::Mat2f::operator+ (const float _Scale) const
+const BSR::Math::Mat2f BSR::Math::Mat2f::operator+ (const float _Scale) const
 {
 	Mat2f _Matrix(*this);
 
@@ -131,7 +131,7 @@ const Math::Mat2f Math::Mat2f::operator+ (const float _Scale) const
 	return _Matrix;
 }
 
-const Math::Mat2f& Math::Mat2f::operator+= (const float _Scale)
+const BSR::Math::Mat2f& BSR::Math::Mat2f::operator+= (const float _Scale)
 {
 	Matrix[0][0] += _Scale; Matrix[0][1] += _Scale;
 	Matrix[1][0] += _Scale; Matrix[1][1] += _Scale;
@@ -139,7 +139,7 @@ const Math::Mat2f& Math::Mat2f::operator+= (const float _Scale)
 	return *this;
 }
 
-const Math::Mat2f Math::Mat2f::operator- (const Mat2f& _Other) const
+const BSR::Math::Mat2f BSR::Math::Mat2f::operator- (const Mat2f& _Other) const
 {
 	Mat2f _Matrix(*this);
 
@@ -149,7 +149,7 @@ const Math::Mat2f Math::Mat2f::operator- (const Mat2f& _Other) const
 	return _Matrix;
 }
 
-const Math::Mat2f& Math::Mat2f::operator-= (const Mat2f& _Other)
+const BSR::Math::Mat2f& BSR::Math::Mat2f::operator-= (const Mat2f& _Other)
 {
 	Matrix[0][0] -= _Other[0][0]; Matrix[0][1] -= _Other[0][1];
 	Matrix[1][0] -= _Other[1][0]; Matrix[1][1] -= _Other[1][1];
@@ -157,7 +157,7 @@ const Math::Mat2f& Math::Mat2f::operator-= (const Mat2f& _Other)
 	return *this;
 }
 
-const Math::Mat2f Math::Mat2f::operator- (const float _Scale) const
+const BSR::Math::Mat2f BSR::Math::Mat2f::operator- (const float _Scale) const
 {
 	Mat2f _Matrix(*this);
 
@@ -167,7 +167,7 @@ const Math::Mat2f Math::Mat2f::operator- (const float _Scale) const
 	return _Matrix;
 }
 
-const Math::Mat2f& Math::Mat2f::operator-= (const float _Scale)
+const BSR::Math::Mat2f& BSR::Math::Mat2f::operator-= (const float _Scale)
 {
 	Matrix[0][0] -= _Scale; Matrix[0][1] -= _Scale;
 	Matrix[1][0] -= _Scale; Matrix[1][1] -= _Scale;
@@ -175,7 +175,7 @@ const Math::Mat2f& Math::Mat2f::operator-= (const float _Scale)
 	return *this;
 }
 
-const Math::Mat2f Math::Mat2f::operator* (const Mat2f& _Other) const
+const BSR::Math::Mat2f BSR::Math::Mat2f::operator* (const Mat2f& _Other) const
 {
 	Mat2f _Matrix;
 
@@ -187,7 +187,7 @@ const Math::Mat2f Math::Mat2f::operator* (const Mat2f& _Other) const
 	return _Matrix;
 }
 
-const Math::Mat2f& Math::Mat2f::operator*= (const Mat2f& _Other)
+const BSR::Math::Mat2f& BSR::Math::Mat2f::operator*= (const Mat2f& _Other)
 {
 	Mat2f _Matrix;
 
@@ -201,7 +201,7 @@ const Math::Mat2f& Math::Mat2f::operator*= (const Mat2f& _Other)
 	return *this;
 }
 
-const Math::Mat2f Math::Mat2f::operator* (const float _Scale) const
+const BSR::Math::Mat2f BSR::Math::Mat2f::operator* (const float _Scale) const
 {
 	Mat2f _Matrix(*this);
 
@@ -211,7 +211,7 @@ const Math::Mat2f Math::Mat2f::operator* (const float _Scale) const
 	return _Matrix;
 }
 
-const Math::Mat2f& Math::Mat2f::operator*= (const float _Scale)
+const BSR::Math::Mat2f& BSR::Math::Mat2f::operator*= (const float _Scale)
 {
 	Matrix[0][0] *= _Scale; Matrix[0][1] *= _Scale;
 	Matrix[1][0] *= _Scale; Matrix[1][1] *= _Scale;
@@ -219,7 +219,7 @@ const Math::Mat2f& Math::Mat2f::operator*= (const float _Scale)
 	return *this;
 }
 
-const Math::Mat2f Math::Mat2f::operator/ (const float _Scale) const
+const BSR::Math::Mat2f BSR::Math::Mat2f::operator/ (const float _Scale) const
 {
 	Mat2f _Matrix(*this);
 
@@ -229,7 +229,7 @@ const Math::Mat2f Math::Mat2f::operator/ (const float _Scale) const
 	return _Matrix;
 }
 
-const Math::Mat2f& Math::Mat2f::operator/= (const float _Scale)
+const BSR::Math::Mat2f& BSR::Math::Mat2f::operator/= (const float _Scale)
 {
 	Matrix[0][0] /= _Scale; Matrix[0][1] /= _Scale;
 	Matrix[1][0] /= _Scale; Matrix[1][1] /= _Scale;
@@ -237,31 +237,31 @@ const Math::Mat2f& Math::Mat2f::operator/= (const float _Scale)
 	return *this;
 }
 
-const bool Math::Mat2f::operator== (const Mat2f& _Other) const
+const bool BSR::Math::Mat2f::operator== (const Mat2f& _Other) const
 {
 	return
 		Matrix[0][0] == _Other[0][0] && Matrix[0][1] == _Other[0][1] &&
 		Matrix[1][0] == _Other[1][0] && Matrix[1][1] == _Other[1][1];
 }
 
-const bool Math::Mat2f::operator!= (const Mat2f& _Other) const
+const bool BSR::Math::Mat2f::operator!= (const Mat2f& _Other) const
 {
 	return
 		Matrix[0][0] != _Other[0][0] || Matrix[0][1] != _Other[0][1] ||
 		Matrix[1][0] != _Other[1][0] || Matrix[1][1] != _Other[1][1];
 }
 
-float* Math::Mat2f::operator[] (const size_t _Index)
+float* BSR::Math::Mat2f::operator[] (const size_t _Index)
 {
 	return Matrix[_Index].Data();
 }
 
-const float* Math::Mat2f::operator[] (const size_t _Index) const
+const float* BSR::Math::Mat2f::operator[] (const size_t _Index) const
 {
 	return Matrix[_Index].Data();
 }
 
-const Math::Mat2f& Math::Mat2f::operator= (const Mat2f& _Other)
+const BSR::Math::Mat2f& BSR::Math::Mat2f::operator= (const Mat2f& _Other)
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1];
@@ -269,7 +269,7 @@ const Math::Mat2f& Math::Mat2f::operator= (const Mat2f& _Other)
 	return *this;
 }
 
-const Math::Mat2f& Math::Mat2f::operator= (Mat2f&& _Other) noexcept
+const BSR::Math::Mat2f& BSR::Math::Mat2f::operator= (Mat2f&& _Other) noexcept
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1];
@@ -280,7 +280,7 @@ const Math::Mat2f& Math::Mat2f::operator= (Mat2f&& _Other) noexcept
 	return *this;
 }
 
-const Math::Mat2f Math::Mat2f::GetScale(const float _x, const float _y)
+const BSR::Math::Mat2f BSR::Math::Mat2f::GetScale(const float _x, const float _y)
 {
 	Mat2f _Matrix;
 
@@ -290,7 +290,7 @@ const Math::Mat2f Math::Mat2f::GetScale(const float _x, const float _y)
 	return _Matrix;
 }
 
-const Math::Mat2f Math::Mat2f::GetFill(const float _Value)
+const BSR::Math::Mat2f BSR::Math::Mat2f::GetFill(const float _Value)
 {
 	Mat2f _Matrix;
 
@@ -300,7 +300,7 @@ const Math::Mat2f Math::Mat2f::GetFill(const float _Value)
 	return _Matrix;
 }
 
-const Math::Mat2f Math::Mat2f::GetShear(const float _Value, const size_t _ShearedAxis, const size_t _ShearByAxis)
+const BSR::Math::Mat2f BSR::Math::Mat2f::GetShear(const float _Value, const size_t _ShearedAxis, const size_t _ShearByAxis)
 {
 	Mat2f _Matrix;
 
@@ -309,7 +309,7 @@ const Math::Mat2f Math::Mat2f::GetShear(const float _Value, const size_t _Sheare
 	return _Matrix;
 }
 
-const Math::Mat2f Math::Mat2f::GetRotation(const float _Angle)
+const BSR::Math::Mat2f BSR::Math::Mat2f::GetRotation(const float _Angle)
 {
 	Mat2f _Matrix;
 
@@ -324,21 +324,21 @@ const Math::Mat2f Math::Mat2f::GetRotation(const float _Angle)
 
 
 
-Math::Mat3f::Mat3f() : Matrix()
+BSR::Math::Mat3f::Mat3f() : Matrix()
 {
 	Matrix[0][0] = 1.0f; Matrix[0][1] = 0.0f; Matrix[0][2] = 0.0f;
 	Matrix[1][0] = 0.0f; Matrix[1][1] = 1.0f; Matrix[1][2] = 0.0f;
 	Matrix[2][0] = 0.0f; Matrix[2][1] = 0.0f; Matrix[2][2] = 1.0f;
 }
 
-Math::Mat3f::Mat3f(const Mat3f& _Other) : Matrix()
+BSR::Math::Mat3f::Mat3f(const Mat3f& _Other) : Matrix()
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = _Other[0][2];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2];
 	Matrix[2][0] = _Other[2][0]; Matrix[2][1] = _Other[2][1]; Matrix[2][2] = _Other[2][2];
 }
 
-Math::Mat3f::Mat3f(Mat3f&& _Other) noexcept : Matrix()
+BSR::Math::Mat3f::Mat3f(Mat3f&& _Other) noexcept : Matrix()
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = _Other[0][2];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2];
@@ -349,19 +349,19 @@ Math::Mat3f::Mat3f(Mat3f&& _Other) noexcept : Matrix()
 	_Other[2][0] = 0.0f; _Other[2][1] = 0.0f; _Other[2][2] = 1.0f;
 }
 
-Math::Mat3f::Mat3f(const Mat2f& _Other) : Matrix()
+BSR::Math::Mat3f::Mat3f(const Mat2f& _Other) : Matrix()
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = 0.0f;
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = 0.0f;
 	Matrix[2][0] = 0.0f; Matrix[2][1] = 0.0f; Matrix[2][2] = 1.0f;
 }
 
-Math::Mat3f::~Mat3f()
+BSR::Math::Mat3f::~Mat3f()
 {
 
 }
 
-Math::Mat3f::operator const Math::Mat2f() const
+BSR::Math::Mat3f::operator const BSR::Math::Mat2f() const
 {
 	Mat2f _Matrix;
 
@@ -371,17 +371,17 @@ Math::Mat3f::operator const Math::Mat2f() const
 	return _Matrix;
 }
 
-float* Math::Mat3f::Data()
+float* BSR::Math::Mat3f::Data()
 {
 	return (float*)(Matrix);
 }
 
-const float* Math::Mat3f::Data() const
+const float* BSR::Math::Mat3f::Data() const
 {
 	return (const float*)(Matrix);
 }
 
-const float Math::Mat3f::Determinant() const
+const float BSR::Math::Mat3f::Determinant() const
 {
 	return
 		Matrix[0][0] * Matrix[1][1] * Matrix[2][2] +
@@ -392,12 +392,12 @@ const float Math::Mat3f::Determinant() const
 		Matrix[0][1] * Matrix[1][0] * Matrix[2][2];
 }
 
-const float Math::Mat3f::Trace() const
+const float BSR::Math::Mat3f::Trace() const
 {
 	return Matrix[0][0] + Matrix[1][1] + Matrix[2][2];
 }
 
-const Math::Mat3f& Math::Mat3f::Transpose()
+const BSR::Math::Mat3f& BSR::Math::Mat3f::Transpose()
 {
 	Swap(Matrix[0][1], Matrix[1][0]);
 	Swap(Matrix[0][2], Matrix[2][0]);
@@ -406,12 +406,12 @@ const Math::Mat3f& Math::Mat3f::Transpose()
 	return *this;
 }
 
-const Math::Mat3f Math::Mat3f::Transposed() const
+const BSR::Math::Mat3f BSR::Math::Mat3f::Transposed() const
 {
 	return Mat3f(*this).Transpose();
 }
 
-const Math::Mat3f& Math::Mat3f::Inverse()
+const BSR::Math::Mat3f& BSR::Math::Mat3f::Inverse()
 {
 	Mat3f _Matrix;
 
@@ -469,17 +469,17 @@ const Math::Mat3f& Math::Mat3f::Inverse()
 	return *this;
 }
 
-const Math::Mat3f Math::Mat3f::Inversed() const
+const BSR::Math::Mat3f BSR::Math::Mat3f::Inversed() const
 {
 	return Mat3f(*this).Inverse();
 }
 
-const Math::Mat3f& Math::Mat3f::operator+ () const
+const BSR::Math::Mat3f& BSR::Math::Mat3f::operator+ () const
 {
 	return *this;
 }
 
-const Math::Mat3f Math::Mat3f::operator- () const
+const BSR::Math::Mat3f BSR::Math::Mat3f::operator- () const
 {
 	Mat3f _Matrix;
 
@@ -490,7 +490,7 @@ const Math::Mat3f Math::Mat3f::operator- () const
 	return _Matrix;
 }
 
-const Math::Vec3f Math::Mat3f::operator* (const Vec3f& _Vec) const
+const BSR::Math::Vec3f BSR::Math::Mat3f::operator* (const Vec3f& _Vec) const
 {
 	return Vec3f
 	(
@@ -500,7 +500,7 @@ const Math::Vec3f Math::Mat3f::operator* (const Vec3f& _Vec) const
 	);
 }
 
-const Math::Mat3f Math::Mat3f::operator+ (const Mat3f& _Other) const
+const BSR::Math::Mat3f BSR::Math::Mat3f::operator+ (const Mat3f& _Other) const
 {
 	Mat3f _Matrix(*this);
 
@@ -511,7 +511,7 @@ const Math::Mat3f Math::Mat3f::operator+ (const Mat3f& _Other) const
 	return _Matrix;
 }
 
-const Math::Mat3f& Math::Mat3f::operator+= (const Mat3f& _Other)
+const BSR::Math::Mat3f& BSR::Math::Mat3f::operator+= (const Mat3f& _Other)
 {
 	Matrix[0][0] += _Other[0][0]; Matrix[0][1] += _Other[0][1]; Matrix[0][2] += _Other[0][2];
 	Matrix[1][0] += _Other[1][0]; Matrix[1][1] += _Other[1][1]; Matrix[1][2] += _Other[1][2];
@@ -520,7 +520,7 @@ const Math::Mat3f& Math::Mat3f::operator+= (const Mat3f& _Other)
 	return *this;
 }
 
-const Math::Mat3f Math::Mat3f::operator+ (const float _Scale) const
+const BSR::Math::Mat3f BSR::Math::Mat3f::operator+ (const float _Scale) const
 {
 	Mat3f _Matrix(*this);
 
@@ -531,7 +531,7 @@ const Math::Mat3f Math::Mat3f::operator+ (const float _Scale) const
 	return _Matrix;
 }
 
-const Math::Mat3f& Math::Mat3f::operator+= (const float _Scale)
+const BSR::Math::Mat3f& BSR::Math::Mat3f::operator+= (const float _Scale)
 {
 	Matrix[0][0] += _Scale; Matrix[0][1] += _Scale; Matrix[0][2] += _Scale;
 	Matrix[1][0] += _Scale; Matrix[1][1] += _Scale; Matrix[1][2] += _Scale;
@@ -540,7 +540,7 @@ const Math::Mat3f& Math::Mat3f::operator+= (const float _Scale)
 	return *this;
 }
 
-const Math::Mat3f Math::Mat3f::operator- (const Mat3f& _Other) const
+const BSR::Math::Mat3f BSR::Math::Mat3f::operator- (const Mat3f& _Other) const
 {
 	Mat3f _Matrix(*this);
 
@@ -551,7 +551,7 @@ const Math::Mat3f Math::Mat3f::operator- (const Mat3f& _Other) const
 	return _Matrix;
 }
 
-const Math::Mat3f& Math::Mat3f::operator-= (const Mat3f& _Other)
+const BSR::Math::Mat3f& BSR::Math::Mat3f::operator-= (const Mat3f& _Other)
 {
 	Matrix[0][0] -= _Other[0][0]; Matrix[0][1] -= _Other[0][1]; Matrix[0][2] -= _Other[0][2];
 	Matrix[1][0] -= _Other[1][0]; Matrix[1][1] -= _Other[1][1]; Matrix[1][2] -= _Other[1][2];
@@ -560,7 +560,7 @@ const Math::Mat3f& Math::Mat3f::operator-= (const Mat3f& _Other)
 	return *this;
 }
 
-const Math::Mat3f Math::Mat3f::operator- (const float _Scale) const
+const BSR::Math::Mat3f BSR::Math::Mat3f::operator- (const float _Scale) const
 {
 	Mat3f _Matrix(*this);
 
@@ -571,7 +571,7 @@ const Math::Mat3f Math::Mat3f::operator- (const float _Scale) const
 	return _Matrix;
 }
 
-const Math::Mat3f& Math::Mat3f::operator-= (const float _Scale)
+const BSR::Math::Mat3f& BSR::Math::Mat3f::operator-= (const float _Scale)
 {
 	Matrix[0][0] -= _Scale; Matrix[0][1] -= _Scale; Matrix[0][2] -= _Scale;
 	Matrix[1][0] -= _Scale; Matrix[1][1] -= _Scale; Matrix[1][2] -= _Scale;
@@ -580,7 +580,7 @@ const Math::Mat3f& Math::Mat3f::operator-= (const float _Scale)
 	return *this;
 }
 
-const Math::Mat3f Math::Mat3f::operator* (const Mat3f& _Other) const
+const BSR::Math::Mat3f BSR::Math::Mat3f::operator* (const Mat3f& _Other) const
 {
 	Mat3f _Matrix;
 
@@ -599,7 +599,7 @@ const Math::Mat3f Math::Mat3f::operator* (const Mat3f& _Other) const
 	return _Matrix;
 }
 
-const Math::Mat3f& Math::Mat3f::operator*= (const Mat3f& _Other)
+const BSR::Math::Mat3f& BSR::Math::Mat3f::operator*= (const Mat3f& _Other)
 {
 	Mat3f _Matrix;
 
@@ -620,7 +620,7 @@ const Math::Mat3f& Math::Mat3f::operator*= (const Mat3f& _Other)
 	return *this;
 }
 
-const Math::Mat3f Math::Mat3f::operator* (const float _Scale) const
+const BSR::Math::Mat3f BSR::Math::Mat3f::operator* (const float _Scale) const
 {
 	Mat3f _Matrix(*this);
 
@@ -631,7 +631,7 @@ const Math::Mat3f Math::Mat3f::operator* (const float _Scale) const
 	return _Matrix;
 }
 
-const Math::Mat3f& Math::Mat3f::operator*= (const float _Scale)
+const BSR::Math::Mat3f& BSR::Math::Mat3f::operator*= (const float _Scale)
 {
 	Matrix[0][0] *= _Scale; Matrix[0][1] *= _Scale; Matrix[0][2] *= _Scale;
 	Matrix[1][0] *= _Scale; Matrix[1][1] *= _Scale; Matrix[1][2] *= _Scale;
@@ -640,7 +640,7 @@ const Math::Mat3f& Math::Mat3f::operator*= (const float _Scale)
 	return *this;
 }
 
-const Math::Mat3f Math::Mat3f::operator/ (const float _Scale) const
+const BSR::Math::Mat3f BSR::Math::Mat3f::operator/ (const float _Scale) const
 {
 	Mat3f _Matrix(*this);
 
@@ -651,7 +651,7 @@ const Math::Mat3f Math::Mat3f::operator/ (const float _Scale) const
 	return _Matrix;
 }
 
-const Math::Mat3f& Math::Mat3f::operator/= (const float _Scale)
+const BSR::Math::Mat3f& BSR::Math::Mat3f::operator/= (const float _Scale)
 {
 	Matrix[0][0] /= _Scale; Matrix[0][1] /= _Scale; Matrix[0][2] /= _Scale;
 	Matrix[1][0] /= _Scale; Matrix[1][1] /= _Scale; Matrix[1][2] /= _Scale;
@@ -660,7 +660,7 @@ const Math::Mat3f& Math::Mat3f::operator/= (const float _Scale)
 	return *this;
 }
 
-const bool Math::Mat3f::operator== (const Mat3f& _Other) const
+const bool BSR::Math::Mat3f::operator== (const Mat3f& _Other) const
 {
 	return
 		Matrix[0][0] == _Other[0][0] && Matrix[0][1] == _Other[0][1] && Matrix[0][2] == _Other[0][2] &&
@@ -668,7 +668,7 @@ const bool Math::Mat3f::operator== (const Mat3f& _Other) const
 		Matrix[2][0] == _Other[2][0] && Matrix[2][1] == _Other[2][1] && Matrix[2][2] == _Other[2][2];
 }
 
-const bool Math::Mat3f::operator!= (const Mat3f& _Other) const
+const bool BSR::Math::Mat3f::operator!= (const Mat3f& _Other) const
 {
 	return
 		Matrix[0][0] != _Other[0][0] || Matrix[0][1] != _Other[0][1] || Matrix[0][2] != _Other[0][2] ||
@@ -676,17 +676,17 @@ const bool Math::Mat3f::operator!= (const Mat3f& _Other) const
 		Matrix[2][0] != _Other[2][0] || Matrix[2][1] != _Other[2][1] || Matrix[2][2] != _Other[2][2];
 }
 
-float* Math::Mat3f::operator[] (const size_t _Index)
+float* BSR::Math::Mat3f::operator[] (const size_t _Index)
 {
 	return Matrix[_Index].Data();
 }
 
-const float* Math::Mat3f::operator[] (const size_t _Index) const
+const float* BSR::Math::Mat3f::operator[] (const size_t _Index) const
 {
 	return Matrix[_Index].Data();
 }
 
-const Math::Mat3f& Math::Mat3f::operator= (const Mat3f& _Other)
+const BSR::Math::Mat3f& BSR::Math::Mat3f::operator= (const Mat3f& _Other)
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = _Other[0][2];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2];
@@ -695,7 +695,7 @@ const Math::Mat3f& Math::Mat3f::operator= (const Mat3f& _Other)
 	return *this;
 }
 
-const Math::Mat3f& Math::Mat3f::operator= (Mat3f&& _Other) noexcept
+const BSR::Math::Mat3f& BSR::Math::Mat3f::operator= (Mat3f&& _Other) noexcept
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = _Other[0][2];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2];
@@ -708,7 +708,7 @@ const Math::Mat3f& Math::Mat3f::operator= (Mat3f&& _Other) noexcept
 	return *this;
 }
 
-const Math::Mat3f Math::Mat3f::GetScale(const float _x, const float _y, const float _z)
+const BSR::Math::Mat3f BSR::Math::Mat3f::GetScale(const float _x, const float _y, const float _z)
 {
 	Mat3f _Matrix;
 
@@ -719,7 +719,7 @@ const Math::Mat3f Math::Mat3f::GetScale(const float _x, const float _y, const fl
 	return _Matrix;
 }
 
-const Math::Mat3f Math::Mat3f::GetFill(const float _Value)
+const BSR::Math::Mat3f BSR::Math::Mat3f::GetFill(const float _Value)
 {
 	Mat3f _Matrix;
 
@@ -730,7 +730,7 @@ const Math::Mat3f Math::Mat3f::GetFill(const float _Value)
 	return _Matrix;
 }
 
-const Math::Mat3f Math::Mat3f::GetShear(const float _Value, const size_t _ShearedAxis, const size_t _ShearByAxis)
+const BSR::Math::Mat3f BSR::Math::Mat3f::GetShear(const float _Value, const size_t _ShearedAxis, const size_t _ShearByAxis)
 {
 	Mat3f _Matrix;
 
@@ -739,7 +739,7 @@ const Math::Mat3f Math::Mat3f::GetShear(const float _Value, const size_t _Sheare
 	return _Matrix;
 }
 
-const Math::Mat3f Math::Mat3f::GetRotation(const float _Angle, const Vec3f& _RotationAxis)
+const BSR::Math::Mat3f BSR::Math::Mat3f::GetRotation(const float _Angle, const Vec3f& _RotationAxis)
 {
 	Mat3f _Matrix;
 
@@ -761,7 +761,7 @@ const Math::Mat3f Math::Mat3f::GetRotation(const float _Angle, const Vec3f& _Rot
 	return _Matrix;
 }
 
-const Math::Mat3f Math::Mat3f::GetTranslation(const Vec2f& _Coords)
+const BSR::Math::Mat3f BSR::Math::Mat3f::GetTranslation(const Vec2f& _Coords)
 {
 	Mat3f _Matrix;
 
@@ -771,7 +771,7 @@ const Math::Mat3f Math::Mat3f::GetTranslation(const Vec2f& _Coords)
 	return _Matrix;
 }
 
-const Math::Mat3f Math::Mat3f::GetOrtho(const float _Left, const float _Right, const float _Bottom, const float _Top)
+const BSR::Math::Mat3f BSR::Math::Mat3f::GetOrtho(const float _Left, const float _Right, const float _Bottom, const float _Top)
 {
 	Mat3f _Matrix;
 
@@ -786,7 +786,7 @@ const Math::Mat3f Math::Mat3f::GetOrtho(const float _Left, const float _Right, c
 
 
 
-Math::Mat4f::Mat4f() : Matrix()
+BSR::Math::Mat4f::Mat4f() : Matrix()
 {
 	Matrix[0][0] = 1.0f; Matrix[0][1] = 0.0f; Matrix[0][2] = 0.0f; Matrix[0][3] = 0.0f;
 	Matrix[1][0] = 0.0f; Matrix[1][1] = 1.0f; Matrix[1][2] = 0.0f; Matrix[1][3] = 0.0f;
@@ -794,7 +794,7 @@ Math::Mat4f::Mat4f() : Matrix()
 	Matrix[3][0] = 0.0f; Matrix[3][1] = 0.0f; Matrix[3][2] = 0.0f; Matrix[3][3] = 1.0f;
 }
 
-Math::Mat4f::Mat4f(const Mat4f& _Other) : Matrix()
+BSR::Math::Mat4f::Mat4f(const Mat4f& _Other) : Matrix()
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = _Other[0][2]; Matrix[0][3] = _Other[0][3];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2]; Matrix[1][3] = _Other[1][3];
@@ -802,7 +802,7 @@ Math::Mat4f::Mat4f(const Mat4f& _Other) : Matrix()
 	Matrix[3][0] = _Other[3][0]; Matrix[3][1] = _Other[3][1]; Matrix[3][2] = _Other[3][2]; Matrix[3][3] = _Other[3][3];
 }
 
-Math::Mat4f::Mat4f(Mat4f&& _Other) noexcept : Matrix()
+BSR::Math::Mat4f::Mat4f(Mat4f&& _Other) noexcept : Matrix()
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = _Other[0][2]; Matrix[0][3] = _Other[0][3];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2]; Matrix[1][3] = _Other[1][3];
@@ -815,7 +815,7 @@ Math::Mat4f::Mat4f(Mat4f&& _Other) noexcept : Matrix()
 	_Other[3][0] = 0.0f; _Other[3][1] = 0.0f; _Other[3][2] = 0.0f; _Other[3][3] = 1.0f;
 }
 
-Math::Mat4f::Mat4f(const Mat2f& _Other) : Matrix()
+BSR::Math::Mat4f::Mat4f(const Mat2f& _Other) : Matrix()
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = 0.0f; Matrix[0][3] = 0.0f;
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = 0.0f; Matrix[1][3] = 0.0f;
@@ -823,7 +823,7 @@ Math::Mat4f::Mat4f(const Mat2f& _Other) : Matrix()
 	Matrix[3][0] = 0.0f; Matrix[3][1] = 0.0f; Matrix[3][2] = 0.0f; Matrix[3][3] = 1.0f;
 }
 
-Math::Mat4f::Mat4f(const Mat3f& _Other) : Matrix()
+BSR::Math::Mat4f::Mat4f(const Mat3f& _Other) : Matrix()
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = _Other[0][2]; Matrix[0][3] = 0.0f;
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2]; Matrix[1][3] = 0.0f;
@@ -831,12 +831,12 @@ Math::Mat4f::Mat4f(const Mat3f& _Other) : Matrix()
 	Matrix[3][0] = 0.0f; Matrix[3][1] = 0.0f; Matrix[3][2] = 0.0f; Matrix[3][3] = 1.0f;
 }
 
-Math::Mat4f::~Mat4f()
+BSR::Math::Mat4f::~Mat4f()
 {
 
 }
 
-Math::Mat4f::operator const Math::Mat2f() const
+BSR::Math::Mat4f::operator const BSR::Math::Mat2f() const
 {
 	Mat2f _Matrix;
 
@@ -846,7 +846,7 @@ Math::Mat4f::operator const Math::Mat2f() const
 	return _Matrix;
 }
 
-Math::Mat4f::operator const Math::Mat3f() const
+BSR::Math::Mat4f::operator const BSR::Math::Mat3f() const
 {
 	Mat3f _Matrix;
 
@@ -857,17 +857,17 @@ Math::Mat4f::operator const Math::Mat3f() const
 	return _Matrix;
 }
 
-float* Math::Mat4f::Data()
+float* BSR::Math::Mat4f::Data()
 {
 	return (float*)(Matrix);
 }
 
-const float* Math::Mat4f::Data() const
+const float* BSR::Math::Mat4f::Data() const
 {
 	return (const float*)(Matrix);
 }
 
-const float Math::Mat4f::Determinant() const
+const float BSR::Math::Mat4f::Determinant() const
 {
 	Mat3f _Mat[4];
 
@@ -894,12 +894,12 @@ const float Math::Mat4f::Determinant() const
 		Matrix[3][0] * _Mat[3].Determinant();
 }
 
-const float Math::Mat4f::Trace() const
+const float BSR::Math::Mat4f::Trace() const
 {
 	return Matrix[0][0] + Matrix[1][1] + Matrix[2][2] + Matrix[3][3];
 }
 
-const Math::Mat4f& Math::Mat4f::Transpose()
+const BSR::Math::Mat4f& BSR::Math::Mat4f::Transpose()
 {
 	Swap(Matrix[0][1], Matrix[1][0]);
 	Swap(Matrix[0][2], Matrix[2][0]);
@@ -911,12 +911,12 @@ const Math::Mat4f& Math::Mat4f::Transpose()
 	return *this;
 }
 
-const Math::Mat4f Math::Mat4f::Transposed() const
+const BSR::Math::Mat4f BSR::Math::Mat4f::Transposed() const
 {
 	return Mat4f(*this).Transpose();
 }
 
-const Math::Mat4f& Math::Mat4f::Inverse()
+const BSR::Math::Mat4f& BSR::Math::Mat4f::Inverse()
 {
 	Mat4f _Matrix;
 
@@ -1025,17 +1025,17 @@ const Math::Mat4f& Math::Mat4f::Inverse()
 	return *this;
 }
 
-const Math::Mat4f Math::Mat4f::Inversed() const
+const BSR::Math::Mat4f BSR::Math::Mat4f::Inversed() const
 {
 	return Mat4f(*this).Inverse();
 }
 
-const Math::Mat4f& Math::Mat4f::operator+ () const
+const BSR::Math::Mat4f& BSR::Math::Mat4f::operator+ () const
 {
 	return *this;
 }
 
-const Math::Mat4f Math::Mat4f::operator- () const
+const BSR::Math::Mat4f BSR::Math::Mat4f::operator- () const
 {
 	Mat4f _Matrix;
 
@@ -1047,7 +1047,7 @@ const Math::Mat4f Math::Mat4f::operator- () const
 	return _Matrix;
 }
 
-const Math::Vec4f Math::Mat4f::operator* (const Vec4f& _Vec) const
+const BSR::Math::Vec4f BSR::Math::Mat4f::operator* (const Vec4f& _Vec) const
 {
 	return Vec4f
 	(
@@ -1058,7 +1058,7 @@ const Math::Vec4f Math::Mat4f::operator* (const Vec4f& _Vec) const
 	);
 }
 
-const Math::Mat4f Math::Mat4f::operator+ (const Mat4f& _Other) const
+const BSR::Math::Mat4f BSR::Math::Mat4f::operator+ (const Mat4f& _Other) const
 {
 	Mat4f _Matrix(*this);
 
@@ -1070,7 +1070,7 @@ const Math::Mat4f Math::Mat4f::operator+ (const Mat4f& _Other) const
 	return _Matrix;
 }
 
-const Math::Mat4f& Math::Mat4f::operator+= (const Mat4f& _Other)
+const BSR::Math::Mat4f& BSR::Math::Mat4f::operator+= (const Mat4f& _Other)
 {
 	Matrix[0][0] += _Other[0][0]; Matrix[0][1] += _Other[0][1]; Matrix[0][2] += _Other[0][2]; Matrix[0][3] += _Other[0][3];
 	Matrix[1][0] += _Other[1][0]; Matrix[1][1] += _Other[1][1]; Matrix[1][2] += _Other[1][2]; Matrix[1][3] += _Other[1][3];
@@ -1080,7 +1080,7 @@ const Math::Mat4f& Math::Mat4f::operator+= (const Mat4f& _Other)
 	return *this;
 }
 
-const Math::Mat4f Math::Mat4f::operator+ (const float _Scale) const
+const BSR::Math::Mat4f BSR::Math::Mat4f::operator+ (const float _Scale) const
 {
 	Mat4f _Matrix(*this);
 
@@ -1092,7 +1092,7 @@ const Math::Mat4f Math::Mat4f::operator+ (const float _Scale) const
 	return _Matrix;
 }
 
-const Math::Mat4f& Math::Mat4f::operator+= (const float _Scale)
+const BSR::Math::Mat4f& BSR::Math::Mat4f::operator+= (const float _Scale)
 {
 	Matrix[0][0] += _Scale; Matrix[0][1] += _Scale; Matrix[0][2] += _Scale; Matrix[0][3] += _Scale;
 	Matrix[1][0] += _Scale; Matrix[1][1] += _Scale; Matrix[1][2] += _Scale; Matrix[1][3] += _Scale;
@@ -1102,7 +1102,7 @@ const Math::Mat4f& Math::Mat4f::operator+= (const float _Scale)
 	return *this;
 }
 
-const Math::Mat4f Math::Mat4f::operator- (const Mat4f& _Other) const
+const BSR::Math::Mat4f BSR::Math::Mat4f::operator- (const Mat4f& _Other) const
 {
 	Mat4f _Matrix(*this);
 
@@ -1114,7 +1114,7 @@ const Math::Mat4f Math::Mat4f::operator- (const Mat4f& _Other) const
 	return _Matrix;
 }
 
-const Math::Mat4f& Math::Mat4f::operator-= (const Mat4f& _Other)
+const BSR::Math::Mat4f& BSR::Math::Mat4f::operator-= (const Mat4f& _Other)
 {
 	Matrix[0][0] -= _Other[0][0]; Matrix[0][1] -= _Other[0][1]; Matrix[0][2] -= _Other[0][2]; Matrix[0][3] -= _Other[0][3];
 	Matrix[1][0] -= _Other[1][0]; Matrix[1][1] -= _Other[1][1]; Matrix[1][2] -= _Other[1][2]; Matrix[1][3] -= _Other[1][3];
@@ -1124,7 +1124,7 @@ const Math::Mat4f& Math::Mat4f::operator-= (const Mat4f& _Other)
 	return *this;
 }
 
-const Math::Mat4f Math::Mat4f::operator- (const float _Scale) const
+const BSR::Math::Mat4f BSR::Math::Mat4f::operator- (const float _Scale) const
 {
 	Mat4f _Matrix(*this);
 
@@ -1136,7 +1136,7 @@ const Math::Mat4f Math::Mat4f::operator- (const float _Scale) const
 	return _Matrix;
 }
 
-const Math::Mat4f& Math::Mat4f::operator-= (const float _Scale)
+const BSR::Math::Mat4f& BSR::Math::Mat4f::operator-= (const float _Scale)
 {
 	Matrix[0][0] -= _Scale; Matrix[0][1] -= _Scale; Matrix[0][2] -= _Scale; Matrix[0][3] -= _Scale;
 	Matrix[1][0] -= _Scale; Matrix[1][1] -= _Scale; Matrix[1][2] -= _Scale; Matrix[1][3] -= _Scale;
@@ -1146,7 +1146,7 @@ const Math::Mat4f& Math::Mat4f::operator-= (const float _Scale)
 	return *this;
 }
 
-const Math::Mat4f Math::Mat4f::operator* (const Mat4f& _Other) const
+const BSR::Math::Mat4f BSR::Math::Mat4f::operator* (const Mat4f& _Other) const
 {
 	Mat4f _Matrix;
 
@@ -1173,7 +1173,7 @@ const Math::Mat4f Math::Mat4f::operator* (const Mat4f& _Other) const
 	return _Matrix;
 }
 
-const Math::Mat4f& Math::Mat4f::operator*= (const Mat4f& _Other)
+const BSR::Math::Mat4f& BSR::Math::Mat4f::operator*= (const Mat4f& _Other)
 {
 	Mat4f _Matrix;
 
@@ -1202,7 +1202,7 @@ const Math::Mat4f& Math::Mat4f::operator*= (const Mat4f& _Other)
 	return *this;
 }
 
-const Math::Mat4f Math::Mat4f::operator* (const float _Scale) const
+const BSR::Math::Mat4f BSR::Math::Mat4f::operator* (const float _Scale) const
 {
 	Mat4f _Matrix(*this);
 
@@ -1214,7 +1214,7 @@ const Math::Mat4f Math::Mat4f::operator* (const float _Scale) const
 	return _Matrix;
 }
 
-const Math::Mat4f& Math::Mat4f::operator*= (const float _Scale)
+const BSR::Math::Mat4f& BSR::Math::Mat4f::operator*= (const float _Scale)
 {
 	Matrix[0][0] *= _Scale; Matrix[0][1] *= _Scale; Matrix[0][2] *= _Scale; Matrix[0][3] *= _Scale;
 	Matrix[1][0] *= _Scale; Matrix[1][1] *= _Scale; Matrix[1][2] *= _Scale; Matrix[1][3] *= _Scale;
@@ -1224,7 +1224,7 @@ const Math::Mat4f& Math::Mat4f::operator*= (const float _Scale)
 	return *this;
 }
 
-const Math::Mat4f Math::Mat4f::operator/ (const float _Scale) const
+const BSR::Math::Mat4f BSR::Math::Mat4f::operator/ (const float _Scale) const
 {
 	Mat4f _Matrix(*this);
 
@@ -1236,7 +1236,7 @@ const Math::Mat4f Math::Mat4f::operator/ (const float _Scale) const
 	return _Matrix;
 }
 
-const Math::Mat4f& Math::Mat4f::operator/= (const float _Scale)
+const BSR::Math::Mat4f& BSR::Math::Mat4f::operator/= (const float _Scale)
 {
 	Matrix[0][0] /= _Scale; Matrix[0][1] /= _Scale; Matrix[0][2] /= _Scale; Matrix[0][3] /= _Scale;
 	Matrix[1][0] /= _Scale; Matrix[1][1] /= _Scale; Matrix[1][2] /= _Scale; Matrix[1][3] /= _Scale;
@@ -1246,7 +1246,7 @@ const Math::Mat4f& Math::Mat4f::operator/= (const float _Scale)
 	return *this;
 }
 
-const bool Math::Mat4f::operator== (const Mat4f& _Other) const
+const bool BSR::Math::Mat4f::operator== (const Mat4f& _Other) const
 {
 	return
 		Matrix[0][0] == _Other[0][0] && Matrix[0][1] == _Other[0][1] && Matrix[0][2] == _Other[0][2] && Matrix[0][3] == _Other[0][3] &&
@@ -1255,7 +1255,7 @@ const bool Math::Mat4f::operator== (const Mat4f& _Other) const
 		Matrix[3][0] == _Other[3][0] && Matrix[3][1] == _Other[3][1] && Matrix[3][2] == _Other[3][2] && Matrix[3][3] == _Other[3][3];
 }
 
-const bool Math::Mat4f::operator!= (const Mat4f& _Other) const
+const bool BSR::Math::Mat4f::operator!= (const Mat4f& _Other) const
 {
 	return
 		Matrix[0][0] != _Other[0][0] || Matrix[0][1] != _Other[0][1] || Matrix[0][2] != _Other[0][2] || Matrix[0][3] != _Other[0][3] ||
@@ -1264,17 +1264,17 @@ const bool Math::Mat4f::operator!= (const Mat4f& _Other) const
 		Matrix[3][0] != _Other[3][0] || Matrix[3][1] != _Other[3][1] || Matrix[3][2] != _Other[3][2] || Matrix[3][3] != _Other[3][3];
 }
 
-float* Math::Mat4f::operator[] (const size_t _Index)
+float* BSR::Math::Mat4f::operator[] (const size_t _Index)
 {
 	return Matrix[_Index].Data();
 }
 
-const float* Math::Mat4f::operator[] (const size_t _Index) const
+const float* BSR::Math::Mat4f::operator[] (const size_t _Index) const
 {
 	return Matrix[_Index].Data();
 }
 
-const Math::Mat4f& Math::Mat4f::operator= (const Mat4f& _Other)
+const BSR::Math::Mat4f& BSR::Math::Mat4f::operator= (const Mat4f& _Other)
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = _Other[0][2]; Matrix[0][3] = _Other[0][3];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2]; Matrix[1][3] = _Other[1][3];
@@ -1284,7 +1284,7 @@ const Math::Mat4f& Math::Mat4f::operator= (const Mat4f& _Other)
 	return *this;
 }
 
-const Math::Mat4f& Math::Mat4f::operator= (Mat4f&& _Other) noexcept
+const BSR::Math::Mat4f& BSR::Math::Mat4f::operator= (Mat4f&& _Other) noexcept
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = _Other[0][2]; Matrix[0][3] = _Other[0][3];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2]; Matrix[1][3] = _Other[1][3];
@@ -1299,7 +1299,7 @@ const Math::Mat4f& Math::Mat4f::operator= (Mat4f&& _Other) noexcept
 	return *this;
 }
 
-const Math::Mat4f Math::Mat4f::GetScale(const float _x, const float _y, const float _z, const float _w)
+const BSR::Math::Mat4f BSR::Math::Mat4f::GetScale(const float _x, const float _y, const float _z, const float _w)
 {
 	Mat4f _Matrix;
 
@@ -1311,7 +1311,7 @@ const Math::Mat4f Math::Mat4f::GetScale(const float _x, const float _y, const fl
 	return _Matrix;
 }
 
-const Math::Mat4f Math::Mat4f::GetFill(const float _Value)
+const BSR::Math::Mat4f BSR::Math::Mat4f::GetFill(const float _Value)
 {
 	Mat4f _Matrix;
 
@@ -1323,7 +1323,7 @@ const Math::Mat4f Math::Mat4f::GetFill(const float _Value)
 	return _Matrix;
 }
 
-const Math::Mat4f Math::Mat4f::GetShear(const float _Value, const size_t _ShearedAxis, const size_t _ShearByAxis)
+const BSR::Math::Mat4f BSR::Math::Mat4f::GetShear(const float _Value, const size_t _ShearedAxis, const size_t _ShearByAxis)
 {
 	Mat4f _Matrix;
 
@@ -1332,7 +1332,7 @@ const Math::Mat4f Math::Mat4f::GetShear(const float _Value, const size_t _Sheare
 	return _Matrix;
 }
 
-const Math::Mat4f Math::Mat4f::GetRotation(const float _Angle, const Vec3f& _RotationAxis)
+const BSR::Math::Mat4f BSR::Math::Mat4f::GetRotation(const float _Angle, const Vec3f& _RotationAxis)
 {
 	Mat4f _Matrix;
 
@@ -1354,7 +1354,7 @@ const Math::Mat4f Math::Mat4f::GetRotation(const float _Angle, const Vec3f& _Rot
 	return _Matrix;
 }
 
-const Math::Mat4f Math::Mat4f::GetTranslation(const Vec3f& _Coords)
+const BSR::Math::Mat4f BSR::Math::Mat4f::GetTranslation(const Vec3f& _Coords)
 {
 	Mat4f _Matrix;
 
@@ -1365,7 +1365,7 @@ const Math::Mat4f Math::Mat4f::GetTranslation(const Vec3f& _Coords)
 	return _Matrix;
 }
 
-const Math::Mat4f Math::Mat4f::GetOrtho(const float _Left, const float _Right, const float _Bottom, const float _Top, const float _Front, const float _Back)
+const BSR::Math::Mat4f BSR::Math::Mat4f::GetOrtho(const float _Left, const float _Right, const float _Bottom, const float _Top, const float _Front, const float _Back)
 {
 	Mat4f _Matrix;
 
@@ -1380,7 +1380,7 @@ const Math::Mat4f Math::Mat4f::GetOrtho(const float _Left, const float _Right, c
 	return _Matrix;
 }
 
-const Math::Mat4f Math::Mat4f::GetPerspective(const float _Fov, const float _AspectRatio, const float _ZNear, const float _ZFar)
+const BSR::Math::Mat4f BSR::Math::Mat4f::GetPerspective(const float _Fov, const float _AspectRatio, const float _ZNear, const float _ZFar)
 {
 	Mat4f _Matrix;
 

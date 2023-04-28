@@ -1,10 +1,10 @@
-#ifndef Templates_hpp
+#ifndef BSR_Templates_hpp
 
-#define Templates_hpp
+#define BSR_Templates_hpp
 
 
 
-#include "Main.hpp"
+#include "BSR.hpp"
 
 
 

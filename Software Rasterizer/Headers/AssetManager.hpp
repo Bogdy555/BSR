@@ -1,52 +1,57 @@
-#ifndef AssetManager_hpp
+#ifndef BSR_AssetManager_hpp
 
-#define AssetManager_hpp
-
-
-
-#include "Main.hpp"
+#define BSR_AssetManager_hpp
 
 
 
-struct Asset
-{
-	void* Data = nullptr;
-	const wchar_t* Name = nullptr;
-};
+#include "BSR.hpp"
 
-class AssetManager
+
+
+namespace BSR
 {
 
-public:
+	struct Asset
+	{
+		void* Data = nullptr;
+		const wchar_t* Name = nullptr;
+	};
 
-	AssetManager();
-	AssetManager(const AssetManager& _Other) = delete;
-	AssetManager(AssetManager&& _Other) noexcept;
-	~AssetManager();
+	class AssetManager
+	{
 
-	bool AddAsset(void* _Data, const wchar_t* _Name);
+	public:
 
-	void RemoveAsset(const wchar_t* _Name);
-	void RemoveAsset(const size_t _Index);
-	void RemoveAllAssets();
+		AssetManager();
+		AssetManager(const AssetManager& _Other) = delete;
+		AssetManager(AssetManager&& _Other) noexcept;
+		~AssetManager();
 
-	const size_t GetAssetsCount() const;
-	const size_t GetAssetIndex(const wchar_t* _Name) const;
+		bool AddAsset(void* _Data, const wchar_t* _Name);
 
-	void* GetAssetData(const wchar_t* _Name);
-	const void* GetAssetData(const wchar_t* _Name) const;
+		void RemoveAsset(const wchar_t* _Name);
+		void RemoveAsset(const size_t _Index);
+		void RemoveAllAssets();
 
-	Asset& operator[] (const size_t _Index);
-	const Asset& operator[] (const size_t _Index) const;
+		const size_t GetAssetsCount() const;
+		const size_t GetAssetIndex(const wchar_t* _Name) const;
 
-	void operator= (const AssetManager& _Other) = delete;
-	void operator= (AssetManager&& _Other) noexcept;
+		void* GetAssetData(const wchar_t* _Name);
+		const void* GetAssetData(const wchar_t* _Name) const;
 
-private:
+		Asset& operator[] (const size_t _Index);
+		const Asset& operator[] (const size_t _Index) const;
 
-	std::vector<Asset> Assets;
+		void operator= (const AssetManager& _Other) = delete;
+		void operator= (AssetManager&& _Other) noexcept;
 
-};
+	private:
+
+		std::vector<Asset> Assets;
+
+	};
+
+}
 
 
 

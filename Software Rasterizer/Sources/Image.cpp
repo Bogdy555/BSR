@@ -1,4 +1,4 @@
-#include "..\Headers\Main.hpp"
+#include "..\Headers\BSR.hpp"
 
 
 
@@ -249,7 +249,7 @@ static void PlaceScanLine(float* _Image, uint8_t* _ScanLine, size_t _Width, size
 
 
 
-float* Image::LoadHdr(const wchar_t* _Path, size_t& _Width, size_t& _Height)
+float* BSR::Image::LoadHdr(const wchar_t* _Path, size_t& _Width, size_t& _Height)
 {
 	if (!_Path)
 	{
@@ -615,7 +615,7 @@ float* Image::LoadHdr(const wchar_t* _Path, size_t& _Width, size_t& _Height)
 
 
 
-bool Image::SaveBmp(const wchar_t* _Path, const uint8_t* _Img, const size_t _Width, const size_t _Height)
+bool BSR::Image::SaveBmp(const wchar_t* _Path, const uint8_t* _Img, const size_t _Width, const size_t _Height)
 {
 	if (!_Path || !_Img || !_Width || !_Height)
 	{
@@ -701,7 +701,7 @@ bool Image::SaveBmp(const wchar_t* _Path, const uint8_t* _Img, const size_t _Wid
 
 
 
-uint8_t* Image::LoadBmp(const wchar_t* _Path, size_t& _Width, size_t& _Height)
+uint8_t* BSR::Image::LoadBmp(const wchar_t* _Path, size_t& _Width, size_t& _Height)
 {
 	uint8_t* _Data = nullptr;
 	_Width = 0;

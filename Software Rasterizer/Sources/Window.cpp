@@ -1,32 +1,32 @@
-#include "..\Headers\Main.hpp"
+#include "..\Headers\BSR.hpp"
 
 
 
-Window* Window::LastWnd = nullptr;
+BSR::Window* BSR::Window::LastWnd = nullptr;
 
 
 
-Window::Window() : hWnd(NULL), WndThread(), UserData(nullptr)
+BSR::Window::Window() : hWnd(NULL), WndThread(), UserData(nullptr)
 {
 
 }
 
-Window::Window(Window&& _Other) noexcept : hWnd(_Other.hWnd), WndThread(std::move(_Other.WndThread)), UserData(_Other.UserData)
+BSR::Window::Window(Window&& _Other) noexcept : hWnd(_Other.hWnd), WndThread(std::move(_Other.WndThread)), UserData(_Other.UserData)
 {
 	_Other.hWnd = NULL;
 	_Other.UserData = nullptr;
 }
 
-Window::~Window()
+BSR::Window::~Window()
 {
-	ASSERT_MSG(!CheckOn(), STRING_TYPE("A window was not destroyed!"));
+	BSR_ASSERT_MSG(!CheckOn(), BSR_STRING_TYPE("A window was not destroyed!"));
 }
 
-bool Window::Create(const WindowCreationDescriptor* _Descriptor)
+bool BSR::Window::Create(const WindowCreationDescriptor* _Descriptor)
 {
 	if (hWnd)
 	{
-		DEBUG_BREAK_MSG(STRING_TYPE("Can not create a window before cleaning the old one!"));
+		BSR_DEBUG_BREAK_MSG(BSR_STRING_TYPE("Can not create a window before cleaning the old one!"));
 		return false;
 	}
 
@@ -54,7 +54,7 @@ bool Window::Create(const WindowCreationDescriptor* _Descriptor)
 	return true;
 }
 
-void Window::Destroy()
+void BSR::Window::Destroy()
 {
 	if (!hWnd)
 	{
@@ -65,7 +65,7 @@ void Window::Destroy()
 	WndThread.join();
 }
 
-bool Window::Show(const int _ShowCmd)
+bool BSR::Window::Show(const int _ShowCmd)
 {
 	if (!_ShowCmd)
 	{
@@ -75,7 +75,7 @@ bool Window::Show(const int _ShowCmd)
 	return ShowWindowAsync(hWnd, _ShowCmd) != false;
 }
 
-bool Window::UpdateContent()
+bool BSR::Window::UpdateContent()
 {
 	if (!hWnd)
 	{
@@ -90,27 +90,27 @@ bool Window::UpdateContent()
 	return UpdateWindow(hWnd);
 }
 
-const bool Window::CheckOn() const
+const bool BSR::Window::CheckOn() const
 {
 	return hWnd != NULL;
 }
 
-const HWND Window::GetHandle() const
+const HWND BSR::Window::GetHandle() const
 {
 	return hWnd;
 }
 
-void* Window::GetUserData()
+void* BSR::Window::GetUserData()
 {
 	return UserData;
 }
 
-const void* Window::GetUserData() const
+const void* BSR::Window::GetUserData() const
 {
 	return UserData;
 }
 
-const bool Window::GetClientSize(int32_t& _Width, int32_t& _Height) const
+const bool BSR::Window::GetClientSize(int32_t& _Width, int32_t& _Height) const
 {
 	if (!hWnd)
 	{
@@ -130,7 +130,7 @@ const bool Window::GetClientSize(int32_t& _Width, int32_t& _Height) const
 	return true;
 }
 
-const bool Window::GetWindowSize(int32_t& _Width, int32_t& _Height) const
+const bool BSR::Window::GetWindowSize(int32_t& _Width, int32_t& _Height) const
 {
 	if (!hWnd)
 	{
@@ -150,7 +150,7 @@ const bool Window::GetWindowSize(int32_t& _Width, int32_t& _Height) const
 	return true;
 }
 
-const size_t Window::GetRefreshRate() const
+const size_t BSR::Window::GetRefreshRate() const
 {
 	if (!hWnd)
 	{
@@ -185,14 +185,14 @@ const size_t Window::GetRefreshRate() const
 	return (size_t)(_DevMode.dmDisplayFrequency);
 }
 
-Window::operator const HWND() const
+BSR::Window::operator const HWND() const
 {
 	return hWnd;
 }
 
-void Window::operator= (Window&& _Other) noexcept
+void BSR::Window::operator= (Window&& _Other) noexcept
 {
-	ASSERT_MSG(CheckOn(), STRING_TYPE("A window was not destroyed before assigning another one to it!"));
+	BSR_ASSERT_MSG(CheckOn(), BSR_STRING_TYPE("A window was not destroyed before assigning another one to it!"));
 
 	hWnd = _Other.hWnd;
 	WndThread = std::move(_Other.WndThread);
@@ -202,7 +202,7 @@ void Window::operator= (Window&& _Other) noexcept
 	_Other.UserData = nullptr;
 }
 
-Window* Window::GetWindowPtr(const HWND _hWnd)
+BSR::Window* BSR::Window::GetWindowPtr(const HWND _hWnd)
 {
 	if (!_hWnd)
 	{
@@ -219,7 +219,7 @@ Window* Window::GetWindowPtr(const HWND _hWnd)
 	return _WndPtr;
 }
 
-void Window::WndThreadFunc(bool* _Done, bool* _Fail, Window* _Wnd, const WindowCreationDescriptor* _Descriptor)
+void BSR::Window::WndThreadFunc(bool* _Done, bool* _Fail, Window* _Wnd, const WindowCreationDescriptor* _Descriptor)
 {
 	if (_Descriptor->ThreadInitFnc)
 	{

@@ -1,4 +1,4 @@
-#include "..\Headers\Main.hpp"
+#include "..\Headers\BSR_APP.hpp"
 
 
 
@@ -7,20 +7,20 @@ constexpr size_t Height = 1080;
 
 
 
-const Math::Vec2f SampleEquirectangularMap(const Math::Vec3f& _Dir)
+const BSR::Math::Vec2f SampleEquirectangularMap(const BSR::Math::Vec3f& _Dir)
 {
-	return Math::Vec2f(atan2(_Dir.z, _Dir.x), asin(_Dir.y)) * Math::Vec2f(0.1591f, 0.3183f) + Math::Vec2f(0.5f, 0.5f);
+	return BSR::Math::Vec2f(atan2(_Dir.z, _Dir.x), asin(_Dir.y)) * BSR::Math::Vec2f(0.1591f, 0.3183f) + BSR::Math::Vec2f(0.5f, 0.5f);
 }
 
-const Math::Vec3f ReverseSampleEquirectangularMap(const Math::Vec2f& _UV)
+const BSR::Math::Vec3f ReverseSampleEquirectangularMap(const BSR::Math::Vec2f& _UV)
 {
-	Math::Vec2f _NewUV = (_UV - Math::Vec2f(0.5f, 0.5f)) / Math::Vec2f(0.1591f, 0.3183f);
-	return Math::Vec3f(cosf(_NewUV.x), sinf(_NewUV.y), sinf(_NewUV.x)).Normalized();
+	BSR::Math::Vec2f _NewUV = (_UV - BSR::Math::Vec2f(0.5f, 0.5f)) / BSR::Math::Vec2f(0.1591f, 0.3183f);
+	return BSR::Math::Vec3f(cosf(_NewUV.x), sinf(_NewUV.y), sinf(_NewUV.x)).Normalized();
 }
 
-const Math::Vec3f SampleNormal(const Rasterizer::Material& _Material, const Math::Vec2f& _TextureCoords, const Math::Vec3f& _TrueNormal, const Math::Vec3f& _TrueTangent)
+const BSR::Math::Vec3f SampleNormal(const BSR::Rasterizer::Material& _Material, const BSR::Math::Vec2f& _TextureCoords, const BSR::Math::Vec3f& _TrueNormal, const BSR::Math::Vec3f& _TrueTangent)
 {
-	if (_TrueTangent == Math::Vec3f(0.0f, 0.0f, 0.0f))
+	if (_TrueTangent == BSR::Math::Vec3f(0.0f, 0.0f, 0.0f))
 	{
 		return _TrueNormal.Normalized();
 	}
@@ -30,203 +30,203 @@ const Math::Vec3f SampleNormal(const Rasterizer::Material& _Material, const Math
 		return _TrueNormal.Normalized();
 	}
 
-	Math::Vec3f _N = _TrueNormal.Normalized();
-	Math::Vec3f _T = _TrueTangent.Normalized();
-	_T = (_T - _N * Math::Vec3f::Dot(_N, _T)).Normalized();
-	Math::Vec3f _B = Math::Vec3f::Cross(_N, _T);
+	BSR::Math::Vec3f _N = _TrueNormal.Normalized();
+	BSR::Math::Vec3f _T = _TrueTangent.Normalized();
+	_T = (_T - _N * BSR::Math::Vec3f::Dot(_N, _T)).Normalized();
+	BSR::Math::Vec3f _B = BSR::Math::Vec3f::Cross(_N, _T);
 
-	Math::Mat3f _TBN;
+	BSR::Math::Mat3f _TBN;
 
 	_TBN[0][0] = _T.x; _TBN[0][1] = _B.x; _TBN[0][2] = _N.x;
 	_TBN[1][0] = _T.y; _TBN[1][1] = _B.y; _TBN[1][2] = _N.y;
 	_TBN[2][0] = _T.z; _TBN[2][1] = _B.z; _TBN[2][2] = _N.z;
 
-	Math::Vec3f _NMap = _Material.NormalMap->SampleRGB(_TextureCoords) * _Material.NormalMapMultiplier * 2.0f - 1.0f;
+	BSR::Math::Vec3f _NMap = _Material.NormalMap->SampleRGB(_TextureCoords) * _Material.NormalMapMultiplier * 2.0f - 1.0f;
 
 	return (_TBN * _NMap).Normalized();
 }
 
-const float NormalDistributionFunctionGGX(const Math::Vec3f& _Normal, const Math::Vec3f& _HalfWayVec, const float _Roughness)
+const float NormalDistributionFunctionGGX(const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _HalfWayVec, const float _Roughness)
 {
 	float _AlphaSquared = _Roughness * _Roughness;
 	_AlphaSquared *= _AlphaSquared;
 
-	float _DotNormalHalfWayVecSquare = Math::Max(Math::Vec3f::Dot(_Normal, _HalfWayVec), 0.0f);
+	float _DotNormalHalfWayVecSquare = BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _HalfWayVec), 0.0f);
 	_DotNormalHalfWayVecSquare *= _DotNormalHalfWayVecSquare;
 
 	float _Numerator = _AlphaSquared;
 	float _Denominator = _DotNormalHalfWayVecSquare * (_AlphaSquared - 1.0f) + 1.0f;
-	_Denominator = Math::fPi * _Denominator * _Denominator;
+	_Denominator = BSR::Math::fPi * _Denominator * _Denominator;
 
 	return _Numerator / _Denominator;
 }
 
-const float GeometrySchlickGGX(const Math::Vec3f& _Normal, const Math::Vec3f& _Vec, float _Roughness)
+const float GeometrySchlickGGX(const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Vec, float _Roughness)
 {
 	float _K = _Roughness + 1.0f;
 	_K *= _K / 8.0f;
 
-	float _Numerator = Math::Max(Math::Vec3f::Dot(_Normal, _Vec), 0.0f);
+	float _Numerator = BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _Vec), 0.0f);
 	float _Denominator = _Numerator * (1.0f - _K) + _K;
 
 	return _Numerator / _Denominator;
 }
 
-const float GeometrySmith(const Math::Vec3f& _Normal, const Math::Vec3f& _PositionToCamera, const Math::Vec3f& _PositionToLight, const float _Roughness)
+const float GeometrySmith(const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _PositionToLight, const float _Roughness)
 {
 	return GeometrySchlickGGX(_Normal, _PositionToCamera, _Roughness) * GeometrySchlickGGX(_Normal, _PositionToLight, _Roughness);
 }
 
-const Math::Vec3f FresnelSchlick(const Math::Vec3f& _PositionToCamera, const Math::Vec3f& _HalfWayVec, const Math::Vec3f& _BaseReflectivity)
+const BSR::Math::Vec3f FresnelSchlick(const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _HalfWayVec, const BSR::Math::Vec3f& _BaseReflectivity)
 {
-	return _BaseReflectivity + (Math::Vec3f(1.0f, 1.0f, 1.0f) - _BaseReflectivity) * powf(Math::Clamp(1.0f - Math::Max(Math::Vec3f::Dot(_PositionToCamera, _HalfWayVec), 0.0f), 0.0f, 1.0f), 5.0f);
+	return _BaseReflectivity + (BSR::Math::Vec3f(1.0f, 1.0f, 1.0f) - _BaseReflectivity) * powf(BSR::Math::Clamp(1.0f - BSR::Math::Max(BSR::Math::Vec3f::Dot(_PositionToCamera, _HalfWayVec), 0.0f), 0.0f, 1.0f), 5.0f);
 }
 
-const Math::Vec3f FresnelSchlickRoughness(const Math::Vec3f& _PositionToCamera, const Math::Vec3f& _HalfWayVec, const Math::Vec3f& _BaseReflectivity, const float _Roughness)
+const BSR::Math::Vec3f FresnelSchlickRoughness(const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _HalfWayVec, const BSR::Math::Vec3f& _BaseReflectivity, const float _Roughness)
 {
-	return _BaseReflectivity + (Math::Vec3f::Max(Math::Vec3f(1.0f - _Roughness, 1.0f - _Roughness, 1.0f - _Roughness), _BaseReflectivity) - _BaseReflectivity) * powf(Math::Clamp(1.0f - Math::Max(Math::Vec3f::Dot(_PositionToCamera, _HalfWayVec), 0.0f), 0.0f, 1.0f), 5.0f);
+	return _BaseReflectivity + (BSR::Math::Vec3f::Max(BSR::Math::Vec3f(1.0f - _Roughness, 1.0f - _Roughness, 1.0f - _Roughness), _BaseReflectivity) - _BaseReflectivity) * powf(BSR::Math::Clamp(1.0f - BSR::Math::Max(BSR::Math::Vec3f::Dot(_PositionToCamera, _HalfWayVec), 0.0f), 0.0f, 1.0f), 5.0f);
 }
 
-const Math::Vec3f DirectionalLightCalculation(const Rasterizer::Light& _Light, const Math::Vec3f& _PositionToCamera, const Math::Vec3f& _Position, const Math::Vec3f& _Normal, const Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const Math::Vec3f& _BaseReflectivity)
+const BSR::Math::Vec3f DirectionalLightCalculation(const BSR::Rasterizer::Light& _Light, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _Position, const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const BSR::Math::Vec3f& _BaseReflectivity)
 {
-	Math::Vec3f _PositionToLight = -_Light.Direction;
-	Math::Vec3f _HalfWayVec = (_PositionToCamera + _PositionToLight).Normalized();
-	Math::Vec3f _Radiance = _Light.Color * _Light.Intensity;
+	BSR::Math::Vec3f _PositionToLight = -_Light.Direction;
+	BSR::Math::Vec3f _HalfWayVec = (_PositionToCamera + _PositionToLight).Normalized();
+	BSR::Math::Vec3f _Radiance = _Light.Color * _Light.Intensity;
 
 	float _NormalDistributionFunctionGGX = NormalDistributionFunctionGGX(_Normal, _HalfWayVec, _Roughness);
 	float _GeometrySmith = GeometrySmith(_Normal, _PositionToCamera, _PositionToLight, _Roughness);
-	Math::Vec3f _FresnelSchlick = FresnelSchlick(_PositionToCamera, _HalfWayVec, _BaseReflectivity);
-	Math::Vec3f _kDiffuse = (Math::Vec3f(1.0f, 1.0f, 1.0f) - _FresnelSchlick) * (1.0f - _Metalness);
+	BSR::Math::Vec3f _FresnelSchlick = FresnelSchlick(_PositionToCamera, _HalfWayVec, _BaseReflectivity);
+	BSR::Math::Vec3f _kDiffuse = (BSR::Math::Vec3f(1.0f, 1.0f, 1.0f) - _FresnelSchlick) * (1.0f - _Metalness);
 
-	Math::Vec3f _Diffuse = _kDiffuse * _Albedo / Math::fPi;
-	Math::Vec3f _Specular = _FresnelSchlick * _NormalDistributionFunctionGGX * _GeometrySmith / (4.0f * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f) * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f) + 0.0001f);
+	BSR::Math::Vec3f _Diffuse = _kDiffuse * _Albedo / BSR::Math::fPi;
+	BSR::Math::Vec3f _Specular = _FresnelSchlick * _NormalDistributionFunctionGGX * _GeometrySmith / (4.0f * BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f) * BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f) + 0.0001f);
 
-	return (_Diffuse + _Specular) * _Radiance * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f);
+	return (_Diffuse + _Specular) * _Radiance * BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f);
 }
 
-const Math::Vec3f PointLightCalculation(const Rasterizer::Light& _Light, const Math::Vec3f& _PositionToCamera, const Math::Vec3f& _Position, const Math::Vec3f& _Normal, const Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const Math::Vec3f& _BaseReflectivity)
+const BSR::Math::Vec3f PointLightCalculation(const BSR::Rasterizer::Light& _Light, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _Position, const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const BSR::Math::Vec3f& _BaseReflectivity)
 {
-	Math::Vec3f _PositionToLight = (_Light.Position - _Position).Normalized();
-	Math::Vec3f _HalfWayVec = (_PositionToCamera + _PositionToLight).Normalized();
+	BSR::Math::Vec3f _PositionToLight = (_Light.Position - _Position).Normalized();
+	BSR::Math::Vec3f _HalfWayVec = (_PositionToCamera + _PositionToLight).Normalized();
 	float _Distance = (_Position - _Light.Position).Magnitude();
 	float _Attenuation = 1.0f / (_Distance * _Distance);
-	Math::Vec3f _Radiance = _Light.Color * _Light.Intensity * _Attenuation;
+	BSR::Math::Vec3f _Radiance = _Light.Color * _Light.Intensity * _Attenuation;
 
 	float _NormalDistributionFunctionGGX = NormalDistributionFunctionGGX(_Normal, _HalfWayVec, _Roughness);
 	float _GeometrySmith = GeometrySmith(_Normal, _PositionToCamera, _PositionToLight, _Roughness);
-	Math::Vec3f _FresnelSchlick = FresnelSchlick(_PositionToCamera, _HalfWayVec, _BaseReflectivity);
-	Math::Vec3f _kDiffuse = (Math::Vec3f(1.0f, 1.0f, 1.0f) - _FresnelSchlick) * (1.0f - _Metalness);
+	BSR::Math::Vec3f _FresnelSchlick = FresnelSchlick(_PositionToCamera, _HalfWayVec, _BaseReflectivity);
+	BSR::Math::Vec3f _kDiffuse = (BSR::Math::Vec3f(1.0f, 1.0f, 1.0f) - _FresnelSchlick) * (1.0f - _Metalness);
 
-	Math::Vec3f _Diffuse = _kDiffuse * _Albedo / Math::fPi;
-	Math::Vec3f _Specular = _FresnelSchlick * _NormalDistributionFunctionGGX * _GeometrySmith / (4.0f * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f) * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f) + 0.0001f);
+	BSR::Math::Vec3f _Diffuse = _kDiffuse * _Albedo / BSR::Math::fPi;
+	BSR::Math::Vec3f _Specular = _FresnelSchlick * _NormalDistributionFunctionGGX * _GeometrySmith / (4.0f * BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f) * BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f) + 0.0001f);
 
-	return (_Diffuse + _Specular) * _Radiance * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f);
+	return (_Diffuse + _Specular) * _Radiance * BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f);
 }
 
-const Math::Vec3f SpotLightCalculation(const Rasterizer::Light& _Light, const Math::Vec3f& _PositionToCamera, const Math::Vec3f& _Position, const Math::Vec3f& _Normal, const Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const Math::Vec3f& _BaseReflectivity)
+const BSR::Math::Vec3f SpotLightCalculation(const BSR::Rasterizer::Light& _Light, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _Position, const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const BSR::Math::Vec3f& _BaseReflectivity)
 {
-	Math::Vec3f _PositionToLight = (_Light.Position - _Position).Normalized();
-	Math::Vec3f _HalfWayVec = (_PositionToCamera + _PositionToLight).Normalized();
+	BSR::Math::Vec3f _PositionToLight = (_Light.Position - _Position).Normalized();
+	BSR::Math::Vec3f _HalfWayVec = (_PositionToCamera + _PositionToLight).Normalized();
 	float _Distance = (_Position - _Light.Position).Magnitude();
 	float _Attenuation = 1.0f / (_Distance * _Distance);
-	Math::Vec3f _Radiance = _Light.Color * _Light.Intensity * _Attenuation;
+	BSR::Math::Vec3f _Radiance = _Light.Color * _Light.Intensity * _Attenuation;
 
 	float _NormalDistributionFunctionGGX = NormalDistributionFunctionGGX(_Normal, _HalfWayVec, _Roughness);
 	float _GeometrySmith = GeometrySmith(_Normal, _PositionToCamera, _PositionToLight, _Roughness);
-	Math::Vec3f _FresnelSchlick = FresnelSchlick(_PositionToCamera, _HalfWayVec, _BaseReflectivity);
-	Math::Vec3f _kDiffuse = (Math::Vec3f(1.0f, 1.0f, 1.0f) - _FresnelSchlick) * (1.0f - _Metalness);
+	BSR::Math::Vec3f _FresnelSchlick = FresnelSchlick(_PositionToCamera, _HalfWayVec, _BaseReflectivity);
+	BSR::Math::Vec3f _kDiffuse = (BSR::Math::Vec3f(1.0f, 1.0f, 1.0f) - _FresnelSchlick) * (1.0f - _Metalness);
 
-	Math::Vec3f _Diffuse = _kDiffuse * _Albedo / Math::fPi;
-	Math::Vec3f _Specular = _FresnelSchlick * _NormalDistributionFunctionGGX * _GeometrySmith / (4.0f * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f) * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f) + 0.0001f);
+	BSR::Math::Vec3f _Diffuse = _kDiffuse * _Albedo / BSR::Math::fPi;
+	BSR::Math::Vec3f _Specular = _FresnelSchlick * _NormalDistributionFunctionGGX * _GeometrySmith / (4.0f * BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f) * BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f) + 0.0001f);
 
-	Math::Vec3f _Result = (_Diffuse + _Specular) * _Radiance * Math::Max(Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f);
+	BSR::Math::Vec3f _Result = (_Diffuse + _Specular) * _Radiance * BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f);
 
 	float _CosTheta = cosf(_Light.Theta);
 	float _CosThetaPlusThetaFade = cosf(_Light.Theta + _Light.ThetaFade);
-	float _Cos = Math::Vec3f::Dot(_Light.Direction, -_PositionToLight);
-	float _MixT = Math::Clamp((_Cos - _CosThetaPlusThetaFade) / (_CosTheta - _CosThetaPlusThetaFade), 0.0f, 1.0f);
+	float _Cos = BSR::Math::Vec3f::Dot(_Light.Direction, -_PositionToLight);
+	float _MixT = BSR::Math::Clamp((_Cos - _CosThetaPlusThetaFade) / (_CosTheta - _CosThetaPlusThetaFade), 0.0f, 1.0f);
 
-	return Math::Vec3f::Mix(Math::Vec3f(0.0f, 0.0f, 0.0f), _Result, _MixT);
+	return BSR::Math::Vec3f::Mix(BSR::Math::Vec3f(0.0f, 0.0f, 0.0f), _Result, _MixT);
 }
 
-const Math::Vec3f ImageBasedLightCalculation(const Rasterizer::Texture_Float_RGB& _EnvironmentTexture, const Rasterizer::Texture_Float_RGB& _IradianceTexture, const Rasterizer::Texture_RG& _BRDFLookUpTexture, const Math::Vec3f& _PositionToCamera, const Math::Vec3f& _Position, const Math::Vec3f& _Normal, const Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const Math::Vec3f& _BaseReflectivity)
+const BSR::Math::Vec3f ImageBasedLightCalculation(const BSR::Rasterizer::Texture_Float_RGB& _EnvironmentTexture, const BSR::Rasterizer::Texture_Float_RGB& _IradianceTexture, const BSR::Rasterizer::Texture_RG& _BRDFLookUpTexture, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _Position, const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const BSR::Math::Vec3f& _BaseReflectivity)
 {
-	Math::Vec3f _FresnelSchlickRoughness = FresnelSchlickRoughness(_Normal, _PositionToCamera, _BaseReflectivity, _Roughness);
-	Math::Vec3f _kDiffuse = (Math::Vec3f(1.0f, 1.0f, 1.0f) - _FresnelSchlickRoughness) * (1.0f - _Metalness);
+	BSR::Math::Vec3f _FresnelSchlickRoughness = FresnelSchlickRoughness(_Normal, _PositionToCamera, _BaseReflectivity, _Roughness);
+	BSR::Math::Vec3f _kDiffuse = (BSR::Math::Vec3f(1.0f, 1.0f, 1.0f) - _FresnelSchlickRoughness) * (1.0f - _Metalness);
 
-	Math::Vec3f _Iradiance = _IradianceTexture.SampleRGB(SampleEquirectangularMap(_Normal));
-	Math::Vec3f _Environment = _EnvironmentTexture.SampleRGB(SampleEquirectangularMap(Math::Vec3f::Reflect(-_PositionToCamera, _Normal)));
-	_Environment = Math::Vec3f::Mix(_Environment, _Iradiance, _Roughness);
-	Math::Vec2f _BRDFLookUp = _BRDFLookUpTexture.SampleRG(Math::Vec2f(Math::Max(Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f), _Roughness));
+	BSR::Math::Vec3f _Iradiance = _IradianceTexture.SampleRGB(SampleEquirectangularMap(_Normal));
+	BSR::Math::Vec3f _Environment = _EnvironmentTexture.SampleRGB(SampleEquirectangularMap(BSR::Math::Vec3f::Reflect(-_PositionToCamera, _Normal)));
+	_Environment = BSR::Math::Vec3f::Mix(_Environment, _Iradiance, _Roughness);
+	BSR::Math::Vec2f _BRDFLookUp = _BRDFLookUpTexture.SampleRG(BSR::Math::Vec2f(BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f), _Roughness));
 
-	Math::Vec3f _Diffuse = _kDiffuse * _Iradiance * _Albedo;
-	Math::Vec3f _Specular = _Environment * (_FresnelSchlickRoughness * _BRDFLookUp.x + _BRDFLookUp.y);
+	BSR::Math::Vec3f _Diffuse = _kDiffuse * _Iradiance * _Albedo;
+	BSR::Math::Vec3f _Specular = _Environment * (_FresnelSchlickRoughness * _BRDFLookUp.x + _BRDFLookUp.y);
 
 	return (_Diffuse + _Specular) * _AmbientOcclusion;
 }
 
-const Math::Vec3f LightCalculation(const Rasterizer::Light& _Light, const Math::Vec3f& _PositionToCamera, const Math::Vec3f& _Position, const Math::Vec3f& _Normal, const Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const Math::Vec3f& _BaseReflectivity)
+const BSR::Math::Vec3f LightCalculation(const BSR::Rasterizer::Light& _Light, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _Position, const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const BSR::Math::Vec3f& _BaseReflectivity)
 {
 	switch (_Light.Type)
 	{
-	case Rasterizer::_DirectionalLight:
+	case BSR::Rasterizer::_DirectionalLight:
 	{
 		return DirectionalLightCalculation(_Light, _PositionToCamera, _Position, _Normal, _Albedo, _Metalness, _Roughness, _AmbientOcclusion, _BaseReflectivity);
 	}
-	case Rasterizer::_PointLight:
+	case BSR::Rasterizer::_PointLight:
 	{
 		return PointLightCalculation(_Light, _PositionToCamera, _Position, _Normal, _Albedo, _Metalness, _Roughness, _AmbientOcclusion, _BaseReflectivity);
 	}
-	case Rasterizer::_SpotLight:
+	case BSR::Rasterizer::_SpotLight:
 	{
 		return SpotLightCalculation(_Light, _PositionToCamera, _Position, _Normal, _Albedo, _Metalness, _Roughness, _AmbientOcclusion, _BaseReflectivity);
 	}
 	}
 
-	return Math::Vec3f(0.0f, 0.0f, 0.0f);
+	return BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
 }
 
 
 
-AssetManager SceneAssets;
+BSR::AssetManager SceneAssets;
 
 void CleanUpModel(const wchar_t* _AssetName)
 {
-	delete (Rasterizer::Model*)(SceneAssets.GetAssetData(_AssetName));
+	delete (BSR::Rasterizer::Model*)(SceneAssets.GetAssetData(_AssetName));
 	SceneAssets.RemoveAsset(_AssetName);
 }
 
 void CleanUpTexture_Float_RGB(const wchar_t* _AssetName)
 {
-	ASSERT(dynamic_cast<Rasterizer::Texture_Float_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(_AssetName))) || SceneAssets.GetAssetData(_AssetName) == nullptr);
-	delete (Rasterizer::Texture_Float_RGB*)(SceneAssets.GetAssetData(_AssetName));
+	BSR_ASSERT(dynamic_cast<BSR::Rasterizer::Texture_Float_RGB*>((BSR::Rasterizer::Texture*)(SceneAssets.GetAssetData(_AssetName))) || SceneAssets.GetAssetData(_AssetName) == nullptr);
+	delete (BSR::Rasterizer::Texture_Float_RGB*)(SceneAssets.GetAssetData(_AssetName));
 	SceneAssets.RemoveAsset(_AssetName);
 }
 
 void CleanUpTexture_RGB(const wchar_t* _AssetName)
 {
-	ASSERT(dynamic_cast<Rasterizer::Texture_RGB*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(_AssetName))) || SceneAssets.GetAssetData(_AssetName) == nullptr);
-	delete (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(_AssetName));
+	BSR_ASSERT(dynamic_cast<BSR::Rasterizer::Texture_RGB*>((BSR::Rasterizer::Texture*)(SceneAssets.GetAssetData(_AssetName))) || SceneAssets.GetAssetData(_AssetName) == nullptr);
+	delete (BSR::Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(_AssetName));
 	SceneAssets.RemoveAsset(_AssetName);
 }
 
 void CleanUpTexture_R(const wchar_t* _AssetName)
 {
-	ASSERT(dynamic_cast<Rasterizer::Texture_R*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(_AssetName))) || SceneAssets.GetAssetData(_AssetName) == nullptr);
-	delete (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(_AssetName));
+	BSR_ASSERT(dynamic_cast<BSR::Rasterizer::Texture_R*>((BSR::Rasterizer::Texture*)(SceneAssets.GetAssetData(_AssetName))) || SceneAssets.GetAssetData(_AssetName) == nullptr);
+	delete (BSR::Rasterizer::Texture_R*)(SceneAssets.GetAssetData(_AssetName));
 	SceneAssets.RemoveAsset(_AssetName);
 }
 
 void CleanUpMaterial(const wchar_t* _AssetName)
 {
-	delete (Rasterizer::Material*)(SceneAssets.GetAssetData(_AssetName));
+	delete (BSR::Rasterizer::Material*)(SceneAssets.GetAssetData(_AssetName));
 	SceneAssets.RemoveAsset(_AssetName);
 }
 
 void CleanUpTexture_RG(const wchar_t* _AssetName)
 {
-	ASSERT(dynamic_cast<Rasterizer::Texture_RG*>((Rasterizer::Texture*)(SceneAssets.GetAssetData(_AssetName))) || SceneAssets.GetAssetData(_AssetName) == nullptr);
-	delete (Rasterizer::Texture_RG*)(SceneAssets.GetAssetData(_AssetName));
+	BSR_ASSERT(dynamic_cast<BSR::Rasterizer::Texture_RG*>((BSR::Rasterizer::Texture*)(SceneAssets.GetAssetData(_AssetName))) || SceneAssets.GetAssetData(_AssetName) == nullptr);
+	delete (BSR::Rasterizer::Texture_RG*)(SceneAssets.GetAssetData(_AssetName));
 	SceneAssets.RemoveAsset(_AssetName);
 }
 
@@ -278,12 +278,12 @@ void CleanUpAssets()
 
 	CleanUpTexture_RG(L"BRDF lookup");
 
-	ASSERT(SceneAssets.GetAssetsCount() == 0);
+	BSR_ASSERT(SceneAssets.GetAssetsCount() == 0);
 }
 
 bool LoadModel(const wchar_t* _FilePath, const wchar_t* _AssetName)
 {
-	Rasterizer::Model* _Model = new Rasterizer::Model;
+	BSR::Rasterizer::Model* _Model = new BSR::Rasterizer::Model;
 
 	if (!_Model)
 	{
@@ -310,9 +310,9 @@ bool LoadModel(const wchar_t* _FilePath, const wchar_t* _AssetName)
 
 bool LoadTexture_Float_RGB(const wchar_t* _FilePath, const wchar_t* _AssetName)
 {
-	Image::ImageFloat _Image;
+	BSR::Image::ImageFloat _Image;
 
-	_Image.Data = Image::LoadHdr(_FilePath, _Image.Width, _Image.Height);
+	_Image.Data = BSR::Image::LoadHdr(_FilePath, _Image.Width, _Image.Height);
 
 	if (!_Image.Data)
 	{
@@ -320,7 +320,7 @@ bool LoadTexture_Float_RGB(const wchar_t* _FilePath, const wchar_t* _AssetName)
 		return false;
 	}
 
-	Rasterizer::Texture_Float_RGB* _Texture = new Rasterizer::Texture_Float_RGB;
+	BSR::Rasterizer::Texture_Float_RGB* _Texture = new BSR::Rasterizer::Texture_Float_RGB;
 
 	if (!_Texture)
 	{
@@ -329,7 +329,7 @@ bool LoadTexture_Float_RGB(const wchar_t* _FilePath, const wchar_t* _AssetName)
 		return false;
 	}
 
-	_Texture->SetWrapType(Rasterizer::_WrapClamp);
+	_Texture->SetWrapType(BSR::Rasterizer::_WrapClamp);
 
 	if (!_Texture->AddMip(_Image))
 	{
@@ -354,9 +354,9 @@ bool LoadTexture_Float_RGB(const wchar_t* _FilePath, const wchar_t* _AssetName)
 
 bool LoadTexture_RGB(const wchar_t* _FilePath, const wchar_t* _AssetName)
 {
-	Image::Image _Image;
+	BSR::Image::Image _Image;
 
-	_Image.Data = Image::LoadBmp(_FilePath, _Image.Width, _Image.Height);
+	_Image.Data = BSR::Image::LoadBmp(_FilePath, _Image.Width, _Image.Height);
 
 	if (!_Image.Data)
 	{
@@ -364,7 +364,7 @@ bool LoadTexture_RGB(const wchar_t* _FilePath, const wchar_t* _AssetName)
 		return false;
 	}
 
-	Rasterizer::Texture_RGB* _Texture = new Rasterizer::Texture_RGB;
+	BSR::Rasterizer::Texture_RGB* _Texture = new BSR::Rasterizer::Texture_RGB;
 
 	if (!_Texture)
 	{
@@ -396,9 +396,9 @@ bool LoadTexture_RGB(const wchar_t* _FilePath, const wchar_t* _AssetName)
 
 bool LoadTexture_R(const wchar_t* _FilePath, const wchar_t* _AssetName)
 {
-	Image::Image _Image;
+	BSR::Image::Image _Image;
 
-	_Image.Data = Image::LoadBmp(_FilePath, _Image.Width, _Image.Height);
+	_Image.Data = BSR::Image::LoadBmp(_FilePath, _Image.Width, _Image.Height);
 
 	if (!_Image.Data)
 	{
@@ -406,7 +406,7 @@ bool LoadTexture_R(const wchar_t* _FilePath, const wchar_t* _AssetName)
 		return false;
 	}
 
-	Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
+	BSR::Rasterizer::Texture_R* _Texture = new BSR::Rasterizer::Texture_R;
 
 	if (!_Texture)
 	{
@@ -438,9 +438,9 @@ bool LoadTexture_R(const wchar_t* _FilePath, const wchar_t* _AssetName)
 
 bool LoadTexture_RG(const wchar_t* _FilePath, const wchar_t* _AssetName)
 {
-	Image::Image _Image;
+	BSR::Image::Image _Image;
 
-	_Image.Data = Image::LoadBmp(_FilePath, _Image.Width, _Image.Height);
+	_Image.Data = BSR::Image::LoadBmp(_FilePath, _Image.Width, _Image.Height);
 
 	if (!_Image.Data)
 	{
@@ -448,7 +448,7 @@ bool LoadTexture_RG(const wchar_t* _FilePath, const wchar_t* _AssetName)
 		return false;
 	}
 
-	Rasterizer::Texture_RG* _Texture = new Rasterizer::Texture_RG;
+	BSR::Rasterizer::Texture_RG* _Texture = new BSR::Rasterizer::Texture_RG;
 
 	if (!_Texture)
 	{
@@ -457,7 +457,7 @@ bool LoadTexture_RG(const wchar_t* _FilePath, const wchar_t* _AssetName)
 		return false;
 	}
 
-	_Texture->SetWrapType(Rasterizer::_WrapClamp);
+	_Texture->SetWrapType(BSR::Rasterizer::_WrapClamp);
 
 	if (!_Texture->AddMip(_Image))
 	{
@@ -482,7 +482,7 @@ bool LoadTexture_RG(const wchar_t* _FilePath, const wchar_t* _AssetName)
 
 bool GenerateMaterialAsset(const wchar_t* _AssetName, const wchar_t* _Albedo, const wchar_t* _Metalness, const wchar_t* _Roughness, const wchar_t* _AmbientOcclusion, const wchar_t* _NormalMap)
 {
-	Rasterizer::Material* _Material = new Rasterizer::Material;
+	BSR::Rasterizer::Material* _Material = new BSR::Rasterizer::Material;
 
 	if (!_Material)
 	{
@@ -490,11 +490,11 @@ bool GenerateMaterialAsset(const wchar_t* _AssetName, const wchar_t* _Albedo, co
 		return false;
 	}
 
-	_Material->Albedo = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(_Albedo));
-	_Material->Metalness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(_Metalness));
-	_Material->Roughness = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(_Roughness));
-	_Material->AmbientOcclusion = (Rasterizer::Texture_R*)(SceneAssets.GetAssetData(_AmbientOcclusion));
-	_Material->NormalMap = (Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(_NormalMap));
+	_Material->Albedo = (BSR::Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(_Albedo));
+	_Material->Metalness = (BSR::Rasterizer::Texture_R*)(SceneAssets.GetAssetData(_Metalness));
+	_Material->Roughness = (BSR::Rasterizer::Texture_R*)(SceneAssets.GetAssetData(_Roughness));
+	_Material->AmbientOcclusion = (BSR::Rasterizer::Texture_R*)(SceneAssets.GetAssetData(_AmbientOcclusion));
+	_Material->NormalMap = (BSR::Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(_NormalMap));
 
 	if (!SceneAssets.AddAsset(_Material, _AssetName))
 	{
@@ -641,13 +641,13 @@ bool LoadAssets()
 	{
 		uint32_t _White = 0xFFFFFFFF;
 
-		Image::Image _Image;
+		BSR::Image::Image _Image;
 
 		_Image.Width = 1;
 		_Image.Height = 1;
 		_Image.Data = (uint8_t*)(&_White);
 
-		Rasterizer::Texture_R* _Texture = new Rasterizer::Texture_R;
+		BSR::Rasterizer::Texture_R* _Texture = new BSR::Rasterizer::Texture_R;
 
 		if (!_Texture)
 		{
@@ -722,27 +722,27 @@ bool LoadAssets()
 
 struct FrameBuffer
 {
-	Image::Image* ColorBuffer = nullptr;
-	Image::ImageFloat DepthBuffer;
+	BSR::Image::Image* ColorBuffer = nullptr;
+	BSR::Image::ImageFloat DepthBuffer;
 };
 
 
 
 struct CubeMapUniforms
 {
-	Math::Mat4f Mvp;
-	const Rasterizer::Texture_Float_RGB* EnvironmentTexture = nullptr;
+	BSR::Math::Mat4f Mvp;
+	const BSR::Rasterizer::Texture_Float_RGB* EnvironmentTexture = nullptr;
 	float Exposure = 1.0f;
 };
 
 struct CubeMapLerpers
 {
-	Math::Vec3f Position;
+	BSR::Math::Vec3f Position;
 };
 
-const Math::Vec4f CubeMapVertexShader(const void* _Vertex, const void* _Uniforms, float* _OutLerpers)
+const BSR::Math::Vec4f CubeMapVertexShader(const void* _Vertex, const void* _Uniforms, float* _OutLerpers)
 {
-	const Rasterizer::VertexData* _VertexData = (const Rasterizer::VertexData*)(_Vertex);
+	const BSR::Rasterizer::VertexData* _VertexData = (const BSR::Rasterizer::VertexData*)(_Vertex);
 
 	const CubeMapUniforms* _CubeMapUniforms = (const CubeMapUniforms*)(_Uniforms);
 
@@ -750,10 +750,10 @@ const Math::Vec4f CubeMapVertexShader(const void* _Vertex, const void* _Uniforms
 
 	_Lerpers->Position = _VertexData->Position;
 
-	return _CubeMapUniforms->Mvp * Math::Vec4f(_VertexData->Position, 1.0f);
+	return _CubeMapUniforms->Mvp * BSR::Math::Vec4f(_VertexData->Position, 1.0f);
 }
 
-void CubeMapFragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType)
+void CubeMapFragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const BSR::Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType)
 {
 	const CubeMapLerpers* _CubeMapLerpers = (const CubeMapLerpers*)(_Lerpers);
 
@@ -763,11 +763,11 @@ void CubeMapFragmentShader(const size_t _X, const size_t _Y, const size_t _ViewP
 
 	_TrueFrameBuffer->DepthBuffer.Data[_X + _Y * _TrueFrameBuffer->DepthBuffer.Width] = 1.0f;
 
-	Math::Vec3f _Color = _CubeMapUniforms->EnvironmentTexture->SampleRGB(SampleEquirectangularMap(_CubeMapLerpers->Position.Normalized()));
+	BSR::Math::Vec3f _Color = _CubeMapUniforms->EnvironmentTexture->SampleRGB(SampleEquirectangularMap(_CubeMapLerpers->Position.Normalized()));
 
-	_Color = Math::Vec3f(1.0f, 1.0f, 1.0f) - Math::Vec3f::Exp(-_Color * _CubeMapUniforms->Exposure);
+	_Color = BSR::Math::Vec3f(1.0f, 1.0f, 1.0f) - BSR::Math::Vec3f::Exp(-_Color * _CubeMapUniforms->Exposure);
 
-	_Color = Math::Vec3f::Pow(_Color, Math::Vec3f(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f));
+	_Color = BSR::Math::Vec3f::Pow(_Color, BSR::Math::Vec3f(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f));
 
 	_TrueFrameBuffer->ColorBuffer->Data[(_X + _Y * _TrueFrameBuffer->ColorBuffer->Width) * 4 + 0] = (uint8_t)(_Color.x * 255.0f);
 	_TrueFrameBuffer->ColorBuffer->Data[(_X + _Y * _TrueFrameBuffer->ColorBuffer->Width) * 4 + 1] = (uint8_t)(_Color.y * 255.0f);
@@ -781,51 +781,51 @@ struct PBRUniforms
 {
 	float Exposure = 1.0f;
 
-	Math::Mat4f Mvp;
-	Math::Mat4f Model;
-	Math::Mat4f View;
-	Math::Mat4f Projection;
-	Math::Mat4f ModelInversedTransposed;
+	BSR::Math::Mat4f Mvp;
+	BSR::Math::Mat4f Model;
+	BSR::Math::Mat4f View;
+	BSR::Math::Mat4f Projection;
+	BSR::Math::Mat4f ModelInversedTransposed;
 
-	Rasterizer::Camera Camera;
-	Math::Vec3f CameraForwardVector;
+	BSR::Rasterizer::Camera Camera;
+	BSR::Math::Vec3f CameraForwardVector;
 
-	Rasterizer::Transform Transform;
+	BSR::Rasterizer::Transform Transform;
 
-	Rasterizer::Material Material;
+	BSR::Rasterizer::Material Material;
 
-	const Rasterizer::Texture_Float_RGB* Environment = nullptr;
-	const Rasterizer::Texture_Float_RGB* Iradiance = nullptr;
-	const Rasterizer::Texture_RG* BRDFLookUp = nullptr;
+	const BSR::Rasterizer::Texture_Float_RGB* Environment = nullptr;
+	const BSR::Rasterizer::Texture_Float_RGB* Iradiance = nullptr;
+	const BSR::Rasterizer::Texture_RG* BRDFLookUp = nullptr;
 
 	//Lights vector
 };
 
 struct PBRLerpers
 {
-	Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
-	Math::Vec3f Normal = Math::Vec3f(0.0f, 0.0f, 1.0f);
-	Math::Vec3f Tangent = Math::Vec3f(1.0f, 0.0f, 0.0f);
-	Math::Vec2f TextureCoords = Math::Vec2f(0.0f, 0.0f);
+	BSR::Math::Vec3f Position = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
+	BSR::Math::Vec3f Normal = BSR::Math::Vec3f(0.0f, 0.0f, 1.0f);
+	BSR::Math::Vec3f Tangent = BSR::Math::Vec3f(1.0f, 0.0f, 0.0f);
+	BSR::Math::Vec2f TextureCoords = BSR::Math::Vec2f(0.0f, 0.0f);
 };
 
-const Math::Vec4f PBRVertexShader(const void* _Vertex, const void* _Uniforms, float* _OutLerpers)
+const BSR::Math::Vec4f PBRVertexShader(const void* _Vertex, const void* _Uniforms, float* _OutLerpers)
 {
-	const Rasterizer::VertexData* _VertexData = (const Rasterizer::VertexData*)(_Vertex);
+	const BSR::Rasterizer::VertexData* _VertexData = (const BSR::Rasterizer::VertexData*)(_Vertex);
 
 	const PBRUniforms* _PBRUniforms = (const PBRUniforms*)(_Uniforms);
 
 	PBRLerpers* _Lerpers = (PBRLerpers*)(_OutLerpers);
 
-	_Lerpers->Position = Math::Vec3f(_PBRUniforms->Model * Math::Vec4f(_VertexData->Position, 1.0f));
-	_Lerpers->Normal = Math::Vec3f(_PBRUniforms->ModelInversedTransposed * Math::Vec4f(_VertexData->Normal, 1.0f));
-	_Lerpers->Tangent = Math::Vec3f(_PBRUniforms->ModelInversedTransposed * Math::Vec4f(_VertexData->Tangent, 1.0f));
+	_Lerpers->Position = BSR::Math::Vec3f(_PBRUniforms->Model * BSR::Math::Vec4f(_VertexData->Position, 1.0f));
+	_Lerpers->Normal = BSR::Math::Vec3f(_PBRUniforms->ModelInversedTransposed * BSR::Math::Vec4f(_VertexData->Normal, 1.0f));
+	_Lerpers->Tangent = BSR::Math::Vec3f(_PBRUniforms->ModelInversedTransposed * BSR::Math::Vec4f(_VertexData->Tangent, 1.0f));
 	_Lerpers->TextureCoords = _VertexData->TextureCoords;
 
-	return _PBRUniforms->Mvp * Math::Vec4f(_VertexData->Position, 1.0f);
+	return _PBRUniforms->Mvp * BSR::Math::Vec4f(_VertexData->Position, 1.0f);
 }
 
-void PBRFragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType)
+void PBRFragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const BSR::Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType)
 {
 	const PBRLerpers* _PBRLerpers = (const PBRLerpers*)(_Lerpers);
 
@@ -833,7 +833,7 @@ void PBRFragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX
 
 	FrameBuffer* _TrueFrameBuffer = (FrameBuffer*)(_FrameBuffer);
 
-	if (!Rasterizer::Context::DepthTest(_FragCoord.z, _TrueFrameBuffer->DepthBuffer.Data[_X + _Y * _TrueFrameBuffer->DepthBuffer.Width], _DepthTestingType))
+	if (!BSR::Rasterizer::Context::DepthTest(_FragCoord.z, _TrueFrameBuffer->DepthBuffer.Data[_X + _Y * _TrueFrameBuffer->DepthBuffer.Width], _DepthTestingType))
 	{
 		return;
 	}
@@ -842,20 +842,20 @@ void PBRFragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX
 
 
 
-	Math::Vec3f _Albedo = Math::Vec3f::Pow(_PBRUniforms->Material.Albedo->SampleRGB(_PBRLerpers->TextureCoords) * _PBRUniforms->Material.AlbedoMultiplier, Math::Vec3f(2.2f, 2.2f, 2.2f));
-	Math::Vec3f _Normal = SampleNormal(_PBRUniforms->Material, _PBRLerpers->TextureCoords, _PBRLerpers->Normal, _PBRLerpers->Tangent);
+	BSR::Math::Vec3f _Albedo = BSR::Math::Vec3f::Pow(_PBRUniforms->Material.Albedo->SampleRGB(_PBRLerpers->TextureCoords) * _PBRUniforms->Material.AlbedoMultiplier, BSR::Math::Vec3f(2.2f, 2.2f, 2.2f));
+	BSR::Math::Vec3f _Normal = SampleNormal(_PBRUniforms->Material, _PBRLerpers->TextureCoords, _PBRLerpers->Normal, _PBRLerpers->Tangent);
 	float _Metalness = _PBRUniforms->Material.Metalness->SampleR(_PBRLerpers->TextureCoords) * _PBRUniforms->Material.MetalnessMultiplier;
 	float _Roughness = _PBRUniforms->Material.Roughness->SampleR(_PBRLerpers->TextureCoords) * _PBRUniforms->Material.RoughnessMultiplier;
 	float _AmbientOcclusion = _PBRUniforms->Material.AmbientOcclusion->SampleR(_PBRLerpers->TextureCoords) * _PBRUniforms->Material.AmbientOcclusionMultiplier;
-	Math::Vec3f _BaseReflectivity = Math::Vec3f::Mix(Math::Vec3f(0.04f, 0.04f, 0.04f), _Albedo, _Metalness);
-	Math::Vec3f _Position = _PBRLerpers->Position;
-	Math::Vec3f _PositionToCamera = _PBRUniforms->Camera.Perspective ? (_PBRUniforms->Camera.Position - _Position).Normalized() : -_PBRUniforms->CameraForwardVector;
+	BSR::Math::Vec3f _BaseReflectivity = BSR::Math::Vec3f::Mix(BSR::Math::Vec3f(0.04f, 0.04f, 0.04f), _Albedo, _Metalness);
+	BSR::Math::Vec3f _Position = _PBRLerpers->Position;
+	BSR::Math::Vec3f _PositionToCamera = _PBRUniforms->Camera.Perspective ? (_PBRUniforms->Camera.Position - _Position).Normalized() : -_PBRUniforms->CameraForwardVector;
 
 
 
-	Math::Vec3f _Result = Math::Vec3f(0.0f, 0.0f, 0.0f);
+	BSR::Math::Vec3f _Result = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
 
-	//Math::Vec3f _Result = Math::Vec3f(0.0f, 0.0f, 0.0f);
+	//BSR::Math::Vec3f _Result = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
 
 	//for ()
 	//{
@@ -866,10 +866,10 @@ void PBRFragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX
 
 
 
-	_Result = Math::Vec3f(1.0f, 1.0f, 1.0f) - Math::Vec3f::Exp(-_Result * _PBRUniforms->Exposure);
-	_Result = Math::Vec3f::Pow(_Result, Math::Vec3f(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f));
+	_Result = BSR::Math::Vec3f(1.0f, 1.0f, 1.0f) - BSR::Math::Vec3f::Exp(-_Result * _PBRUniforms->Exposure);
+	_Result = BSR::Math::Vec3f::Pow(_Result, BSR::Math::Vec3f(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f));
 
-	_Result = Rasterizer::Context::Blend(Math::Vec3f(0.0f, 0.0f, 0.0f), Math::Vec4f(_Result, 1.0f), _BlendingType);
+	_Result = BSR::Rasterizer::Context::Blend(BSR::Math::Vec3f(0.0f, 0.0f, 0.0f), BSR::Math::Vec4f(_Result, 1.0f), _BlendingType);
 
 	_TrueFrameBuffer->ColorBuffer->Data[(_X + _Y * _TrueFrameBuffer->ColorBuffer->Width) * 4 + 0] = (uint8_t)(_Result.x * 255.0f);
 	_TrueFrameBuffer->ColorBuffer->Data[(_X + _Y * _TrueFrameBuffer->ColorBuffer->Width) * 4 + 1] = (uint8_t)(_Result.y * 255.0f);
@@ -879,7 +879,7 @@ void PBRFragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX
 
 
 
-bool RenderScene(Image::Image& _RenderResult)
+bool RenderScene(BSR::Image::Image& _RenderResult)
 {
 	if (!_RenderResult.Width || !_RenderResult.Height)
 	{
@@ -901,47 +901,47 @@ bool RenderScene(Image::Image& _RenderResult)
 
 	float _Exposure = 2.5f;
 
-	Rasterizer::Camera _Camera;
+	BSR::Rasterizer::Camera _Camera;
 
-	Rasterizer::Transform _Transform;
+	BSR::Rasterizer::Transform _Transform;
 
-	_Transform.Position = Math::Vec3f(0.0f, 0.0f, -3.0f);
+	_Transform.Position = BSR::Math::Vec3f(0.0f, 0.0f, -3.0f);
 
-	Rasterizer::Context _Context;
+	BSR::Rasterizer::Context _Context;
 
 	_Context.SetViewPort(0, 0, _RenderResult.Width, _RenderResult.Height);
 
 	float _AspectRatio = (float)(_RenderResult.Width) / (float)(_RenderResult.Height);
 
 	{
-		Rasterizer::Camera _CubeMapCamera = _Camera;
+		BSR::Rasterizer::Camera _CubeMapCamera = _Camera;
 
-		_CubeMapCamera.Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
+		_CubeMapCamera.Position = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
 		_CubeMapCamera.NearPlane = 0.1f;
 		_CubeMapCamera.FarPlane = 2.0f;
 
-		Rasterizer::Mesh _Cube;
+		BSR::Rasterizer::Mesh _Cube;
 
-		Rasterizer::Mesh::GenerateCube(_Cube);
+		BSR::Rasterizer::Mesh::GenerateCube(_Cube);
 
 		CubeMapUniforms _Uniforms;
 
 		_Uniforms.Mvp = _CubeMapCamera.GetProjectionMatrix(_AspectRatio) * _CubeMapCamera.GetViewMatrix();
-		_Uniforms.EnvironmentTexture = (Rasterizer::Texture_Float_RGB*)(SceneAssets.GetAssetData(L"Environment texture"));
+		_Uniforms.EnvironmentTexture = (BSR::Rasterizer::Texture_Float_RGB*)(SceneAssets.GetAssetData(L"Environment texture"));
 		_Uniforms.Exposure = _Exposure;
 
-		_Context.SetCullingType(Rasterizer::_CounterClockWiseCulling);
+		_Context.SetCullingType(BSR::Rasterizer::_CounterClockWiseCulling);
 
-		if (!_Context.RenderMesh(_Cube.VBO.GetData(), _Cube.VBO.GetSize(), sizeof(Rasterizer::VertexData), _Cube.IBO.GetData(), 0, _Cube.IBO.GetSize() * 3, &_Uniforms, sizeof(CubeMapLerpers) / sizeof(float), sizeof(CubeMapLerpers) / sizeof(float), CubeMapVertexShader, nullptr, CubeMapFragmentShader, &_FrameBuffer))
+		if (!_Context.RenderMesh(_Cube.VBO.GetData(), _Cube.VBO.GetSize(), sizeof(BSR::Rasterizer::VertexData), _Cube.IBO.GetData(), 0, _Cube.IBO.GetSize() * 3, &_Uniforms, sizeof(CubeMapLerpers) / sizeof(float), sizeof(CubeMapLerpers) / sizeof(float), CubeMapVertexShader, nullptr, CubeMapFragmentShader, &_FrameBuffer))
 		{
 			delete[] _FrameBuffer.DepthBuffer.Data;
 			return false;
 		}
 
-		_Context.SetCullingType(Rasterizer::_ClockWiseCulling);
+		_Context.SetCullingType(BSR::Rasterizer::_ClockWiseCulling);
 	}
 
-	Rasterizer::Model* _Model = (Rasterizer::Model*)(SceneAssets.GetAssetData(L"Model"));
+	BSR::Rasterizer::Model* _Model = (BSR::Rasterizer::Model*)(SceneAssets.GetAssetData(L"Model"));
 
 	if (!_Model)
 	{
@@ -957,7 +957,7 @@ bool RenderScene(Image::Image& _RenderResult)
 
 	for (size_t _Index = 0; _Index < 8; _Index++)
 	{
-		const Rasterizer::Mesh& _Mesh = _Model->operator[](_Index);
+		const BSR::Rasterizer::Mesh& _Mesh = _Model->operator[](_Index);
 
 		PBRUniforms _Uniforms;
 
@@ -972,12 +972,12 @@ bool RenderScene(Image::Image& _RenderResult)
 		_Uniforms.Transform = _Transform;
 		std::wstring _MaterialName(L"Material 0");
 		_MaterialName[9] += (wchar_t)(_Index);
-		_Uniforms.Material = *(Rasterizer::Material*)(SceneAssets.GetAssetData(_MaterialName.c_str()));
-		_Uniforms.Environment = (const Rasterizer::Texture_Float_RGB*)(SceneAssets.GetAssetData(L"Environment texture"));
-		_Uniforms.Iradiance = (const Rasterizer::Texture_Float_RGB*)(SceneAssets.GetAssetData(L"Iradiance texture"));
-		_Uniforms.BRDFLookUp = (const Rasterizer::Texture_RG*)(SceneAssets.GetAssetData(L"BRDF lookup"));
+		_Uniforms.Material = *(BSR::Rasterizer::Material*)(SceneAssets.GetAssetData(_MaterialName.c_str()));
+		_Uniforms.Environment = (const BSR::Rasterizer::Texture_Float_RGB*)(SceneAssets.GetAssetData(L"Environment texture"));
+		_Uniforms.Iradiance = (const BSR::Rasterizer::Texture_Float_RGB*)(SceneAssets.GetAssetData(L"Iradiance texture"));
+		_Uniforms.BRDFLookUp = (const BSR::Rasterizer::Texture_RG*)(SceneAssets.GetAssetData(L"BRDF lookup"));
 
-		if (!_Context.RenderMesh(_Mesh.VBO.GetData(), _Mesh.VBO.GetSize(), sizeof(Rasterizer::VertexData), _Mesh.IBO.GetData(), 0, _Mesh.IBO.GetSize() * 3, &_Uniforms, sizeof(PBRLerpers) / sizeof(float), sizeof(PBRLerpers) / sizeof(float), PBRVertexShader, nullptr, PBRFragmentShader, &_FrameBuffer))
+		if (!_Context.RenderMesh(_Mesh.VBO.GetData(), _Mesh.VBO.GetSize(), sizeof(BSR::Rasterizer::VertexData), _Mesh.IBO.GetData(), 0, _Mesh.IBO.GetSize() * 3, &_Uniforms, sizeof(PBRLerpers) / sizeof(float), sizeof(PBRLerpers) / sizeof(float), PBRVertexShader, nullptr, PBRFragmentShader, &_FrameBuffer))
 		{
 			delete[] _FrameBuffer.DepthBuffer.Data;
 			return false;
@@ -993,28 +993,28 @@ bool RenderScene(Image::Image& _RenderResult)
 
 int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance, _In_ LPWSTR _CmdLine, _In_ int _ShowCmd)
 {
-	Time::Timer _ProfilerTimer;
+	BSR::Time::Timer _ProfilerTimer;
 
-	LOG_LINE(STRING_TYPE("Loading the assets"));
+	BSR_LOG_LINE(BSR_STRING_TYPE("Loading the assets"));
 
 	_ProfilerTimer.Start();
 
 	if (!LoadAssets())
 	{
-		LOG_LINE(STRING_TYPE("Failed"));
+		BSR_LOG_LINE(BSR_STRING_TYPE("Failed"));
 		return -1;
 	}
 
 	_ProfilerTimer.Stop();
 
-	LOG(STRING_TYPE("Time: "));
-	LOG_LINE(_ProfilerTimer);
+	BSR_LOG(BSR_STRING_TYPE("Time: "));
+	BSR_LOG_LINE(_ProfilerTimer);
 
-	LOG_LINE(STRING_TYPE("Rendering the scene"));
+	BSR_LOG_LINE(BSR_STRING_TYPE("Rendering the scene"));
 
 	_ProfilerTimer.Start();
 
-	Image::Image _RenderResult;
+	BSR::Image::Image _RenderResult;
 
 	_RenderResult.Width = Width;
 	_RenderResult.Height = Height;
@@ -1022,14 +1022,14 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
 	if (!_RenderResult.Data)
 	{
-		LOG_LINE(STRING_TYPE("Failed"));
+		BSR_LOG_LINE(BSR_STRING_TYPE("Failed"));
 		CleanUpAssets();
 		return -1;
 	}
 
 	if (!RenderScene(_RenderResult))
 	{
-		LOG_LINE(STRING_TYPE("Failed"));
+		BSR_LOG_LINE(BSR_STRING_TYPE("Failed"));
 		delete[] _RenderResult.Data;
 		CleanUpAssets();
 		return -1;
@@ -1037,17 +1037,17 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
 	_ProfilerTimer.Stop();
 
-	LOG(STRING_TYPE("Time: "));
-	LOG_LINE(_ProfilerTimer);
+	BSR_LOG(BSR_STRING_TYPE("Time: "));
+	BSR_LOG_LINE(_ProfilerTimer);
 
-	LOG(STRING_TYPE("FPS: "));
-	LOG_LINE(1.0f / _ProfilerTimer);
+	BSR_LOG(BSR_STRING_TYPE("FPS: "));
+	BSR_LOG_LINE(1.0f / _ProfilerTimer);
 
-	LOG_LINE(STRING_TYPE("Saving the result"));
+	BSR_LOG_LINE(BSR_STRING_TYPE("Saving the result"));
 
-	if (!Image::SaveBmp(L".\\Render.bmp", _RenderResult.Data, _RenderResult.Width, _RenderResult.Height))
+	if (!BSR::Image::SaveBmp(L".\\Render.bmp", _RenderResult.Data, _RenderResult.Width, _RenderResult.Height))
 	{
-		LOG_LINE(STRING_TYPE("Failed"));
+		BSR_LOG_LINE(BSR_STRING_TYPE("Failed"));
 		delete[] _RenderResult.Data;
 		CleanUpAssets();
 		return -1;

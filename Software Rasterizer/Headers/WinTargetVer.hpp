@@ -1,6 +1,6 @@
-#ifndef WinTargetVer_hpp
+#ifndef BSR_WinTargetVer_hpp
 
-#define WinTargetVer_hpp
+#define BSR_WinTargetVer_hpp
 
 
 

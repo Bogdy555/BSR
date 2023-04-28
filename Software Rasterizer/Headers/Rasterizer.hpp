@@ -1,620 +1,625 @@
-#ifndef Rasterizer_hpp
+#ifndef BSR_Rasterizer_hpp
 
-#define Rasterizer_hpp
-
-
-
-#include "Main.hpp"
+#define BSR_Rasterizer_hpp
 
 
 
-#define OBJ_MAX_LINE_LEN 200
+#include "BSR.hpp"
 
 
 
-namespace Rasterizer
+#define BSR_OBJ_MAX_LINE_LEN 200
+
+
+
+namespace BSR
 {
 
-	enum LerpTypes : const uint8_t
-	{
-		_LerpNearest = 0,
-		_LerpLinear = 1
-	};
-
-	enum WrapTypes : const uint8_t
-	{
-		_WrapBlack = 0,
-		_WrapClamp = 1,
-		_WrapRepeat = 2,
-		_WrapMirror = 3
-	};
-
-	class Texture
+	namespace Rasterizer
 	{
 
-	public:
+		enum LerpTypes : const uint8_t
+		{
+			_LerpNearest = 0,
+			_LerpLinear = 1
+		};
 
-		Texture();
-		Texture(const Texture& _Other) = delete;
-		Texture(Texture&& _Other) noexcept;
-		virtual ~Texture();
+		enum WrapTypes : const uint8_t
+		{
+			_WrapBlack = 0,
+			_WrapClamp = 1,
+			_WrapRepeat = 2,
+			_WrapMirror = 3
+		};
 
-		virtual const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel) const = 0;
+		class Texture
+		{
 
-		void SetLerpType(const uint8_t _LerpType);
-		void SetWrapType(const uint8_t _WrapType);
+		public:
 
-		const uint8_t GetLerpType() const;
-		const uint8_t GetWrapType() const;
+			Texture();
+			Texture(const Texture& _Other) = delete;
+			Texture(Texture&& _Other) noexcept;
+			virtual ~Texture();
 
-		void operator= (const Texture& _Other) = delete;
-		void operator= (Texture&& _Other) noexcept;
+			virtual const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel) const = 0;
 
-	protected:
+			void SetLerpType(const uint8_t _LerpType);
+			void SetWrapType(const uint8_t _WrapType);
 
-		uint8_t LerpType;
-		uint8_t WrapType;
+			const uint8_t GetLerpType() const;
+			const uint8_t GetWrapType() const;
 
-	};
+			void operator= (const Texture& _Other) = delete;
+			void operator= (Texture&& _Other) noexcept;
 
-	class Texture_R : public Texture
-	{
+		protected:
 
-	public:
+			uint8_t LerpType;
+			uint8_t WrapType;
 
-		Texture_R();
-		Texture_R(const Texture_R& _Other) = delete;
-		Texture_R(Texture_R&& _Other) noexcept;
-		~Texture_R();
+		};
 
-		const float SampleR(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
-		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
+		class Texture_R : public Texture
+		{
 
-		bool AddMip(const Image::Image& _Image);
-		void AddDirectMip(Image::Image&& _Image);
-		void RemoveMip(const size_t _Index);
-		void RemoveAllMips();
+		public:
 
-		const size_t GetMipsCount() const;
+			Texture_R();
+			Texture_R(const Texture_R& _Other) = delete;
+			Texture_R(Texture_R&& _Other) noexcept;
+			~Texture_R();
 
-		Image::Image& operator[] (const size_t _Index);
-		const Image::Image& operator[] (const size_t _Index) const;
+			const float SampleR(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
+			const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void operator= (const Texture_R& _Other) = delete;
-		void operator= (Texture_R&& _Other) noexcept;
+			bool AddMip(const Image::Image& _Image);
+			void AddDirectMip(Image::Image&& _Image);
+			void RemoveMip(const size_t _Index);
+			void RemoveAllMips();
 
-	private:
+			const size_t GetMipsCount() const;
 
-		const float SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
+			Image::Image& operator[] (const size_t _Index);
+			const Image::Image& operator[] (const size_t _Index) const;
 
-		std::vector<Image::Image> Textures;
+			void operator= (const Texture_R& _Other) = delete;
+			void operator= (Texture_R&& _Other) noexcept;
 
-	};
+		private:
 
-	class Texture_RG : public Texture
-	{
+			const float SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
 
-	public:
+			std::vector<Image::Image> Textures;
 
-		Texture_RG();
-		Texture_RG(const Texture_RG& _Other) = delete;
-		Texture_RG(Texture_RG&& _Other) noexcept;
-		~Texture_RG();
+		};
 
-		const Math::Vec2f SampleRG(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
-		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
+		class Texture_RG : public Texture
+		{
 
-		bool AddMip(const Image::Image& _Image);
-		void AddDirectMip(Image::Image&& _Image);
-		void RemoveMip(const size_t _Index);
-		void RemoveAllMips();
+		public:
 
-		const size_t GetMipsCount() const;
+			Texture_RG();
+			Texture_RG(const Texture_RG& _Other) = delete;
+			Texture_RG(Texture_RG&& _Other) noexcept;
+			~Texture_RG();
 
-		Image::Image& operator[] (const size_t _Index);
-		const Image::Image& operator[] (const size_t _Index) const;
+			const Math::Vec2f SampleRG(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
+			const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void operator= (const Texture_RG& _Other) = delete;
-		void operator= (Texture_RG&& _Other) noexcept;
+			bool AddMip(const Image::Image& _Image);
+			void AddDirectMip(Image::Image&& _Image);
+			void RemoveMip(const size_t _Index);
+			void RemoveAllMips();
 
-	private:
+			const size_t GetMipsCount() const;
 
-		const Math::Vec2f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
+			Image::Image& operator[] (const size_t _Index);
+			const Image::Image& operator[] (const size_t _Index) const;
 
-		std::vector<Image::Image> Textures;
+			void operator= (const Texture_RG& _Other) = delete;
+			void operator= (Texture_RG&& _Other) noexcept;
 
-	};
+		private:
 
-	class Texture_RGB : public Texture
-	{
+			const Math::Vec2f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
 
-	public:
+			std::vector<Image::Image> Textures;
 
-		Texture_RGB();
-		Texture_RGB(const Texture_RGB& _Other) = delete;
-		Texture_RGB(Texture_RGB&& _Other) noexcept;
-		~Texture_RGB();
+		};
 
-		const Math::Vec3f SampleRGB(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
-		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
+		class Texture_RGB : public Texture
+		{
 
-		bool AddMip(const Image::Image& _Image);
-		void AddDirectMip(Image::Image&& _Image);
-		void RemoveMip(const size_t _Index);
-		void RemoveAllMips();
+		public:
 
-		const size_t GetMipsCount() const;
+			Texture_RGB();
+			Texture_RGB(const Texture_RGB& _Other) = delete;
+			Texture_RGB(Texture_RGB&& _Other) noexcept;
+			~Texture_RGB();
 
-		Image::Image& operator[] (const size_t _Index);
-		const Image::Image& operator[] (const size_t _Index) const;
+			const Math::Vec3f SampleRGB(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
+			const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void operator= (const Texture_RGB& _Other) = delete;
-		void operator= (Texture_RGB&& _Other) noexcept;
+			bool AddMip(const Image::Image& _Image);
+			void AddDirectMip(Image::Image&& _Image);
+			void RemoveMip(const size_t _Index);
+			void RemoveAllMips();
 
-	private:
+			const size_t GetMipsCount() const;
 
-		const Math::Vec3f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
+			Image::Image& operator[] (const size_t _Index);
+			const Image::Image& operator[] (const size_t _Index) const;
 
-		std::vector<Image::Image> Textures;
+			void operator= (const Texture_RGB& _Other) = delete;
+			void operator= (Texture_RGB&& _Other) noexcept;
 
-	};
+		private:
 
-	class Texture_RGBA : public Texture
-	{
+			const Math::Vec3f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
 
-	public:
+			std::vector<Image::Image> Textures;
 
-		Texture_RGBA();
-		Texture_RGBA(const Texture_RGBA& _Other) = delete;
-		Texture_RGBA(Texture_RGBA&& _Other) noexcept;
-		~Texture_RGBA();
+		};
 
-		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
+		class Texture_RGBA : public Texture
+		{
 
-		bool AddMip(const Image::Image& _Image);
-		void AddDirectMip(Image::Image&& _Image);
-		void RemoveMip(const size_t _Index);
-		void RemoveAllMips();
+		public:
 
-		const size_t GetMipsCount() const;
+			Texture_RGBA();
+			Texture_RGBA(const Texture_RGBA& _Other) = delete;
+			Texture_RGBA(Texture_RGBA&& _Other) noexcept;
+			~Texture_RGBA();
 
-		Image::Image& operator[] (const size_t _Index);
-		const Image::Image& operator[] (const size_t _Index) const;
+			const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void operator= (const Texture_RGBA& _Other) = delete;
-		void operator= (Texture_RGBA&& _Other) noexcept;
+			bool AddMip(const Image::Image& _Image);
+			void AddDirectMip(Image::Image&& _Image);
+			void RemoveMip(const size_t _Index);
+			void RemoveAllMips();
 
-	private:
+			const size_t GetMipsCount() const;
 
-		const Math::Vec4f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
+			Image::Image& operator[] (const size_t _Index);
+			const Image::Image& operator[] (const size_t _Index) const;
 
-		std::vector<Image::Image> Textures;
+			void operator= (const Texture_RGBA& _Other) = delete;
+			void operator= (Texture_RGBA&& _Other) noexcept;
 
-	};
+		private:
 
-	class Texture_Float_R : public Texture
-	{
+			const Math::Vec4f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
 
-	public:
+			std::vector<Image::Image> Textures;
 
-		Texture_Float_R();
-		Texture_Float_R(const Texture_Float_R& _Other) = delete;
-		Texture_Float_R(Texture_Float_R&& _Other) noexcept;
-		~Texture_Float_R();
+		};
 
-		const float SampleR(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
-		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
+		class Texture_Float_R : public Texture
+		{
 
-		bool AddMip(const Image::ImageFloat& _Image);
-		void AddDirectMip(Image::ImageFloat&& _Image);
-		void RemoveMip(const size_t _Index);
-		void RemoveAllMips();
+		public:
 
-		const size_t GetMipsCount() const;
+			Texture_Float_R();
+			Texture_Float_R(const Texture_Float_R& _Other) = delete;
+			Texture_Float_R(Texture_Float_R&& _Other) noexcept;
+			~Texture_Float_R();
 
-		Image::ImageFloat& operator[] (const size_t _Index);
-		const Image::ImageFloat& operator[] (const size_t _Index) const;
+			const float SampleR(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
+			const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void operator= (const Texture_Float_R& _Other) = delete;
-		void operator= (Texture_Float_R&& _Other) noexcept;
+			bool AddMip(const Image::ImageFloat& _Image);
+			void AddDirectMip(Image::ImageFloat&& _Image);
+			void RemoveMip(const size_t _Index);
+			void RemoveAllMips();
 
-	private:
+			const size_t GetMipsCount() const;
 
-		const float SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
+			Image::ImageFloat& operator[] (const size_t _Index);
+			const Image::ImageFloat& operator[] (const size_t _Index) const;
 
-		std::vector<Image::ImageFloat> Textures;
+			void operator= (const Texture_Float_R& _Other) = delete;
+			void operator= (Texture_Float_R&& _Other) noexcept;
 
-	};
+		private:
 
-	class Texture_Float_RG : public Texture
-	{
+			const float SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
 
-	public:
+			std::vector<Image::ImageFloat> Textures;
 
-		Texture_Float_RG();
-		Texture_Float_RG(const Texture_Float_RG& _Other) = delete;
-		Texture_Float_RG(Texture_Float_RG&& _Other) noexcept;
-		~Texture_Float_RG();
+		};
 
-		const Math::Vec2f SampleRG(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
-		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
+		class Texture_Float_RG : public Texture
+		{
 
-		bool AddMip(const Image::ImageFloat& _Image);
-		void AddDirectMip(Image::ImageFloat&& _Image);
-		void RemoveMip(const size_t _Index);
-		void RemoveAllMips();
+		public:
 
-		const size_t GetMipsCount() const;
+			Texture_Float_RG();
+			Texture_Float_RG(const Texture_Float_RG& _Other) = delete;
+			Texture_Float_RG(Texture_Float_RG&& _Other) noexcept;
+			~Texture_Float_RG();
 
-		Image::ImageFloat& operator[] (const size_t _Index);
-		const Image::ImageFloat& operator[] (const size_t _Index) const;
+			const Math::Vec2f SampleRG(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
+			const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void operator= (const Texture_Float_RG& _Other) = delete;
-		void operator= (Texture_Float_RG&& _Other) noexcept;
+			bool AddMip(const Image::ImageFloat& _Image);
+			void AddDirectMip(Image::ImageFloat&& _Image);
+			void RemoveMip(const size_t _Index);
+			void RemoveAllMips();
 
-	private:
+			const size_t GetMipsCount() const;
 
-		const Math::Vec2f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
+			Image::ImageFloat& operator[] (const size_t _Index);
+			const Image::ImageFloat& operator[] (const size_t _Index) const;
 
-		std::vector<Image::ImageFloat> Textures;
+			void operator= (const Texture_Float_RG& _Other) = delete;
+			void operator= (Texture_Float_RG&& _Other) noexcept;
 
-	};
+		private:
 
-	class Texture_Float_RGB : public Texture
-	{
+			const Math::Vec2f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
 
-	public:
+			std::vector<Image::ImageFloat> Textures;
 
-		Texture_Float_RGB();
-		Texture_Float_RGB(const Texture_Float_RGB& _Other) = delete;
-		Texture_Float_RGB(Texture_Float_RGB&& _Other) noexcept;
-		~Texture_Float_RGB();
+		};
 
-		const Math::Vec3f SampleRGB(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
-		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
+		class Texture_Float_RGB : public Texture
+		{
 
-		bool AddMip(const Image::ImageFloat& _Image);
-		void AddDirectMip(Image::ImageFloat&& _Image);
-		void RemoveMip(const size_t _Index);
-		void RemoveAllMips();
+		public:
 
-		const size_t GetMipsCount() const;
+			Texture_Float_RGB();
+			Texture_Float_RGB(const Texture_Float_RGB& _Other) = delete;
+			Texture_Float_RGB(Texture_Float_RGB&& _Other) noexcept;
+			~Texture_Float_RGB();
 
-		Image::ImageFloat& operator[] (const size_t _Index);
-		const Image::ImageFloat& operator[] (const size_t _Index) const;
+			const Math::Vec3f SampleRGB(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const;
+			const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void operator= (const Texture_Float_RGB& _Other) = delete;
-		void operator= (Texture_Float_RGB&& _Other) noexcept;
+			bool AddMip(const Image::ImageFloat& _Image);
+			void AddDirectMip(Image::ImageFloat&& _Image);
+			void RemoveMip(const size_t _Index);
+			void RemoveAllMips();
 
-	private:
+			const size_t GetMipsCount() const;
 
-		const Math::Vec3f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
+			Image::ImageFloat& operator[] (const size_t _Index);
+			const Image::ImageFloat& operator[] (const size_t _Index) const;
 
-		std::vector<Image::ImageFloat> Textures;
+			void operator= (const Texture_Float_RGB& _Other) = delete;
+			void operator= (Texture_Float_RGB&& _Other) noexcept;
 
-	};
+		private:
 
-	class Texture_Float_RGBA : public Texture
-	{
+			const Math::Vec3f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
 
-	public:
+			std::vector<Image::ImageFloat> Textures;
 
-		Texture_Float_RGBA();
-		Texture_Float_RGBA(const Texture_Float_RGBA& _Other) = delete;
-		Texture_Float_RGBA(Texture_Float_RGBA&& _Other) noexcept;
-		~Texture_Float_RGBA();
+		};
 
-		const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
+		class Texture_Float_RGBA : public Texture
+		{
 
-		bool AddMip(const Image::ImageFloat& _Image);
-		void AddDirectMip(Image::ImageFloat&& _Image);
-		void RemoveMip(const size_t _Index);
-		void RemoveAllMips();
+		public:
 
-		const size_t GetMipsCount() const;
+			Texture_Float_RGBA();
+			Texture_Float_RGBA(const Texture_Float_RGBA& _Other) = delete;
+			Texture_Float_RGBA(Texture_Float_RGBA&& _Other) noexcept;
+			~Texture_Float_RGBA();
 
-		Image::ImageFloat& operator[] (const size_t _Index);
-		const Image::ImageFloat& operator[] (const size_t _Index) const;
+			const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const override;
 
-		void operator= (const Texture_Float_RGBA& _Other) = delete;
-		void operator= (Texture_Float_RGBA&& _Other) noexcept;
+			bool AddMip(const Image::ImageFloat& _Image);
+			void AddDirectMip(Image::ImageFloat&& _Image);
+			void RemoveMip(const size_t _Index);
+			void RemoveAllMips();
 
-	private:
+			const size_t GetMipsCount() const;
 
-		const Math::Vec4f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
+			Image::ImageFloat& operator[] (const size_t _Index);
+			const Image::ImageFloat& operator[] (const size_t _Index) const;
 
-		std::vector<Image::ImageFloat> Textures;
+			void operator= (const Texture_Float_RGBA& _Other) = delete;
+			void operator= (Texture_Float_RGBA&& _Other) noexcept;
 
-	};
+		private:
 
-	enum CullingTypes : uint8_t
-	{
-		_NoCulling = 0,
-		_ClockWiseCulling = 1,
-		_CounterClockWiseCulling = 2
-	};
+			const Math::Vec4f SampleNearest(const Math::Vec2f& _TextureCoords, const float _MipLevel) const;
 
-	enum DepthTestingTypes : uint8_t
-	{
-		_NoDepthTesting = 0,
-		_LowerDepthTesting = 1,
-		_HigherDepthTesting = 2,
-		_LowerOrEqualDepthTesting = 3,
-		_HigherOrEqualDepthTesting = 4
-	};
+			std::vector<Image::ImageFloat> Textures;
 
-	enum BlendingTypes : uint8_t
-	{
-		_NoBlending = 0,
-		_AditiveBlending = 1,
-		_AlphaBlending = 2
-	};
+		};
 
-	typedef const Math::Vec4f (*VertexShaderFnc)(const void* _Vertex, const void* _Uniforms, float* _OutLerpers);
+		enum CullingTypes : uint8_t
+		{
+			_NoCulling = 0,
+			_ClockWiseCulling = 1,
+			_CounterClockWiseCulling = 2
+		};
 
-	typedef const bool (*GeometryShaderFnc)(const Math::Vec4f& _APosition, const Math::Vec4f& _BPosition, const Math::Vec4f& _CPosition, const float* _ALerpers, const float* _BLerpers, const float* _CLerpers, const void* _Uniforms, std::vector<Math::Vec4f>& _PositionsOut, std::vector<float*>& _LerpersOut);
+		enum DepthTestingTypes : uint8_t
+		{
+			_NoDepthTesting = 0,
+			_LowerDepthTesting = 1,
+			_HigherDepthTesting = 2,
+			_LowerOrEqualDepthTesting = 3,
+			_HigherOrEqualDepthTesting = 4
+		};
 
-	typedef void (*FragmentShaderFnc)(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType);
+		enum BlendingTypes : uint8_t
+		{
+			_NoBlending = 0,
+			_AditiveBlending = 1,
+			_AlphaBlending = 2
+		};
 
-	class Context
-	{
+		typedef const Math::Vec4f(*VertexShaderFnc)(const void* _Vertex, const void* _Uniforms, float* _OutLerpers);
 
-	public:
+		typedef const bool (*GeometryShaderFnc)(const Math::Vec4f& _APosition, const Math::Vec4f& _BPosition, const Math::Vec4f& _CPosition, const float* _ALerpers, const float* _BLerpers, const float* _CLerpers, const void* _Uniforms, std::vector<Math::Vec4f>& _PositionsOut, std::vector<float*>& _LerpersOut);
 
-		Context();
-		Context(const Context& _Other);
-		Context(Context&& _Other) noexcept;
-		~Context();
+		typedef void (*FragmentShaderFnc)(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType);
 
-		const bool RenderMesh(const void* _VBO, const size_t _VBOSize, const size_t _VBOStride, const size_t* _IBO, const size_t _IBOBegin, const size_t _IBOEnd, const void* _Uniforms, const size_t _LerpersCountVertToGeom, const size_t _LerpersCountGeomToFrag, const VertexShaderFnc _VertexShader, const GeometryShaderFnc _GeometryShader, const FragmentShaderFnc _FragmentShader, void* _FrameBuffer) const;
+		class Context
+		{
 
-		void SetViewPort(const size_t _ViewPortX, const size_t _ViewPortY, const size_t _ViewPortWidth, const size_t _ViewPortHeight);
-		void SetCullingType(const uint8_t _CullingType);
-		void SetDepthTestingType(const uint8_t _DepthTestingType);
-		void SetBlendingType(const uint8_t _BlendingType);
+		public:
 
-		void GetViewPort(size_t& _ViewPortX, size_t& _ViewPortY, size_t& _ViewPortWidth, size_t& _ViewPortHeight) const;
-		const uint8_t GetCullingType() const;
-		const uint8_t GetDepthTestingType() const;
-		const uint8_t GetBlendingType() const;
+			Context();
+			Context(const Context& _Other);
+			Context(Context&& _Other) noexcept;
+			~Context();
 
-		void operator= (const Context& _Other);
-		void operator= (Context&& _Other) noexcept;
+			const bool RenderMesh(const void* _VBO, const size_t _VBOSize, const size_t _VBOStride, const size_t* _IBO, const size_t _IBOBegin, const size_t _IBOEnd, const void* _Uniforms, const size_t _LerpersCountVertToGeom, const size_t _LerpersCountGeomToFrag, const VertexShaderFnc _VertexShader, const GeometryShaderFnc _GeometryShader, const FragmentShaderFnc _FragmentShader, void* _FrameBuffer) const;
 
-		static const bool DepthTest(const float _NewDepth, const float _OldDepth, const uint8_t _DepthTestingType);
-		static const Math::Vec3f Blend(const Math::Vec3f& _OldColor, const Math::Vec4f& _Color, const uint8_t _BlendingType, const bool _Clamp = true);
+			void SetViewPort(const size_t _ViewPortX, const size_t _ViewPortY, const size_t _ViewPortWidth, const size_t _ViewPortHeight);
+			void SetCullingType(const uint8_t _CullingType);
+			void SetDepthTestingType(const uint8_t _DepthTestingType);
+			void SetBlendingType(const uint8_t _BlendingType);
 
-	private:
+			void GetViewPort(size_t& _ViewPortX, size_t& _ViewPortY, size_t& _ViewPortWidth, size_t& _ViewPortHeight) const;
+			const uint8_t GetCullingType() const;
+			const uint8_t GetDepthTestingType() const;
+			const uint8_t GetBlendingType() const;
 
-		size_t ViewPortX;
-		size_t ViewPortY;
-		size_t ViewPortWidth;
-		size_t ViewPortHeight;
+			void operator= (const Context& _Other);
+			void operator= (Context&& _Other) noexcept;
 
-		uint8_t CullingType;
-		uint8_t DepthTestingType;
-		uint8_t BlendingType;
+			static const bool DepthTest(const float _NewDepth, const float _OldDepth, const uint8_t _DepthTestingType);
+			static const Math::Vec3f Blend(const Math::Vec3f& _OldColor, const Math::Vec4f& _Color, const uint8_t _BlendingType, const bool _Clamp = true);
 
-	};
+		private:
 
-	struct Material
-	{
-		Texture_RGB* Albedo = nullptr;
-		Texture_R* Alpha = nullptr;
-		Texture_R* Metalness = nullptr;
-		Texture_R* Roughness = nullptr;
-		Texture_R* AmbientOcclusion = nullptr;
-		Texture_RGB* NormalMap = nullptr;
-		Texture_RGB* Emission = nullptr;
+			size_t ViewPortX;
+			size_t ViewPortY;
+			size_t ViewPortWidth;
+			size_t ViewPortHeight;
 
-		Math::Vec3f AlbedoMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
-		float AlphaMultiplier = 1.0f;
-		float MetalnessMultiplier = 1.0f;
-		float RoughnessMultiplier = 1.0f;
-		float AmbientOcclusionMultiplier = 1.0f;
-		Math::Vec3f NormalMapMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
-		Math::Vec3f EmissionMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+			uint8_t CullingType;
+			uint8_t DepthTestingType;
+			uint8_t BlendingType;
 
-		Texture_RGB* AlbedoBack = nullptr;
-		Texture_R* AlphaBack = nullptr;
-		Texture_R* MetalnessBack = nullptr;
-		Texture_R* RoughnessBack = nullptr;
-		Texture_R* AmbientOcclusionBack = nullptr;
-		Texture_RGB* NormalMapBack = nullptr;
-		Texture_RGB* EmissionBack = nullptr;
+		};
 
-		Math::Vec3f AlbedoBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
-		float AlphaBackMultiplier = 1.0f;
-		float MetalnessBackMultiplier = 1.0f;
-		float RoughnessBackMultiplier = 1.0f;
-		float AmbientOcclusionBackMultiplier = 1.0f;
-		Math::Vec3f NormalMapBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
-		Math::Vec3f EmissionBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
-	};
+		struct Material
+		{
+			Texture_RGB* Albedo = nullptr;
+			Texture_R* Alpha = nullptr;
+			Texture_R* Metalness = nullptr;
+			Texture_R* Roughness = nullptr;
+			Texture_R* AmbientOcclusion = nullptr;
+			Texture_RGB* NormalMap = nullptr;
+			Texture_RGB* Emission = nullptr;
 
-	enum LightTypes : uint8_t
-	{
-		_DirectionalLight = 0,
-		_PointLight = 1,
-		_SpotLight = 2
-	};
+			Math::Vec3f AlbedoMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+			float AlphaMultiplier = 1.0f;
+			float MetalnessMultiplier = 1.0f;
+			float RoughnessMultiplier = 1.0f;
+			float AmbientOcclusionMultiplier = 1.0f;
+			Math::Vec3f NormalMapMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+			Math::Vec3f EmissionMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
 
-	struct Light
-	{
-		uint8_t Type = _PointLight;
-		Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
-		Math::Vec3f Direction = Math::Vec3f(0.0f, -1.0f, 0.0f);
-		float Theta = 0.0f;
-		float ThetaFade = 0.0f;
-		Math::Vec3f Color = Math::Vec3f(1.0f, 1.0f, 1.0f);
-		float Intensity = 1.0f;
-	};
+			Texture_RGB* AlbedoBack = nullptr;
+			Texture_R* AlphaBack = nullptr;
+			Texture_R* MetalnessBack = nullptr;
+			Texture_R* RoughnessBack = nullptr;
+			Texture_R* AmbientOcclusionBack = nullptr;
+			Texture_RGB* NormalMapBack = nullptr;
+			Texture_RGB* EmissionBack = nullptr;
 
-	struct Camera
-	{
+			Math::Vec3f AlbedoBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+			float AlphaBackMultiplier = 1.0f;
+			float MetalnessBackMultiplier = 1.0f;
+			float RoughnessBackMultiplier = 1.0f;
+			float AmbientOcclusionBackMultiplier = 1.0f;
+			Math::Vec3f NormalMapBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+			Math::Vec3f EmissionBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+		};
 
-		Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
+		enum LightTypes : uint8_t
+		{
+			_DirectionalLight = 0,
+			_PointLight = 1,
+			_SpotLight = 2
+		};
 
-		float AngleFlat = 0.0f;
-		float AngleVertical = 0.0f;
-		float AngleTilt = 0.0f;
+		struct Light
+		{
+			uint8_t Type = _PointLight;
+			Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
+			Math::Vec3f Direction = Math::Vec3f(0.0f, -1.0f, 0.0f);
+			float Theta = 0.0f;
+			float ThetaFade = 0.0f;
+			Math::Vec3f Color = Math::Vec3f(1.0f, 1.0f, 1.0f);
+			float Intensity = 1.0f;
+		};
 
-		bool Perspective = true;
+		struct Camera
+		{
 
-		float FieldOfView = 90.0f * Math::fDegreesToRadians;
-		float NearPlane = 0.001f;
-		float FarPlane = 1000.0f;
+			Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
 
-		const Math::Mat4f GetViewMatrix() const;
-		const Math::Mat4f GetProjectionMatrix(const float _AspectRatio) const;
-		const Math::Vec3f GetForwardVector();
+			float AngleFlat = 0.0f;
+			float AngleVertical = 0.0f;
+			float AngleTilt = 0.0f;
 
-	};
+			bool Perspective = true;
 
-	struct Transform
-	{
+			float FieldOfView = 90.0f * Math::fDegreesToRadians;
+			float NearPlane = 0.001f;
+			float FarPlane = 1000.0f;
 
-		Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
+			const Math::Mat4f GetViewMatrix() const;
+			const Math::Mat4f GetProjectionMatrix(const float _AspectRatio) const;
+			const Math::Vec3f GetForwardVector();
 
-		float AngleFlat = 0.0f;
-		float AngleVertical = 0.0f;
-		float AngleTilt = 0.0f;
+		};
 
-		Math::Vec3f Scale = Math::Vec3f(1.0f, 1.0f, 1.0f);
+		struct Transform
+		{
 
-		float ShearXByY = 0.0f;
-		float ShearXByZ = 0.0f;
+			Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
 
-		float ShearYByZ = 0.0f;
-		float ShearYByX = 0.0f;
+			float AngleFlat = 0.0f;
+			float AngleVertical = 0.0f;
+			float AngleTilt = 0.0f;
 
-		float ShearZByX = 0.0f;
-		float ShearZByY = 0.0f;
+			Math::Vec3f Scale = Math::Vec3f(1.0f, 1.0f, 1.0f);
 
-		const Math::Mat4f GetModelMatrix() const;
+			float ShearXByY = 0.0f;
+			float ShearXByZ = 0.0f;
 
-	};
+			float ShearYByZ = 0.0f;
+			float ShearYByX = 0.0f;
 
-	struct VertexData
-	{
-		Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
-		Math::Vec3f Normal = Math::Vec3f(0.0f, 0.0f, 1.0f);
-		Math::Vec3f Tangent = Math::Vec3f(1.0f, 0.0f, 0.0f);
-		Math::Vec2f TextureCoords = Math::Vec2f(0.0f, 0.0f);
-	};
+			float ShearZByX = 0.0f;
+			float ShearZByY = 0.0f;
 
-	class VertexBuffer
-	{
+			const Math::Mat4f GetModelMatrix() const;
 
-	public:
+		};
 
-		VertexBuffer();
-		VertexBuffer(const VertexBuffer& _Other);
-		VertexBuffer(VertexBuffer&& _Other) noexcept;
-		~VertexBuffer();
+		struct VertexData
+		{
+			Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
+			Math::Vec3f Normal = Math::Vec3f(0.0f, 0.0f, 1.0f);
+			Math::Vec3f Tangent = Math::Vec3f(1.0f, 0.0f, 0.0f);
+			Math::Vec2f TextureCoords = Math::Vec2f(0.0f, 0.0f);
+		};
 
-		void PushBack(const VertexData& _Vertex);
-		void Erase(const size_t _Index);
-		void Clear();
+		class VertexBuffer
+		{
 
-		const size_t GetSize() const;
+		public:
 
-		float* GetData();
-		const float* GetData() const;
+			VertexBuffer();
+			VertexBuffer(const VertexBuffer& _Other);
+			VertexBuffer(VertexBuffer&& _Other) noexcept;
+			~VertexBuffer();
 
-		VertexData& operator[] (const size_t _Index);
-		const VertexData& operator[] (const size_t _Index) const;
+			void PushBack(const VertexData& _Vertex);
+			void Erase(const size_t _Index);
+			void Clear();
 
-		void operator= (const VertexBuffer& _Other);
-		void operator= (VertexBuffer&& _Other) noexcept;
+			const size_t GetSize() const;
 
-	private:
+			float* GetData();
+			const float* GetData() const;
 
-		std::vector<VertexData> Verteces;
+			VertexData& operator[] (const size_t _Index);
+			const VertexData& operator[] (const size_t _Index) const;
 
-	};
+			void operator= (const VertexBuffer& _Other);
+			void operator= (VertexBuffer&& _Other) noexcept;
 
-	struct IndexData
-	{
-		size_t IndexA = 0;
-		size_t IndexB = 0;
-		size_t IndexC = 0;
-	};
+		private:
 
-	class IndexBuffer
-	{
+			std::vector<VertexData> Verteces;
 
-	public:
+		};
 
-		IndexBuffer();
-		IndexBuffer(const IndexBuffer& _Other);
-		IndexBuffer(IndexBuffer&& _Other) noexcept;
-		~IndexBuffer();
+		struct IndexData
+		{
+			size_t IndexA = 0;
+			size_t IndexB = 0;
+			size_t IndexC = 0;
+		};
 
-		void PushBack(const IndexData& _Index);
-		void Erase(const size_t _Index);
-		void Clear();
+		class IndexBuffer
+		{
 
-		const size_t GetSize() const;
+		public:
 
-		size_t* GetData();
-		const size_t* GetData() const;
+			IndexBuffer();
+			IndexBuffer(const IndexBuffer& _Other);
+			IndexBuffer(IndexBuffer&& _Other) noexcept;
+			~IndexBuffer();
 
-		IndexData& operator[] (const size_t _Index);
-		const IndexData& operator[] (const size_t _Index) const;
+			void PushBack(const IndexData& _Index);
+			void Erase(const size_t _Index);
+			void Clear();
 
-		void operator= (const IndexBuffer& _Other);
-		void operator= (IndexBuffer&& _Other) noexcept;
+			const size_t GetSize() const;
 
-	private:
+			size_t* GetData();
+			const size_t* GetData() const;
 
-		std::vector<IndexData> Indexes;
+			IndexData& operator[] (const size_t _Index);
+			const IndexData& operator[] (const size_t _Index) const;
 
-	};
+			void operator= (const IndexBuffer& _Other);
+			void operator= (IndexBuffer&& _Other) noexcept;
 
-	struct Mesh
-	{
+		private:
 
-		wchar_t* Name = nullptr;
-		VertexBuffer VBO;
-		IndexBuffer IBO;
+			std::vector<IndexData> Indexes;
 
-		static void GenerateCube(Mesh& _Mesh);
-		static void GenerateQuad(Mesh& _Mesh);
+		};
 
-	};
+		struct Mesh
+		{
 
-	class Model
-	{
+			wchar_t* Name = nullptr;
+			VertexBuffer VBO;
+			IndexBuffer IBO;
 
-	public:
+			static void GenerateCube(Mesh& _Mesh);
+			static void GenerateQuad(Mesh& _Mesh);
 
-		Model();
-		Model(const Model& _Other) = delete;
-		Model(Model&& _Other) noexcept;
-		~Model();
+		};
 
-		bool Load(const wchar_t* _Path);
-		const bool Save(const wchar_t* _Path) const;
+		class Model
+		{
 
-		void PushBack(const Mesh& _Mesh);
-		void EmplaceBack(Mesh&& _Mesh) noexcept;
-		void Erase(const size_t _Index);
-		void Clear();
+		public:
 
-		const size_t GetSize() const;
+			Model();
+			Model(const Model& _Other) = delete;
+			Model(Model&& _Other) noexcept;
+			~Model();
 
-		Mesh& operator[] (const size_t _Index);
-		const Mesh& operator[] (const size_t _Index) const;
+			bool Load(const wchar_t* _Path);
+			const bool Save(const wchar_t* _Path) const;
 
-		void operator= (const Model& _Other) = delete;
-		void operator= (Model&& _Other) noexcept;
+			void PushBack(const Mesh& _Mesh);
+			void EmplaceBack(Mesh&& _Mesh) noexcept;
+			void Erase(const size_t _Index);
+			void Clear();
 
-	private:
+			const size_t GetSize() const;
 
-		std::vector<Mesh> Meshes;
+			Mesh& operator[] (const size_t _Index);
+			const Mesh& operator[] (const size_t _Index) const;
 
-	};
+			void operator= (const Model& _Other) = delete;
+			void operator= (Model&& _Other) noexcept;
+
+		private:
+
+			std::vector<Mesh> Meshes;
+
+		};
+
+	}
 
 }
 

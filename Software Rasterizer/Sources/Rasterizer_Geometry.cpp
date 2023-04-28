@@ -1,236 +1,236 @@
-#include "..\Headers\Main.hpp"
+#include "..\Headers\BSR.hpp"
 
 
 
-const Math::Mat4f Rasterizer::Camera::GetViewMatrix() const
+const BSR::Math::Mat4f BSR::Rasterizer::Camera::GetViewMatrix() const
 {
 	return
-		Math::Mat4f::GetRotation(AngleTilt, Math::Vec3f(0.0f, 0.0f, 1.0f)) *
-		Math::Mat4f::GetRotation(AngleVertical, Math::Vec3f(1.0f, 0.0f, 0.0f)) *
-		Math::Mat4f::GetRotation(AngleFlat, Math::Vec3f(0.0f, 1.0f, 0.0f)) *
-		Math::Mat4f::GetTranslation(-Position);
+		BSR::Math::Mat4f::GetRotation(AngleTilt, BSR::Math::Vec3f(0.0f, 0.0f, 1.0f)) *
+		BSR::Math::Mat4f::GetRotation(AngleVertical, BSR::Math::Vec3f(1.0f, 0.0f, 0.0f)) *
+		BSR::Math::Mat4f::GetRotation(AngleFlat, BSR::Math::Vec3f(0.0f, 1.0f, 0.0f)) *
+		BSR::Math::Mat4f::GetTranslation(-Position);
 }
 
-const Math::Mat4f Rasterizer::Camera::GetProjectionMatrix(const float _AspectRatio) const
+const BSR::Math::Mat4f BSR::Rasterizer::Camera::GetProjectionMatrix(const float _AspectRatio) const
 {
 	if (Perspective)
 	{
-		return Math::Mat4f::GetPerspective(FieldOfView, _AspectRatio, NearPlane, FarPlane);
+		return BSR::Math::Mat4f::GetPerspective(FieldOfView, _AspectRatio, NearPlane, FarPlane);
 	}
 
-	return Math::Mat4f::GetOrtho(-FieldOfView / 2.0f * _AspectRatio, FieldOfView / 2.0f * _AspectRatio, -FieldOfView / 2.0f, FieldOfView / 2.0f, -NearPlane, -FarPlane);
+	return BSR::Math::Mat4f::GetOrtho(-FieldOfView / 2.0f * _AspectRatio, FieldOfView / 2.0f * _AspectRatio, -FieldOfView / 2.0f, FieldOfView / 2.0f, -NearPlane, -FarPlane);
 }
 
-const Math::Vec3f Rasterizer::Camera::GetForwardVector()
+const BSR::Math::Vec3f BSR::Rasterizer::Camera::GetForwardVector()
 {
-	return Math::Mat3f::GetRotation(-AngleFlat, Math::Vec3f(0.0f, 1.0f, 0.0f)) * Math::Mat3f::GetRotation(-AngleVertical, Math::Vec3f(1.0f, 0.0f, 0.0f)) * Math::Vec3f(0.0f, 0.0f, -1.0f);
+	return BSR::Math::Mat3f::GetRotation(-AngleFlat, BSR::Math::Vec3f(0.0f, 1.0f, 0.0f)) * BSR::Math::Mat3f::GetRotation(-AngleVertical, BSR::Math::Vec3f(1.0f, 0.0f, 0.0f)) * BSR::Math::Vec3f(0.0f, 0.0f, -1.0f);
 }
 
 
 
-const Math::Mat4f Rasterizer::Transform::GetModelMatrix() const
+const BSR::Math::Mat4f BSR::Rasterizer::Transform::GetModelMatrix() const
 {
 	return
-		Math::Mat4f::GetTranslation(Position) *
-		Math::Mat4f::GetRotation(AngleFlat, Math::Vec3f(0.0f, -1.0f, 0.0f)) *
-		Math::Mat4f::GetRotation(AngleVertical, Math::Vec3f(-1.0f, 0.0f, 0.0f)) *
-		Math::Mat4f::GetRotation(AngleTilt, Math::Vec3f(0.0f, 0.0f, 1.0f)) *
-		Math::Mat4f::GetScale(Scale.x, Scale.y, Scale.z, 1.0f) *
-		Math::Mat4f::GetShear(ShearXByY, 0, 1) *
-		Math::Mat4f::GetShear(ShearXByZ, 0, 2) *
-		Math::Mat4f::GetShear(ShearYByZ, 1, 2) *
-		Math::Mat4f::GetShear(ShearYByX, 1, 0) *
-		Math::Mat4f::GetShear(ShearZByX, 2, 0) *
-		Math::Mat4f::GetShear(ShearZByY, 2, 1);
+		BSR::Math::Mat4f::GetTranslation(Position) *
+		BSR::Math::Mat4f::GetRotation(AngleFlat, BSR::Math::Vec3f(0.0f, -1.0f, 0.0f)) *
+		BSR::Math::Mat4f::GetRotation(AngleVertical, BSR::Math::Vec3f(-1.0f, 0.0f, 0.0f)) *
+		BSR::Math::Mat4f::GetRotation(AngleTilt, BSR::Math::Vec3f(0.0f, 0.0f, 1.0f)) *
+		BSR::Math::Mat4f::GetScale(Scale.x, Scale.y, Scale.z, 1.0f) *
+		BSR::Math::Mat4f::GetShear(ShearXByY, 0, 1) *
+		BSR::Math::Mat4f::GetShear(ShearXByZ, 0, 2) *
+		BSR::Math::Mat4f::GetShear(ShearYByZ, 1, 2) *
+		BSR::Math::Mat4f::GetShear(ShearYByX, 1, 0) *
+		BSR::Math::Mat4f::GetShear(ShearZByX, 2, 0) *
+		BSR::Math::Mat4f::GetShear(ShearZByY, 2, 1);
 }
 
 
 
-Rasterizer::VertexBuffer::VertexBuffer() : Verteces()
+BSR::Rasterizer::VertexBuffer::VertexBuffer() : Verteces()
 {
 
 }
 
-Rasterizer::VertexBuffer::VertexBuffer(const VertexBuffer& _Other) : Verteces(_Other.Verteces)
+BSR::Rasterizer::VertexBuffer::VertexBuffer(const VertexBuffer& _Other) : Verteces(_Other.Verteces)
 {
 
 }
 
-Rasterizer::VertexBuffer::VertexBuffer(VertexBuffer&& _Other) noexcept : Verteces(std::move(_Other.Verteces))
+BSR::Rasterizer::VertexBuffer::VertexBuffer(VertexBuffer&& _Other) noexcept : Verteces(std::move(_Other.Verteces))
 {
 
 }
 
-Rasterizer::VertexBuffer::~VertexBuffer()
+BSR::Rasterizer::VertexBuffer::~VertexBuffer()
 {
 
 }
 
-void Rasterizer::VertexBuffer::PushBack(const VertexData& _Vertex)
+void BSR::Rasterizer::VertexBuffer::PushBack(const VertexData& _Vertex)
 {
 	Verteces.push_back(_Vertex);
 }
 
-void Rasterizer::VertexBuffer::Erase(const size_t _Index)
+void BSR::Rasterizer::VertexBuffer::Erase(const size_t _Index)
 {
 	Verteces.erase(Verteces.begin() + _Index);
 }
 
-void Rasterizer::VertexBuffer::Clear()
+void BSR::Rasterizer::VertexBuffer::Clear()
 {
 	Verteces.clear();
 }
 
-const size_t Rasterizer::VertexBuffer::GetSize() const
+const size_t BSR::Rasterizer::VertexBuffer::GetSize() const
 {
 	return Verteces.size();
 }
 
-float* Rasterizer::VertexBuffer::GetData()
+float* BSR::Rasterizer::VertexBuffer::GetData()
 {
 	return (float*)(Verteces.data());
 }
 
-const float* Rasterizer::VertexBuffer::GetData() const
+const float* BSR::Rasterizer::VertexBuffer::GetData() const
 {
 	return (const float*)(Verteces.data());
 }
 
-Rasterizer::VertexData& Rasterizer::VertexBuffer::operator[] (const size_t _Index)
+BSR::Rasterizer::VertexData& BSR::Rasterizer::VertexBuffer::operator[] (const size_t _Index)
 {
 	return Verteces[_Index];
 }
 
-const Rasterizer::VertexData& Rasterizer::VertexBuffer::operator[] (const size_t _Index) const
+const BSR::Rasterizer::VertexData& BSR::Rasterizer::VertexBuffer::operator[] (const size_t _Index) const
 {
 	return Verteces[_Index];
 }
 
-void Rasterizer::VertexBuffer::operator= (const VertexBuffer& _Other)
+void BSR::Rasterizer::VertexBuffer::operator= (const VertexBuffer& _Other)
 {
 	Verteces = _Other.Verteces;
 }
 
-void Rasterizer::VertexBuffer::operator= (VertexBuffer&& _Other) noexcept
+void BSR::Rasterizer::VertexBuffer::operator= (VertexBuffer&& _Other) noexcept
 {
 	Verteces = std::move(_Other.Verteces);
 }
 
 
 
-Rasterizer::IndexBuffer::IndexBuffer() : Indexes()
+BSR::Rasterizer::IndexBuffer::IndexBuffer() : Indexes()
 {
 
 }
 
-Rasterizer::IndexBuffer::IndexBuffer(const IndexBuffer& _Other) : Indexes(_Other.Indexes)
+BSR::Rasterizer::IndexBuffer::IndexBuffer(const IndexBuffer& _Other) : Indexes(_Other.Indexes)
 {
 
 }
 
-Rasterizer::IndexBuffer::IndexBuffer(IndexBuffer&& _Other) noexcept : Indexes(std::move(_Other.Indexes))
+BSR::Rasterizer::IndexBuffer::IndexBuffer(IndexBuffer&& _Other) noexcept : Indexes(std::move(_Other.Indexes))
 {
 
 }
 
-Rasterizer::IndexBuffer::~IndexBuffer()
+BSR::Rasterizer::IndexBuffer::~IndexBuffer()
 {
 
 }
 
-void Rasterizer::IndexBuffer::PushBack(const IndexData& _Index)
+void BSR::Rasterizer::IndexBuffer::PushBack(const IndexData& _Index)
 {
 	Indexes.push_back(_Index);
 }
 
-void Rasterizer::IndexBuffer::Erase(const size_t _Index)
+void BSR::Rasterizer::IndexBuffer::Erase(const size_t _Index)
 {
 	Indexes.erase(Indexes.begin() + _Index);
 }
 
-void Rasterizer::IndexBuffer::Clear()
+void BSR::Rasterizer::IndexBuffer::Clear()
 {
 	Indexes.clear();
 }
 
-const size_t Rasterizer::IndexBuffer::GetSize() const
+const size_t BSR::Rasterizer::IndexBuffer::GetSize() const
 {
 	return Indexes.size();
 }
 
-size_t* Rasterizer::IndexBuffer::GetData()
+size_t* BSR::Rasterizer::IndexBuffer::GetData()
 {
 	return (size_t*)(Indexes.data());
 }
 
-const size_t* Rasterizer::IndexBuffer::GetData() const
+const size_t* BSR::Rasterizer::IndexBuffer::GetData() const
 {
 	return (const size_t*)(Indexes.data());
 }
 
-Rasterizer::IndexData& Rasterizer::IndexBuffer::operator[] (const size_t _Index)
+BSR::Rasterizer::IndexData& BSR::Rasterizer::IndexBuffer::operator[] (const size_t _Index)
 {
 	return Indexes[_Index];
 }
 
-const Rasterizer::IndexData& Rasterizer::IndexBuffer::operator[] (const size_t _Index) const
+const BSR::Rasterizer::IndexData& BSR::Rasterizer::IndexBuffer::operator[] (const size_t _Index) const
 {
 	return Indexes[_Index];
 }
 
-void Rasterizer::IndexBuffer::operator= (const IndexBuffer& _Other)
+void BSR::Rasterizer::IndexBuffer::operator= (const IndexBuffer& _Other)
 {
 	Indexes = _Other.Indexes;
 }
 
-void Rasterizer::IndexBuffer::operator= (IndexBuffer&& _Other) noexcept
+void BSR::Rasterizer::IndexBuffer::operator= (IndexBuffer&& _Other) noexcept
 {
 	Indexes = std::move(_Other.Indexes);
 }
 
 
 
-void Rasterizer::Mesh::GenerateCube(Mesh& _Mesh)
+void BSR::Rasterizer::Mesh::GenerateCube(Mesh& _Mesh)
 {
 	_Mesh.VBO.Clear();
 	_Mesh.IBO.Clear();
 
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, 0.5f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, 0.5f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, -0.5f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, 0.5f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, -0.5f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, -0.5f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, -0.5f), Math::Vec3f(0.0f, 0.0f, -1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, -0.5f), Math::Vec3f(0.0f, 0.0f, -1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, -0.5f), Math::Vec3f(0.0f, 0.0f, -1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, -0.5f), Math::Vec3f(0.0f, 0.0f, -1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, -0.5f), Math::Vec3f(0.0f, 0.0f, -1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, -0.5f), Math::Vec3f(0.0f, 0.0f, -1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, -0.5f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, -0.5f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, 0.5f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, -0.5f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, 0.5f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, 0.5f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, 0.5f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, 0.5f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, 0.5f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, 0.5f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, 0.5f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, 0.5f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec2f(0.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, -0.5f), Math::Vec3f(0.0f, -1.0f, 0.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, -0.5f), Math::Vec3f(0.0f, -1.0f, 0.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, 0.5f), Math::Vec3f(0.0f, -1.0f, 0.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, -0.5f), Math::Vec3f(0.0f, -1.0f, 0.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, 0.5f), Math::Vec3f(0.0f, -1.0f, 0.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, 0.5f), Math::Vec3f(0.0f, -1.0f, 0.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, -0.5f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, -0.5f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, 0.5f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, -0.5f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, 0.5f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, 0.5f), Math::Vec3f(0.0f, 1.0f, 0.0f), Math::Vec3f(-1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, -0.5f, 0.5f), BSR::Math::Vec3f(-1.0f, 0.0f, 0.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, 0.5f, 0.5f), BSR::Math::Vec3f(-1.0f, 0.0f, 0.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(1.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, 0.5f, -0.5f), BSR::Math::Vec3f(-1.0f, 0.0f, 0.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, -0.5f, 0.5f), BSR::Math::Vec3f(-1.0f, 0.0f, 0.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, 0.5f, -0.5f), BSR::Math::Vec3f(-1.0f, 0.0f, 0.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, -0.5f, -0.5f), BSR::Math::Vec3f(-1.0f, 0.0f, 0.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(0.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, -0.5f, -0.5f), BSR::Math::Vec3f(0.0f, 0.0f, -1.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, 0.5f, -0.5f), BSR::Math::Vec3f(0.0f, 0.0f, -1.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(1.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, 0.5f, -0.5f), BSR::Math::Vec3f(0.0f, 0.0f, -1.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, -0.5f, -0.5f), BSR::Math::Vec3f(0.0f, 0.0f, -1.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, 0.5f, -0.5f), BSR::Math::Vec3f(0.0f, 0.0f, -1.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, -0.5f, -0.5f), BSR::Math::Vec3f(0.0f, 0.0f, -1.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(0.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, -0.5f, -0.5f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, 0.5f, -0.5f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(1.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, 0.5f, 0.5f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, -0.5f, -0.5f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, 0.5f, 0.5f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, -0.5f, 0.5f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(0.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, -0.5f, 0.5f), BSR::Math::Vec3f(0.0f, 0.0f, 1.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, 0.5f, 0.5f), BSR::Math::Vec3f(0.0f, 0.0f, 1.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(1.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, 0.5f, 0.5f), BSR::Math::Vec3f(0.0f, 0.0f, 1.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, -0.5f, 0.5f), BSR::Math::Vec3f(0.0f, 0.0f, 1.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, 0.5f, 0.5f), BSR::Math::Vec3f(0.0f, 0.0f, 1.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, -0.5f, 0.5f), BSR::Math::Vec3f(0.0f, 0.0f, 1.0f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec2f(0.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, -0.5f, -0.5f), BSR::Math::Vec3f(0.0f, -1.0f, 0.0f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, -0.5f, -0.5f), BSR::Math::Vec3f(0.0f, -1.0f, 0.0f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(1.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, -0.5f, 0.5f), BSR::Math::Vec3f(0.0f, -1.0f, 0.0f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, -0.5f, -0.5f), BSR::Math::Vec3f(0.0f, -1.0f, 0.0f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, -0.5f, 0.5f), BSR::Math::Vec3f(0.0f, -1.0f, 0.0f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, -0.5f, 0.5f), BSR::Math::Vec3f(0.0f, -1.0f, 0.0f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(0.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, 0.5f, -0.5f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec3f(-1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, 0.5f, -0.5f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec3f(-1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(1.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, 0.5f, 0.5f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec3f(-1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, 0.5f, -0.5f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec3f(-1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, 0.5f, 0.5f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec3f(-1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, 0.5f, 0.5f), BSR::Math::Vec3f(0.0f, 1.0f, 0.0f), BSR::Math::Vec3f(-1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(0.0f, 1.0f)));
 
 	_Mesh.IBO.PushBack(IndexData(0, 1, 2));
 	_Mesh.IBO.PushBack(IndexData(3, 4, 5));
@@ -246,15 +246,15 @@ void Rasterizer::Mesh::GenerateCube(Mesh& _Mesh)
 	_Mesh.IBO.PushBack(IndexData(33, 34, 35));
 }
 
-void Rasterizer::Mesh::GenerateQuad(Mesh& _Mesh)
+void BSR::Rasterizer::Mesh::GenerateQuad(Mesh& _Mesh)
 {
 	_Mesh.VBO.Clear();
 	_Mesh.IBO.Clear();
 
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, -0.5f, 0.0f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(-0.5f, 0.5f, 0.0f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(0.0f, 1.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, -0.5f, 0.0f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 0.0f)));
-	_Mesh.VBO.PushBack(VertexData(Math::Vec3f(0.5f, 0.5f, 0.0f), Math::Vec3f(0.0f, 0.0f, 1.0f), Math::Vec3f(1.0f, 0.0f, 0.0f), Math::Vec2f(1.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, -0.5f, 0.0f), BSR::Math::Vec3f(0.0f, 0.0f, 1.0f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(0.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(-0.5f, 0.5f, 0.0f), BSR::Math::Vec3f(0.0f, 0.0f, 1.0f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(0.0f, 1.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, -0.5f, 0.0f), BSR::Math::Vec3f(0.0f, 0.0f, 1.0f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(1.0f, 0.0f)));
+	_Mesh.VBO.PushBack(VertexData(BSR::Math::Vec3f(0.5f, 0.5f, 0.0f), BSR::Math::Vec3f(0.0f, 0.0f, 1.0f), BSR::Math::Vec3f(1.0f, 0.0f, 0.0f), BSR::Math::Vec2f(1.0f, 1.0f)));
 
 	_Mesh.IBO.PushBack(IndexData(0, 2, 1));
 	_Mesh.IBO.PushBack(IndexData(1, 2, 3));
@@ -262,17 +262,17 @@ void Rasterizer::Mesh::GenerateQuad(Mesh& _Mesh)
 
 
 
-Rasterizer::Model::Model() : Meshes()
+BSR::Rasterizer::Model::Model() : Meshes()
 {
 
 }
 
-Rasterizer::Model::Model(Model&& _Other) noexcept : Meshes(std::move(_Other.Meshes))
+BSR::Rasterizer::Model::Model(Model&& _Other) noexcept : Meshes(std::move(_Other.Meshes))
 {
 
 }
 
-Rasterizer::Model::~Model()
+BSR::Rasterizer::Model::~Model()
 {
 	for (size_t _Index = 0; _Index < Meshes.size(); _Index++)
 	{
@@ -280,7 +280,7 @@ Rasterizer::Model::~Model()
 	}
 }
 
-bool Rasterizer::Model::Load(const wchar_t* _Path)
+bool BSR::Rasterizer::Model::Load(const wchar_t* _Path)
 {
 	struct MeshFileData
 	{
@@ -314,20 +314,20 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 
 	std::vector<MeshFileData> _Meshes;
 
-	std::vector<Math::Vec3f> _Positions;
-	std::vector<Math::Vec3f> _Normals;
-	std::vector<Math::Vec2f> _TextureCoords;
+	std::vector<BSR::Math::Vec3f> _Positions;
+	std::vector<BSR::Math::Vec3f> _Normals;
+	std::vector<BSR::Math::Vec2f> _TextureCoords;
 
 	std::vector<std::vector<FaceVertex>> _Faces;
 
-	wchar_t _Line[OBJ_MAX_LINE_LEN + 1];
-	wchar_t _OriginalLine[OBJ_MAX_LINE_LEN + 1];
+	wchar_t _Line[BSR_OBJ_MAX_LINE_LEN + 1];
+	wchar_t _OriginalLine[BSR_OBJ_MAX_LINE_LEN + 1];
 
 	while (!_fIn.eof())
 	{
-		_fIn.getline(_OriginalLine, OBJ_MAX_LINE_LEN);
+		_fIn.getline(_OriginalLine, BSR_OBJ_MAX_LINE_LEN);
 
-		for (size_t _Index = 0; _Index < OBJ_MAX_LINE_LEN + 1; _Index++)
+		for (size_t _Index = 0; _Index < BSR_OBJ_MAX_LINE_LEN + 1; _Index++)
 		{
 			_Line[_Index] = _OriginalLine[_Index];
 		}
@@ -425,7 +425,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				return false;
 			}
 
-			_Positions.push_back(Math::Vec3f(std::stof(_Tokens[1]), std::stof(_Tokens[2]), std::stof(_Tokens[3])));
+			_Positions.push_back(BSR::Math::Vec3f(std::stof(_Tokens[1]), std::stof(_Tokens[2]), std::stof(_Tokens[3])));
 
 			continue;
 		}
@@ -442,7 +442,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				return false;
 			}
 
-			_Normals.push_back((Math::Vec3f(std::stof(_Tokens[1]), std::stof(_Tokens[2]), std::stof(_Tokens[3]))));
+			_Normals.push_back((BSR::Math::Vec3f(std::stof(_Tokens[1]), std::stof(_Tokens[2]), std::stof(_Tokens[3]))));
 
 			continue;
 		}
@@ -459,7 +459,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				return false;
 			}
 
-			_TextureCoords.push_back((Math::Vec2f(std::stof(_Tokens[1]), std::stof(_Tokens[2]))));
+			_TextureCoords.push_back((BSR::Math::Vec2f(std::stof(_Tokens[1]), std::stof(_Tokens[2]))));
 
 			continue;
 		}
@@ -502,8 +502,8 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				{
 				case 0:
 				{
-					X64_CALL(_FaceVertex.Position = std::stoull(_Tokens[_Index]) - 1);
-					X86_CALL(_FaceVertex.Position = std::stoul(_Tokens[_Index]) - 1);
+					BSR_X64_CALL(_FaceVertex.Position = std::stoull(_Tokens[_Index]) - 1);
+					BSR_X86_CALL(_FaceVertex.Position = std::stoul(_Tokens[_Index]) - 1);
 
 					if (_FaceVertex.Position >= _Positions.size())
 					{
@@ -519,7 +519,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				}
 				case 1:
 				{
-					wchar_t _FaceVertexText[OBJ_MAX_LINE_LEN + 1];
+					wchar_t _FaceVertexText[BSR_OBJ_MAX_LINE_LEN + 1];
 
 					for (size_t _IndexCopy = 0; _IndexCopy < _TokenLen + 1; _IndexCopy++)
 					{
@@ -539,8 +539,8 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 						}
 					}
 
-					X64_CALL(_FaceVertex.Position = std::stoull(_FaceVertexTokens[0]) - 1);
-					X86_CALL(_FaceVertex.Position = std::stoul(_FaceVertexTokens[0]) - 1);
+					BSR_X64_CALL(_FaceVertex.Position = std::stoull(_FaceVertexTokens[0]) - 1);
+					BSR_X86_CALL(_FaceVertex.Position = std::stoul(_FaceVertexTokens[0]) - 1);
 
 					if (_FaceVertex.Position >= _Positions.size())
 					{
@@ -552,8 +552,8 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 						return false;
 					}
 
-					X64_CALL(_FaceVertex.TextureCoords = std::stoull(_FaceVertexTokens[1]) - 1);
-					X86_CALL(_FaceVertex.TextureCoords = std::stoul(_FaceVertexTokens[1]) - 1);
+					BSR_X64_CALL(_FaceVertex.TextureCoords = std::stoull(_FaceVertexTokens[1]) - 1);
+					BSR_X86_CALL(_FaceVertex.TextureCoords = std::stoul(_FaceVertexTokens[1]) - 1);
 
 					if (_FaceVertex.TextureCoords >= _TextureCoords.size())
 					{
@@ -569,7 +569,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				}
 				case 2:
 				{
-					wchar_t _FaceVertexText[OBJ_MAX_LINE_LEN + 1];
+					wchar_t _FaceVertexText[BSR_OBJ_MAX_LINE_LEN + 1];
 
 					for (size_t _IndexCopy = 0; _IndexCopy < _TokenLen + 1; _IndexCopy++)
 					{
@@ -591,8 +591,8 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 
 					if (_FaceVertexTokens.size() == 2)
 					{
-						X64_CALL(_FaceVertex.Position = std::stoull(_FaceVertexTokens[0]) - 1);
-						X86_CALL(_FaceVertex.Position = std::stoul(_FaceVertexTokens[0]) - 1);
+						BSR_X64_CALL(_FaceVertex.Position = std::stoull(_FaceVertexTokens[0]) - 1);
+						BSR_X86_CALL(_FaceVertex.Position = std::stoul(_FaceVertexTokens[0]) - 1);
 
 						if (_FaceVertex.Position >= _Positions.size())
 						{
@@ -604,8 +604,8 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 							return false;
 						}
 
-						X64_CALL(_FaceVertex.Normal = std::stoull(_FaceVertexTokens[1]) - 1);
-						X86_CALL(_FaceVertex.Normal = std::stoul(_FaceVertexTokens[1]) - 1);
+						BSR_X64_CALL(_FaceVertex.Normal = std::stoull(_FaceVertexTokens[1]) - 1);
+						BSR_X86_CALL(_FaceVertex.Normal = std::stoul(_FaceVertexTokens[1]) - 1);
 
 						if (_FaceVertex.Normal >= _Normals.size())
 						{
@@ -619,8 +619,8 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 					}
 					else
 					{
-						X64_CALL(_FaceVertex.Position = std::stoull(_FaceVertexTokens[0]) - 1);
-						X86_CALL(_FaceVertex.Position = std::stoul(_FaceVertexTokens[0]) - 1);
+						BSR_X64_CALL(_FaceVertex.Position = std::stoull(_FaceVertexTokens[0]) - 1);
+						BSR_X86_CALL(_FaceVertex.Position = std::stoul(_FaceVertexTokens[0]) - 1);
 
 						if (_FaceVertex.Position >= _Positions.size())
 						{
@@ -632,8 +632,8 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 							return false;
 						}
 
-						X64_CALL(_FaceVertex.TextureCoords = std::stoull(_FaceVertexTokens[1]) - 1);
-						X86_CALL(_FaceVertex.TextureCoords = std::stoul(_FaceVertexTokens[1]) - 1);
+						BSR_X64_CALL(_FaceVertex.TextureCoords = std::stoull(_FaceVertexTokens[1]) - 1);
+						BSR_X86_CALL(_FaceVertex.TextureCoords = std::stoul(_FaceVertexTokens[1]) - 1);
 
 						if (_FaceVertex.TextureCoords >= _TextureCoords.size())
 						{
@@ -645,8 +645,8 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 							return false;
 						}
 
-						X64_CALL(_FaceVertex.Normal = std::stoull(_FaceVertexTokens[2]) - 1);
-						X86_CALL(_FaceVertex.Normal = std::stoul(_FaceVertexTokens[2]) - 1);
+						BSR_X64_CALL(_FaceVertex.Normal = std::stoull(_FaceVertexTokens[2]) - 1);
+						BSR_X86_CALL(_FaceVertex.Normal = std::stoul(_FaceVertexTokens[2]) - 1);
 
 						if (_FaceVertex.Normal >= _Normals.size())
 						{
@@ -717,7 +717,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				}
 				else
 				{
-					_VertA.Normal = Math::Vec3f::Cross(_VertB.Position - _VertA.Position, _VertC.Position - _VertA.Position);
+					_VertA.Normal = BSR::Math::Vec3f::Cross(_VertB.Position - _VertA.Position, _VertC.Position - _VertA.Position);
 				}
 				if (_CurrentFace[0].TextureCoords != (size_t)(-1))
 				{
@@ -725,7 +725,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				}
 				else
 				{
-					_VertA.TextureCoords = Math::Vec2f(0.0f, 0.0f);
+					_VertA.TextureCoords = BSR::Math::Vec2f(0.0f, 0.0f);
 				}
 
 				if (_CurrentFace[_IndexFaceVertex].Normal != (size_t)(-1))
@@ -734,7 +734,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				}
 				else
 				{
-					_VertB.Normal = Math::Vec3f::Cross(_VertB.Position - _VertA.Position, _VertC.Position - _VertA.Position);
+					_VertB.Normal = BSR::Math::Vec3f::Cross(_VertB.Position - _VertA.Position, _VertC.Position - _VertA.Position);
 				}
 				if (_CurrentFace[_IndexFaceVertex].TextureCoords != (size_t)(-1))
 				{
@@ -742,7 +742,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				}
 				else
 				{
-					_VertB.TextureCoords = Math::Vec2f(0.0f, 0.0f);
+					_VertB.TextureCoords = BSR::Math::Vec2f(0.0f, 0.0f);
 				}
 
 				if (_CurrentFace[_IndexFaceVertex + 1].Normal != (size_t)(-1))
@@ -751,7 +751,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				}
 				else
 				{
-					_VertC.Normal = Math::Vec3f::Cross(_VertB.Position - _VertA.Position, _VertC.Position - _VertA.Position);
+					_VertC.Normal = BSR::Math::Vec3f::Cross(_VertB.Position - _VertA.Position, _VertC.Position - _VertA.Position);
 				}
 				if (_CurrentFace[_IndexFaceVertex + 1].TextureCoords != (size_t)(-1))
 				{
@@ -759,18 +759,18 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 				}
 				else
 				{
-					_VertC.TextureCoords = Math::Vec2f(0.0f, 0.0f);
+					_VertC.TextureCoords = BSR::Math::Vec2f(0.0f, 0.0f);
 				}
 
 				if (_CurrentFace[0].TextureCoords != (size_t)(-1) && _CurrentFace[_IndexFaceVertex].TextureCoords != (size_t)(-1) && _CurrentFace[_IndexFaceVertex + 1].TextureCoords != (size_t)(-1))
 				{
 					if (_VertA.TextureCoords != _VertB.TextureCoords && _VertB.TextureCoords != _VertC.TextureCoords && _VertC.TextureCoords != _VertA.TextureCoords)
 					{
-						Math::Vec3f _Edge1 = _VertB.Position - _VertA.Position;
-						Math::Vec3f _Edge2 = _VertC.Position - _VertA.Position;
+						BSR::Math::Vec3f _Edge1 = _VertB.Position - _VertA.Position;
+						BSR::Math::Vec3f _Edge2 = _VertC.Position - _VertA.Position;
 
-						Math::Vec2f _Delta1 = _VertB.TextureCoords - _VertA.TextureCoords;
-						Math::Vec2f _Delta2 = _VertC.TextureCoords - _VertA.TextureCoords;
+						BSR::Math::Vec2f _Delta1 = _VertB.TextureCoords - _VertA.TextureCoords;
+						BSR::Math::Vec2f _Delta2 = _VertC.TextureCoords - _VertA.TextureCoords;
 
 						float _Factor = 1.0f / (_Delta1.x * _Delta2.y - _Delta2.x * _Delta1.y);
 
@@ -790,16 +790,16 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 					}
 					else
 					{
-						_VertA.Tangent = Math::Vec3f(0.0f, 0.0f, 0.0f);
-						_VertB.Tangent = Math::Vec3f(0.0f, 0.0f, 0.0f);
-						_VertC.Tangent = Math::Vec3f(0.0f, 0.0f, 0.0f);
+						_VertA.Tangent = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
+						_VertB.Tangent = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
+						_VertC.Tangent = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
 					}
 				}
 				else
 				{
-					_VertA.Tangent = Math::Vec3f(0.0f, 0.0f, 0.0f);
-					_VertB.Tangent = Math::Vec3f(0.0f, 0.0f, 0.0f);
-					_VertC.Tangent = Math::Vec3f(0.0f, 0.0f, 0.0f);
+					_VertA.Tangent = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
+					_VertB.Tangent = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
+					_VertC.Tangent = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
 				}
 
 				IndexData _IndexData;
@@ -824,7 +824,7 @@ bool Rasterizer::Model::Load(const wchar_t* _Path)
 	return true;
 }
 
-const bool Rasterizer::Model::Save(const wchar_t* _Path) const
+const bool BSR::Rasterizer::Model::Save(const wchar_t* _Path) const
 {
 	std::wofstream _fOut;
 
@@ -889,13 +889,13 @@ const bool Rasterizer::Model::Save(const wchar_t* _Path) const
 	return true;
 }
 
-void Rasterizer::Model::PushBack(const Mesh& _Mesh)
+void BSR::Rasterizer::Model::PushBack(const Mesh& _Mesh)
 {
 	for (size_t _Index = 0; _Index < Meshes.size(); _Index++)
 	{
 		if (String::TheSame(Meshes[_Index].Name, _Mesh.Name))
 		{
-			DEBUG_BREAK();
+			BSR_DEBUG_BREAK();
 			return;
 		}
 	}
@@ -910,7 +910,7 @@ void Rasterizer::Model::PushBack(const Mesh& _Mesh)
 
 		if (!_NewMesh.Name)
 		{
-			DEBUG_BREAK();
+			BSR_DEBUG_BREAK();
 			return;
 		}
 
@@ -923,13 +923,13 @@ void Rasterizer::Model::PushBack(const Mesh& _Mesh)
 	Meshes.emplace_back(_NewMesh);
 }
 
-void Rasterizer::Model::EmplaceBack(Mesh&& _Mesh) noexcept
+void BSR::Rasterizer::Model::EmplaceBack(Mesh&& _Mesh) noexcept
 {
 	for (size_t _Index = 0; _Index < Meshes.size(); _Index++)
 	{
 		if (String::TheSame(Meshes[_Index].Name, _Mesh.Name))
 		{
-			DEBUG_BREAK();
+			BSR_DEBUG_BREAK();
 			return;
 		}
 	}
@@ -937,13 +937,13 @@ void Rasterizer::Model::EmplaceBack(Mesh&& _Mesh) noexcept
 	Meshes.emplace_back(std::move(_Mesh));
 }
 
-void Rasterizer::Model::Erase(const size_t _Index)
+void BSR::Rasterizer::Model::Erase(const size_t _Index)
 {
 	delete[] Meshes[_Index].Name;
 	Meshes.erase(Meshes.begin() + _Index);
 }
 
-void Rasterizer::Model::Clear()
+void BSR::Rasterizer::Model::Clear()
 {
 	for (size_t _Index = 0; _Index < Meshes.size(); _Index++)
 	{
@@ -953,22 +953,22 @@ void Rasterizer::Model::Clear()
 	Meshes.clear();
 }
 
-const size_t Rasterizer::Model::GetSize() const
+const size_t BSR::Rasterizer::Model::GetSize() const
 {
 	return Meshes.size();
 }
 
-Rasterizer::Mesh& Rasterizer::Model::operator[] (const size_t _Index)
+BSR::Rasterizer::Mesh& BSR::Rasterizer::Model::operator[] (const size_t _Index)
 {
 	return Meshes[_Index];
 }
 
-const Rasterizer::Mesh& Rasterizer::Model::operator[] (const size_t _Index) const
+const BSR::Rasterizer::Mesh& BSR::Rasterizer::Model::operator[] (const size_t _Index) const
 {
 	return Meshes[_Index];
 }
 
-void Rasterizer::Model::operator= (Model&& _Other) noexcept
+void BSR::Rasterizer::Model::operator= (Model&& _Other) noexcept
 {
 	Clear();
 

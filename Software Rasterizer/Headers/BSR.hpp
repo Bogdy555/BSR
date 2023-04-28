@@ -1,6 +1,6 @@
-#ifndef Main_hpp
+#ifndef BSR_hpp
 
-#define Main_hpp
+#define BSR_hpp
 
 
 

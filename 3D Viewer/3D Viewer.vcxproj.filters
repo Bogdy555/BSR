@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Files\3D Models\Objects.wfobj" />
+    <None Include="Files\Environments\ParkingLot\Environment.hdr" />
+    <None Include="Files\Environments\ParkingLot\Iradiance.hdr" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Files\Intern\BRDFLookUp.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Aluminum\Albedo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Aluminum\Metalness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Aluminum\Normal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Aluminum\Roughness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Container\Albedo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Container\AmbientOcclusion.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Container\Metalness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Container\Normal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Container\Roughness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Gold\Metalness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Gold\Albedo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Gold\Normal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Gold\Roughness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Iron\Metalness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Iron\Albedo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Iron\Normal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Iron\Roughness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Plastic\Albedo Green.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Plastic\Albedo Red.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Plastic\AmbientOcclusion.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Plastic\Metalness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Plastic\Normal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Plastic\Roughness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sources\EntryPoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Headers\BSR_APP.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Dependencies.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Macros.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Templates.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

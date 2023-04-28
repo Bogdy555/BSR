@@ -15,54 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sources\EntryPoint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Math_Matrix.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Math_Vector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Math.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\AssetManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Rasterizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\String.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Rasterizer_Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Rasterizer_Geometry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Time.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Headers\Main.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Headers\Dependencies.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Vector.hpp">
+    <ClInclude Include="Headers\AssetManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Templates.hpp">
+    <ClInclude Include="Headers\Image.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Headers\Macros.hpp">
@@ -71,105 +30,64 @@
     <ClInclude Include="Headers\Math.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Image.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\AssetManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Headers\Rasterizer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Headers\String.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\WinTargetVer.hpp">
+    <ClInclude Include="Headers\Templates.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Headers\Time.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\Vector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Headers\Window.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\WinTargetVer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\BSR.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Files\3D Models\Objects.wfobj" />
-    <None Include="Files\Environments\ParkingLot\Environment.hdr" />
-    <None Include="Files\Environments\ParkingLot\Iradiance.hdr" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Files\Materials\Aluminum\Albedo.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Aluminum\Metalness.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Aluminum\Normal.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Aluminum\Roughness.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Container\Albedo.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Container\AmbientOcclusion.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Container\Metalness.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Container\Normal.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Container\Roughness.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Gold\Albedo.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Gold\Metalness.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Gold\Normal.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Gold\Roughness.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Iron\Albedo.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Iron\Metalness.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Iron\Normal.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Iron\Roughness.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Plastic\Albedo Red.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Plastic\Albedo Green.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Plastic\Metalness.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Plastic\Roughness.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Plastic\Normal.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Materials\Plastic\AmbientOcclusion.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Files\Intern\BRDFLookUp.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
+    <ClCompile Include="Sources\AssetManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Math.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Math_Matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Math_Vector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Rasterizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Rasterizer_Geometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Rasterizer_Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\String.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

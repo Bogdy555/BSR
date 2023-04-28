@@ -1,6 +1,6 @@
-#ifndef Dependencies_hpp
+#ifndef BSR_Dependencies_hpp
 
-#define Dependencies_hpp
+#define BSR_Dependencies_hpp
 
 
 
@@ -42,116 +42,121 @@
 
 
 
-template <typename T> class Vector;
-
-namespace Time
+namespace BSR
 {
 
-	class Timer;
+	template <typename T> class Vector;
 
-}
+	namespace Time
+	{
 
-namespace String
-{
+		class Timer;
+
+	}
+
+	namespace String
+	{
 
 
 
-}
+	}
 
-namespace Math
-{
+	namespace Math
+	{
 
-	struct Vec2f;
+		struct Vec2f;
 
-	struct Vec3f;
+		struct Vec3f;
 
-	struct Vec4f;
+		struct Vec4f;
 
-	class Mat2f;
+		class Mat2f;
 
-	class Mat3f;
+		class Mat3f;
 
-	class Mat4f;
+		class Mat4f;
 
-}
+	}
 
-struct Asset;
+	struct Asset;
 
-class AssetManager;
+	class AssetManager;
 
-namespace Image
-{
+	namespace Image
+	{
 
-	struct Image;
+		struct Image;
 
-	struct ImageFloat;
+		struct ImageFloat;
 
-}
+	}
 
-struct WindowCreationDescriptor;
+	struct WindowCreationDescriptor;
 
-class Window;
+	class Window;
 
-namespace Rasterizer
-{
+	namespace Rasterizer
+	{
 
-	enum LerpTypes : const uint8_t;
+		enum LerpTypes : const uint8_t;
 
-	enum WrapTypes : const uint8_t;
+		enum WrapTypes : const uint8_t;
 
-	class Texture;
+		class Texture;
 
-	class Texture_R;
+		class Texture_R;
 
-	class Texture_RG;
+		class Texture_RG;
 
-	class Texture_RGB;
+		class Texture_RGB;
 
-	class Texture_RGBA;
+		class Texture_RGBA;
 
-	class Texture_Float_R;
+		class Texture_Float_R;
 
-	class Texture_Float_RG;
+		class Texture_Float_RG;
 
-	class Texture_Float_RGB;
+		class Texture_Float_RGB;
 
-	class Texture_Float_RGBA;
+		class Texture_Float_RGBA;
 
-	enum CullingTypes : uint8_t;
+		enum CullingTypes : uint8_t;
 
-	enum DepthTestingTypes : uint8_t;
+		enum DepthTestingTypes : uint8_t;
 
-	enum BlendingTypes : uint8_t;
+		enum BlendingTypes : uint8_t;
 
-	typedef const Math::Vec4f (*VertexShaderFnc)(const void* _Vertex, const void* _Uniforms, float* _OutLerpers);
+		typedef const Math::Vec4f(*VertexShaderFnc)(const void* _Vertex, const void* _Uniforms, float* _OutLerpers);
 
-	typedef const bool (*GeometryShaderFnc)(const Math::Vec4f& _APosition, const Math::Vec4f& _BPosition, const Math::Vec4f& _CPosition, const float* _ALerpers, const float* _BLerpers, const float* _CLerpers, const void* _Uniforms, std::vector<Math::Vec4f>& _PositionsOut, std::vector<float*>& _LerpersOut);
+		typedef const bool (*GeometryShaderFnc)(const Math::Vec4f& _APosition, const Math::Vec4f& _BPosition, const Math::Vec4f& _CPosition, const float* _ALerpers, const float* _BLerpers, const float* _CLerpers, const void* _Uniforms, std::vector<Math::Vec4f>& _PositionsOut, std::vector<float*>& _LerpersOut);
 
-	typedef void (*FragmentShaderFnc)(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType);
+		typedef void (*FragmentShaderFnc)(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType);
 
-	class Context;
+		class Context;
 
-	struct Material;
+		struct Material;
 
-	enum LightTypes : const uint8_t;
+		enum LightTypes : const uint8_t;
 
-	struct Light;
+		struct Light;
 
-	struct Camera;
+		struct Camera;
 
-	struct Transform;
+		struct Transform;
 
-	struct VertexData;
+		struct VertexData;
 
-	class VertexBuffer;
+		class VertexBuffer;
 
-	struct IndexData;
+		struct IndexData;
 
-	class IndexBuffer;
+		class IndexBuffer;
 
-	struct Mesh;
+		struct Mesh;
 
-	class Model;
+		class Model;
+
+	}
 
 }
 
