@@ -24,8 +24,8 @@ void BSR_APP::Application::Update()
 	{
 	case _MainMenu:
 	{
-		std::unique_ptr<BSR::Menu*> _Menu = std::make_unique<BSR::Menu*>((BSR::Menu*)(new MainMenu));
-		(*_Menu.get())->Run(this);
+		std::unique_ptr<BSR::Menu> _Menu = std::make_unique<BSR_APP::MainMenu>();
+		_Menu->Run(this);
 		break;
 	}
 	default:
