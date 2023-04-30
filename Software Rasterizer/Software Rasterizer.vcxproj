@@ -159,12 +159,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Headers\Application.hpp" />
     <ClInclude Include="Headers\AssetManager.hpp" />
     <ClInclude Include="Headers\BSR.hpp" />
     <ClInclude Include="Headers\Dependencies.hpp" />
     <ClInclude Include="Headers\Image.hpp" />
     <ClInclude Include="Headers\Macros.hpp" />
     <ClInclude Include="Headers\Math.hpp" />
+    <ClInclude Include="Headers\Menu.hpp" />
+    <ClInclude Include="Headers\MultiProcessing.hpp" />
     <ClInclude Include="Headers\Rasterizer.hpp" />
     <ClInclude Include="Headers\String.hpp" />
     <ClInclude Include="Headers\Templates.hpp" />
@@ -174,11 +177,14 @@
     <ClInclude Include="Headers\WinTargetVer.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Sources\Application.cpp" />
     <ClCompile Include="Sources\AssetManager.cpp" />
     <ClCompile Include="Sources\Image.cpp" />
     <ClCompile Include="Sources\Math.cpp" />
     <ClCompile Include="Sources\Math_Matrix.cpp" />
     <ClCompile Include="Sources\Math_Vector.cpp" />
+    <ClCompile Include="Sources\Menu.cpp" />
+    <ClCompile Include="Sources\MultiProcessing.cpp" />
     <ClCompile Include="Sources\Rasterizer.cpp" />
     <ClCompile Include="Sources\Rasterizer_Geometry.cpp" />
     <ClCompile Include="Sources\Rasterizer_Texture.cpp" />

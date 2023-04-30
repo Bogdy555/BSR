@@ -10,6 +10,10 @@
 
 #include "Dependencies.hpp"
 
+#include "Application.hpp"
+
+#include "MainMenu.hpp"
+
 
 
 #pragma pack(pop)

@@ -27,7 +27,11 @@
 namespace BSR_APP
 {
 
+	class Application;
 
+	enum MenuTypes : const uint64_t;
+
+	class MainMenu;
 
 }
 

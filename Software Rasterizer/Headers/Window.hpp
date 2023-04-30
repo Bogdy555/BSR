@@ -21,7 +21,7 @@ namespace BSR
 		int Y = 0;
 		int nWidth = 0;
 		int nHeight = 0;
-		HWND hWndParent = NULL;
+		HWND HandleParent = NULL;
 		HMENU hMenu = NULL;
 		HINSTANCE hInstance = NULL;
 		LPVOID lpParam = nullptr;
@@ -62,7 +62,7 @@ namespace BSR
 		void operator= (const Window& _Other) = delete;
 		void operator= (Window&& _Other) noexcept;
 
-		static Window* GetWindowPtr(const HWND _hWnd);
+		static Window* GetWindowPtr(const HWND _Handle);
 
 	private:
 
@@ -70,7 +70,7 @@ namespace BSR
 
 		static Window* LastWnd;
 
-		HWND hWnd;
+		HWND Handle;
 		std::thread WndThread;
 		void* UserData;
 

@@ -218,12 +218,16 @@
     <Image Include="Files\Materials\Plastic\Roughness.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Sources\Application.cpp" />
     <ClCompile Include="Sources\EntryPoint.cpp" />
+    <ClCompile Include="Sources\MainMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Headers\Application.hpp" />
     <ClInclude Include="Headers\Dependencies.hpp" />
     <ClInclude Include="Headers\Macros.hpp" />
     <ClInclude Include="Headers\BSR_APP.hpp" />
+    <ClInclude Include="Headers\MainMenu.hpp" />
     <ClInclude Include="Headers\Templates.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

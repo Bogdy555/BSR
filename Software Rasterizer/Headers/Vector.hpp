@@ -11,6 +11,28 @@
 namespace BSR
 {
 
+	class OOM : public std::exception
+	{
+
+	public:
+
+		explicit OOM()
+		{
+
+		}
+
+		virtual ~OOM() noexcept
+		{
+
+		}
+
+		virtual const char* what() const noexcept
+		{
+			return "OOM detected.";
+		}
+
+	};
+
 	template <typename T> class Vector
 	{
 
@@ -32,7 +54,7 @@ namespace BSR
 				if (!Data)
 				{
 					Size = 0;
-					return;
+					throw OOM();
 				}
 
 				for (size_t _Index = 0; _Index < Size; _Index++)
@@ -52,7 +74,18 @@ namespace BSR
 		{
 			for (const T& _Elem : _List)
 			{
-				PushBack(_Elem);
+				try
+				{
+					PushBack(_Elem);
+				}
+				catch (OOM _Error)
+				{
+					throw OOM();
+				}
+				catch (...)
+				{
+					BSR_DEBUG_BREAK();
+				}
 			}
 		}
 
@@ -73,7 +106,7 @@ namespace BSR
 
 			if (!_NewData)
 			{
-				return;
+				throw OOM();
 			}
 
 			for (size_t _Index = 0; _Index < _NewSize - 1; _Index++)
@@ -101,7 +134,7 @@ namespace BSR
 
 			if (!_NewData)
 			{
-				return;
+				throw OOM();
 			}
 
 			for (size_t _Index = 0; _Index < _NewSize - 1; _Index++)
@@ -129,7 +162,7 @@ namespace BSR
 
 			if (!_NewData)
 			{
-				return;
+				throw OOM();
 			}
 
 			for (size_t _Index = 0; _Index < _NewSize - 1; _Index++)
@@ -264,7 +297,7 @@ namespace BSR
 				if (!Data)
 				{
 					Size = 0;
-					return *this;
+					throw OOM();
 				}
 
 				for (size_t _Index = 0; _Index < Size; _Index++)

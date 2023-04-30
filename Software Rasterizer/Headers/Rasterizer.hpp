@@ -37,12 +37,12 @@ namespace BSR
 
 		public:
 
-			Texture();
+			Texture(const uint8_t _LerpType = _LerpLinear, const uint8_t _WrapType = _WrapRepeat);
 			Texture(const Texture& _Other) = delete;
 			Texture(Texture&& _Other) noexcept;
 			virtual ~Texture();
 
-			virtual const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel) const = 0;
+			virtual const Math::Vec4f SampleRGBA(const Math::Vec2f& _TextureCoords, const float _MipLevel = 0.0f) const = 0;
 
 			void SetLerpType(const uint8_t _LerpType);
 			void SetWrapType(const uint8_t _WrapType);
@@ -330,14 +330,14 @@ namespace BSR
 
 		};
 
-		enum CullingTypes : uint8_t
+		enum CullingTypes : const uint8_t
 		{
 			_NoCulling = 0,
 			_ClockWiseCulling = 1,
 			_CounterClockWiseCulling = 2
 		};
 
-		enum DepthTestingTypes : uint8_t
+		enum DepthTestingTypes : const uint8_t
 		{
 			_NoDepthTesting = 0,
 			_LowerDepthTesting = 1,
@@ -346,7 +346,7 @@ namespace BSR
 			_HigherOrEqualDepthTesting = 4
 		};
 
-		enum BlendingTypes : uint8_t
+		enum BlendingTypes : const uint8_t
 		{
 			_NoBlending = 0,
 			_AditiveBlending = 1,
@@ -616,6 +616,24 @@ namespace BSR
 		private:
 
 			std::vector<Mesh> Meshes;
+
+		};
+
+		class Renderer
+		{
+
+		public:
+
+			Renderer() = default;
+			Renderer(const Renderer& _Other) = delete;
+			Renderer(Renderer&& _Other) noexcept = default;
+			~Renderer() = default;
+
+			virtual void Submit(void* _Data, const size_t _Command) = 0;
+			virtual void Flush() = 0;
+
+			void operator= (const Renderer& _Other) = delete;
+			Renderer& operator= (Renderer&& _Other) noexcept = default;
 
 		};
 

@@ -45,6 +45,14 @@
 namespace BSR
 {
 
+	enum States : const size_t
+	{
+		_Previous = 0,
+		_Current = 1
+	};
+
+	class OOM;
+
 	template <typename T> class Vector;
 
 	namespace Time
@@ -120,11 +128,11 @@ namespace BSR
 
 		class Texture_Float_RGBA;
 
-		enum CullingTypes : uint8_t;
+		enum CullingTypes : const uint8_t;
 
-		enum DepthTestingTypes : uint8_t;
+		enum DepthTestingTypes : const uint8_t;
 
-		enum BlendingTypes : uint8_t;
+		enum BlendingTypes : const uint8_t;
 
 		typedef const Math::Vec4f(*VertexShaderFnc)(const void* _Vertex, const void* _Uniforms, float* _OutLerpers);
 
@@ -156,7 +164,28 @@ namespace BSR
 
 		class Model;
 
+		class Renderer;
+
 	}
+
+	namespace MultiProcessing
+	{
+
+		enum ReturnValues : const int32_t;
+
+		class SharedMemory;
+
+		class SharedMutex;
+
+		class Process;
+
+	}
+
+	class Application;
+
+	enum MenuTypes : const uint64_t;
+
+	class Menu;
 
 }
 

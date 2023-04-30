@@ -41,6 +41,10 @@ The actual software is free for anyone as long as it is not used commercially, b
 
 Here I will list all of the classes and structures found in the project and a short description of them. This software was designed in a modular way so I will also provide the module name before the class name.
 
+* class BSR::OOM : public std::exception
+
+Out of memory exception class.
+
 * class BSR::Vector
 
 This class is a container that has exactly the same functionality as the std::vector from STL. It has support for move semantics and it is templated.
@@ -89,6 +93,14 @@ Data about an image.
 
 Stores an image with floating point components.
 
+* struct BSR::WindowCreationDescriptor
+
+A structure that packs all of the parameteres required for creating a window.
+
+* class BSR::Window
+
+A class that manages the threads for the grapthic windows used.
+
 * class BSR::Texture
 
 Base class for any texture.
@@ -124,14 +136,6 @@ A texture with 3 floating point components.
 * class BSR::Texture_Float_RGBA : public Texture
 
 A texture with 4 floating point components.
-
-* struct BSR::WindowCreationDescriptor
-
-A structure that packs all of the parameteres required for creating a window.
-
-* class BSR::Window
-
-A class that manages the threads for the grapthic windows used.
 
 * class BSR::Rasterizer::Context
 
@@ -176,3 +180,35 @@ Quick and dirty hack to pair up a VBO and an IBO.
 * class BSR::Rasterizer::Model
 
 A set of meshes that describe a 3D model.
+
+* class BSR::Renderer
+
+An interface that is used for renderers.
+
+* class BSR::MultiProcessing::SharedMemory
+
+Used to comunicate between processes.
+
+* class BSR::MultiProcessing::SharedMutex
+
+Used to comunicate between processes as well.
+
+* class BSR::MultiProcessing::Process
+
+Used to create and manage processes.
+
+* class BSR::Application
+
+A class made for managing the runtime.
+
+* class BSR::Menu
+
+For the runtime as well.
+
+* class BSR_APP::Application : public BSR::Application
+
+A class made for managing the runtime.
+
+* class BSR_APP::MainMenu : public BSR::Menu
+
+For the runtime as well.

@@ -6,27 +6,27 @@ BSR::Window* BSR::Window::LastWnd = nullptr;
 
 
 
-BSR::Window::Window() : hWnd(NULL), WndThread(), UserData(nullptr)
+BSR::Window::Window() : Handle(NULL), WndThread(), UserData(nullptr)
 {
 
 }
 
-BSR::Window::Window(Window&& _Other) noexcept : hWnd(_Other.hWnd), WndThread(std::move(_Other.WndThread)), UserData(_Other.UserData)
+BSR::Window::Window(Window&& _Other) noexcept : Handle(_Other.Handle), WndThread(std::move(_Other.WndThread)), UserData(_Other.UserData)
 {
-	_Other.hWnd = NULL;
+	_Other.Handle = NULL;
 	_Other.UserData = nullptr;
 }
 
 BSR::Window::~Window()
 {
-	BSR_ASSERT_MSG(!CheckOn(), BSR_STRING_TYPE("A window was not destroyed!"));
+	BSR_ASSERT_MSG(!CheckOn(), BSR_STRING_TYPE("A window was not destroyed."));
 }
 
 bool BSR::Window::Create(const WindowCreationDescriptor* _Descriptor)
 {
-	if (hWnd)
+	if (Handle)
 	{
-		BSR_DEBUG_BREAK_MSG(BSR_STRING_TYPE("Can not create a window before cleaning the old one!"));
+		BSR_DEBUG_BREAK_MSG(BSR_STRING_TYPE("Can not create a window before cleaning the old one."));
 		return false;
 	}
 
@@ -56,12 +56,12 @@ bool BSR::Window::Create(const WindowCreationDescriptor* _Descriptor)
 
 void BSR::Window::Destroy()
 {
-	if (!hWnd)
+	if (!Handle)
 	{
 		return;
 	}
 
-	PostMessage(hWnd, WM_QUIT, 0, 0);
+	PostMessage(Handle, WM_QUIT, 0, 0);
 	WndThread.join();
 }
 
@@ -72,32 +72,32 @@ bool BSR::Window::Show(const int _ShowCmd)
 		return false;
 	}
 
-	return ShowWindowAsync(hWnd, _ShowCmd) != false;
+	return ShowWindowAsync(Handle, _ShowCmd) != false;
 }
 
 bool BSR::Window::UpdateContent()
 {
-	if (!hWnd)
+	if (!Handle)
 	{
 		return false;
 	}
 
-	if (!InvalidateRect(hWnd, nullptr, false))
+	if (!InvalidateRect(Handle, nullptr, false))
 	{
 		return false;
 	}
 
-	return UpdateWindow(hWnd);
+	return UpdateWindow(Handle);
 }
 
 const bool BSR::Window::CheckOn() const
 {
-	return hWnd != NULL;
+	return Handle != NULL;
 }
 
 const HWND BSR::Window::GetHandle() const
 {
-	return hWnd;
+	return Handle;
 }
 
 void* BSR::Window::GetUserData()
@@ -112,14 +112,14 @@ const void* BSR::Window::GetUserData() const
 
 const bool BSR::Window::GetClientSize(int32_t& _Width, int32_t& _Height) const
 {
-	if (!hWnd)
+	if (!Handle)
 	{
 		return false;
 	}
 
 	RECT _ClientRect = { 0 };
 
-	if (!GetClientRect(hWnd, &_ClientRect))
+	if (!GetClientRect(Handle, &_ClientRect))
 	{
 		return false;
 	}
@@ -132,14 +132,14 @@ const bool BSR::Window::GetClientSize(int32_t& _Width, int32_t& _Height) const
 
 const bool BSR::Window::GetWindowSize(int32_t& _Width, int32_t& _Height) const
 {
-	if (!hWnd)
+	if (!Handle)
 	{
 		return false;
 	}
 
 	RECT _WindowRect = { 0 };
 
-	if (!GetWindowRect(hWnd, &_WindowRect))
+	if (!GetWindowRect(Handle, &_WindowRect))
 	{
 		return false;
 	}
@@ -152,12 +152,12 @@ const bool BSR::Window::GetWindowSize(int32_t& _Width, int32_t& _Height) const
 
 const size_t BSR::Window::GetRefreshRate() const
 {
-	if (!hWnd)
+	if (!Handle)
 	{
 		return 0;
 	}
 
-	HMONITOR _hMonitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTOPRIMARY);
+	HMONITOR _hMonitor = MonitorFromWindow(Handle, MONITOR_DEFAULTTOPRIMARY);
 
 	if (!_hMonitor)
 	{
@@ -187,29 +187,29 @@ const size_t BSR::Window::GetRefreshRate() const
 
 BSR::Window::operator const HWND() const
 {
-	return hWnd;
+	return Handle;
 }
 
 void BSR::Window::operator= (Window&& _Other) noexcept
 {
-	BSR_ASSERT_MSG(CheckOn(), BSR_STRING_TYPE("A window was not destroyed before assigning another one to it!"));
+	BSR_ASSERT_MSG(CheckOn(), BSR_STRING_TYPE("A window was not destroyed before assigning another one to it."));
 
-	hWnd = _Other.hWnd;
+	Handle = _Other.Handle;
 	WndThread = std::move(_Other.WndThread);
 	UserData = _Other.UserData;
 
-	_Other.hWnd = NULL;
+	_Other.Handle = NULL;
 	_Other.UserData = nullptr;
 }
 
-BSR::Window* BSR::Window::GetWindowPtr(const HWND _hWnd)
+BSR::Window* BSR::Window::GetWindowPtr(const HWND _Handle)
 {
-	if (!_hWnd)
+	if (!_Handle)
 	{
 		return nullptr;
 	}
 
-	Window* _WndPtr = (Window*)(GetWindowLongPtr(_hWnd, GWLP_USERDATA));
+	Window* _WndPtr = (Window*)(GetWindowLongPtr(_Handle, GWLP_USERDATA));
 
 	if (!_WndPtr)
 	{
@@ -240,13 +240,13 @@ void BSR::Window::WndThreadFunc(bool* _Done, bool* _Fail, Window* _Wnd, const Wi
 
 	LastWnd = _Wnd;
 
-	_Wnd->hWnd = CreateWindowEx(_Descriptor->dwExStyle, _Descriptor->lpClassName, _Descriptor->lpWindowName, _Descriptor->dwStyle, _Descriptor->X, _Descriptor->Y, _Descriptor->nWidth, _Descriptor->nHeight, _Descriptor->hWndParent, _Descriptor->hMenu, _Descriptor->hInstance, _Descriptor->lpParam);
+	_Wnd->Handle = CreateWindowEx(_Descriptor->dwExStyle, _Descriptor->lpClassName, _Descriptor->lpWindowName, _Descriptor->dwStyle, _Descriptor->X, _Descriptor->Y, _Descriptor->nWidth, _Descriptor->nHeight, _Descriptor->HandleParent, _Descriptor->hMenu, _Descriptor->hInstance, _Descriptor->lpParam);
 
 	LastWnd = nullptr;
 
 	LastWndPtrMutex.unlock();
 
-	if (!_Wnd->hWnd)
+	if (!_Wnd->Handle)
 	{
 		_Wnd->UserData = nullptr;
 
@@ -258,12 +258,12 @@ void BSR::Window::WndThreadFunc(bool* _Done, bool* _Fail, Window* _Wnd, const Wi
 
 	SetLastError(0);
 
-	if (!SetWindowLongPtr(_Wnd->hWnd, GWLP_USERDATA, (LONG_PTR)(_Wnd)))
+	if (!SetWindowLongPtr(_Wnd->Handle, GWLP_USERDATA, (LONG_PTR)(_Wnd)))
 	{
 		if (GetLastError())
 		{
-			DestroyWindow(_Wnd->hWnd);
-			_Wnd->hWnd = NULL;
+			DestroyWindow(_Wnd->Handle);
+			_Wnd->Handle = NULL;
 
 			_Wnd->UserData = nullptr;
 
@@ -278,8 +278,8 @@ void BSR::Window::WndThreadFunc(bool* _Done, bool* _Fail, Window* _Wnd, const Wi
 	{
 		if (!_Descriptor->WndInitFunc(_Wnd))
 		{
-			DestroyWindow(_Wnd->hWnd);
-			_Wnd->hWnd = NULL;
+			DestroyWindow(_Wnd->Handle);
+			_Wnd->Handle = NULL;
 
 			_Wnd->UserData = nullptr;
 
@@ -304,7 +304,7 @@ void BSR::Window::WndThreadFunc(bool* _Done, bool* _Fail, Window* _Wnd, const Wi
 
 	while (GetMessage(&_Msg, NULL, 0, 0))
 	{
-		if (_Msg.hwnd == _Wnd->hWnd)
+		if (_Msg.hwnd == _Wnd->Handle)
 		{
 			if (_hAccel)
 			{
@@ -327,8 +327,8 @@ void BSR::Window::WndThreadFunc(bool* _Done, bool* _Fail, Window* _Wnd, const Wi
 		}
 	}
 
-	DestroyWindow(_Wnd->hWnd);
-	_Wnd->hWnd = NULL;
+	DestroyWindow(_Wnd->Handle);
+	_Wnd->Handle = NULL;
 
 	_Wnd->UserData = nullptr;
 }

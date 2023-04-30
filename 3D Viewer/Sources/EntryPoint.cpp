@@ -149,15 +149,15 @@ const BSR::Math::Vec3f SpotLightCalculation(const BSR::Rasterizer::Light& _Light
 	return BSR::Math::Vec3f::Mix(BSR::Math::Vec3f(0.0f, 0.0f, 0.0f), _Result, _MixT);
 }
 
-const BSR::Math::Vec3f ImageBasedLightCalculation(const BSR::Rasterizer::Texture_Float_RGB& _EnvironmentTexture, const BSR::Rasterizer::Texture_Float_RGB& _IradianceTexture, const BSR::Rasterizer::Texture_RG& _BRDFLookUpTexture, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _Position, const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const BSR::Math::Vec3f& _BaseReflectivity)
+const BSR::Math::Vec3f ImageBasedLightCalculation(const BSR::Rasterizer::Texture& _EnvironmentTexture, const BSR::Rasterizer::Texture& _IradianceTexture, const BSR::Rasterizer::Texture& _BRDFLookUpTexture, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _Position, const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const BSR::Math::Vec3f& _BaseReflectivity)
 {
 	BSR::Math::Vec3f _FresnelSchlickRoughness = FresnelSchlickRoughness(_Normal, _PositionToCamera, _BaseReflectivity, _Roughness);
 	BSR::Math::Vec3f _kDiffuse = (BSR::Math::Vec3f(1.0f, 1.0f, 1.0f) - _FresnelSchlickRoughness) * (1.0f - _Metalness);
 
-	BSR::Math::Vec3f _Iradiance = _IradianceTexture.SampleRGB(SampleEquirectangularMap(_Normal));
-	BSR::Math::Vec3f _Environment = _EnvironmentTexture.SampleRGB(SampleEquirectangularMap(BSR::Math::Vec3f::Reflect(-_PositionToCamera, _Normal)));
+	BSR::Math::Vec3f _Iradiance = BSR::Math::Vec3f(_IradianceTexture.SampleRGBA(SampleEquirectangularMap(_Normal)));
+	BSR::Math::Vec3f _Environment = BSR::Math::Vec3f(_EnvironmentTexture.SampleRGBA(SampleEquirectangularMap(BSR::Math::Vec3f::Reflect(-_PositionToCamera, _Normal))));
 	_Environment = BSR::Math::Vec3f::Mix(_Environment, _Iradiance, _Roughness);
-	BSR::Math::Vec2f _BRDFLookUp = _BRDFLookUpTexture.SampleRG(BSR::Math::Vec2f(BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f), _Roughness));
+	BSR::Math::Vec2f _BRDFLookUp = BSR::Math::Vec2f(_BRDFLookUpTexture.SampleRGBA(BSR::Math::Vec2f(BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f), _Roughness)));
 
 	BSR::Math::Vec3f _Diffuse = _kDiffuse * _Iradiance * _Albedo;
 	BSR::Math::Vec3f _Specular = _Environment * (_FresnelSchlickRoughness * _BRDFLookUp.x + _BRDFLookUp.y);
@@ -731,7 +731,7 @@ struct FrameBuffer
 struct CubeMapUniforms
 {
 	BSR::Math::Mat4f Mvp;
-	const BSR::Rasterizer::Texture_Float_RGB* EnvironmentTexture = nullptr;
+	const BSR::Rasterizer::Texture* EnvironmentTexture = nullptr;
 	float Exposure = 1.0f;
 };
 
@@ -739,41 +739,6 @@ struct CubeMapLerpers
 {
 	BSR::Math::Vec3f Position;
 };
-
-const BSR::Math::Vec4f CubeMapVertexShader(const void* _Vertex, const void* _Uniforms, float* _OutLerpers)
-{
-	const BSR::Rasterizer::VertexData* _VertexData = (const BSR::Rasterizer::VertexData*)(_Vertex);
-
-	const CubeMapUniforms* _CubeMapUniforms = (const CubeMapUniforms*)(_Uniforms);
-
-	CubeMapLerpers* _Lerpers = (CubeMapLerpers*)(_OutLerpers);
-
-	_Lerpers->Position = _VertexData->Position;
-
-	return _CubeMapUniforms->Mvp * BSR::Math::Vec4f(_VertexData->Position, 1.0f);
-}
-
-void CubeMapFragmentShader(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const BSR::Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType)
-{
-	const CubeMapLerpers* _CubeMapLerpers = (const CubeMapLerpers*)(_Lerpers);
-
-	const CubeMapUniforms* _CubeMapUniforms = (const CubeMapUniforms*)(_Uniforms);
-
-	FrameBuffer* _TrueFrameBuffer = (FrameBuffer*)(_FrameBuffer);
-
-	_TrueFrameBuffer->DepthBuffer.Data[_X + _Y * _TrueFrameBuffer->DepthBuffer.Width] = 1.0f;
-
-	BSR::Math::Vec3f _Color = _CubeMapUniforms->EnvironmentTexture->SampleRGB(SampleEquirectangularMap(_CubeMapLerpers->Position.Normalized()));
-
-	_Color = BSR::Math::Vec3f(1.0f, 1.0f, 1.0f) - BSR::Math::Vec3f::Exp(-_Color * _CubeMapUniforms->Exposure);
-
-	_Color = BSR::Math::Vec3f::Pow(_Color, BSR::Math::Vec3f(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f));
-
-	_TrueFrameBuffer->ColorBuffer->Data[(_X + _Y * _TrueFrameBuffer->ColorBuffer->Width) * 4 + 0] = (uint8_t)(_Color.x * 255.0f);
-	_TrueFrameBuffer->ColorBuffer->Data[(_X + _Y * _TrueFrameBuffer->ColorBuffer->Width) * 4 + 1] = (uint8_t)(_Color.y * 255.0f);
-	_TrueFrameBuffer->ColorBuffer->Data[(_X + _Y * _TrueFrameBuffer->ColorBuffer->Width) * 4 + 2] = (uint8_t)(_Color.z * 255.0f);
-	_TrueFrameBuffer->ColorBuffer->Data[(_X + _Y * _TrueFrameBuffer->ColorBuffer->Width) * 4 + 3] = 255;
-}
 
 
 
@@ -794,9 +759,9 @@ struct PBRUniforms
 
 	BSR::Rasterizer::Material Material;
 
-	const BSR::Rasterizer::Texture_Float_RGB* Environment = nullptr;
-	const BSR::Rasterizer::Texture_Float_RGB* Iradiance = nullptr;
-	const BSR::Rasterizer::Texture_RG* BRDFLookUp = nullptr;
+	const BSR::Rasterizer::Texture* Environment = nullptr;
+	const BSR::Rasterizer::Texture* Iradiance = nullptr;
+	const BSR::Rasterizer::Texture* BRDFLookUp = nullptr;
 
 	//Lights vector
 };
@@ -932,7 +897,46 @@ bool RenderScene(BSR::Image::Image& _RenderResult)
 
 		_Context.SetCullingType(BSR::Rasterizer::_CounterClockWiseCulling);
 
-		if (!_Context.RenderMesh(_Cube.VBO.GetData(), _Cube.VBO.GetSize(), sizeof(BSR::Rasterizer::VertexData), _Cube.IBO.GetData(), 0, _Cube.IBO.GetSize() * 3, &_Uniforms, sizeof(CubeMapLerpers) / sizeof(float), sizeof(CubeMapLerpers) / sizeof(float), CubeMapVertexShader, nullptr, CubeMapFragmentShader, &_FrameBuffer))
+		if (!_Context.RenderMesh(
+			_Cube.VBO.GetData(), _Cube.VBO.GetSize(), sizeof(BSR::Rasterizer::VertexData),
+			_Cube.IBO.GetData(), 0, _Cube.IBO.GetSize() * 3,
+			&_Uniforms,
+			sizeof(CubeMapLerpers) / sizeof(float), sizeof(CubeMapLerpers) / sizeof(float),
+			[](const void* _Vertex, const void* _Uniforms, float* _OutLerpers) -> const BSR::Math::Vec4f
+			{
+				const BSR::Rasterizer::VertexData* _VertexData = (const BSR::Rasterizer::VertexData*)(_Vertex);
+
+				const CubeMapUniforms* _CubeMapUniforms = (const CubeMapUniforms*)(_Uniforms);
+
+				CubeMapLerpers* _Lerpers = (CubeMapLerpers*)(_OutLerpers);
+
+				_Lerpers->Position = _VertexData->Position;
+
+				return _CubeMapUniforms->Mvp * BSR::Math::Vec4f(_VertexData->Position, 1.0f);
+			},
+			nullptr,
+			[](const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const BSR::Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType) -> void
+			{
+				const CubeMapLerpers* _CubeMapLerpers = (const CubeMapLerpers*)(_Lerpers);
+
+				const CubeMapUniforms* _CubeMapUniforms = (const CubeMapUniforms*)(_Uniforms);
+
+				FrameBuffer* _TrueFrameBuffer = (FrameBuffer*)(_FrameBuffer);
+
+				_TrueFrameBuffer->DepthBuffer.Data[_X + _Y * _TrueFrameBuffer->DepthBuffer.Width] = 1.0f;
+
+				BSR::Math::Vec3f _Color = BSR::Math::Vec3f(_CubeMapUniforms->EnvironmentTexture->SampleRGBA(SampleEquirectangularMap(_CubeMapLerpers->Position.Normalized())));
+
+				_Color = BSR::Math::Vec3f(1.0f, 1.0f, 1.0f) - BSR::Math::Vec3f::Exp(-_Color * _CubeMapUniforms->Exposure);
+
+				_Color = BSR::Math::Vec3f::Pow(_Color, BSR::Math::Vec3f(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f));
+
+				_TrueFrameBuffer->ColorBuffer->Data[(_X + _Y * _TrueFrameBuffer->ColorBuffer->Width) * 4 + 0] = (uint8_t)(_Color.x * 255.0f);
+				_TrueFrameBuffer->ColorBuffer->Data[(_X + _Y * _TrueFrameBuffer->ColorBuffer->Width) * 4 + 1] = (uint8_t)(_Color.y * 255.0f);
+				_TrueFrameBuffer->ColorBuffer->Data[(_X + _Y * _TrueFrameBuffer->ColorBuffer->Width) * 4 + 2] = (uint8_t)(_Color.z * 255.0f);
+				_TrueFrameBuffer->ColorBuffer->Data[(_X + _Y * _TrueFrameBuffer->ColorBuffer->Width) * 4 + 3] = 255;
+			},
+			&_FrameBuffer))
 		{
 			delete[] _FrameBuffer.DepthBuffer.Data;
 			return false;

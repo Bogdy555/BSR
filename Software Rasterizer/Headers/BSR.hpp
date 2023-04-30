@@ -24,6 +24,12 @@
 
 #include "Rasterizer.hpp"
 
+#include "MultiProcessing.hpp"
+
+#include "Application.hpp"
+
+#include "Menu.hpp"
+
 
 
 #pragma pack(pop)
