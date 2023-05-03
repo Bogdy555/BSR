@@ -4,7 +4,7 @@
 
 
 
-#pragma comment(lib, "Software Rasterizer.lib")
+#pragma comment(lib, "BSR.lib")
 
 
 
@@ -27,11 +27,16 @@
 namespace BSR_APP
 {
 
-	class Application;
+	namespace RunTime
+	{
 
-	enum MenuTypes : const uint64_t;
+		class Application;
 
-	class MainMenu;
+		enum MenuTypes : const uint64_t;
+
+		class MainMenu;
+
+	}
 
 }
 

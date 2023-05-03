@@ -37,7 +37,7 @@ namespace BSR
 
 		public:
 
-			Texture(const uint8_t _LerpType = _LerpLinear, const uint8_t _WrapType = _WrapRepeat);
+			Texture();
 			Texture(const Texture& _Other) = delete;
 			Texture(Texture&& _Other) noexcept;
 			virtual ~Texture();
@@ -616,24 +616,6 @@ namespace BSR
 		private:
 
 			std::vector<Mesh> Meshes;
-
-		};
-
-		class Renderer
-		{
-
-		public:
-
-			Renderer() = default;
-			Renderer(const Renderer& _Other) = delete;
-			Renderer(Renderer&& _Other) noexcept = default;
-			~Renderer() = default;
-
-			virtual void Submit(void* _Data, const size_t _Command) = 0;
-			virtual void Flush() = 0;
-
-			void operator= (const Renderer& _Other) = delete;
-			Renderer& operator= (Renderer&& _Other) noexcept = default;
 
 		};
 

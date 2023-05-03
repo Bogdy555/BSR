@@ -69,8 +69,8 @@ namespace BSR
 			bool Create(const wchar_t* _Name);
 			void Destroy();
 
-			void Lock();
-			void Unlock();
+			void Lock() const;
+			void Unlock() const;
 
 			const bool CheckCreated() const;
 

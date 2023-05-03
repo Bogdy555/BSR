@@ -103,7 +103,7 @@ static const BSR::Math::Vec2f ComputeWrap(const BSR::Math::Vec2f& _TextureCoords
 
 
 
-BSR::Rasterizer::Texture::Texture(const uint8_t _LerpType, const uint8_t _WrapType) : LerpType(_LerpType), WrapType(_WrapType)
+BSR::Rasterizer::Texture::Texture() : LerpType(_LerpLinear), WrapType(_WrapRepeat)
 {
 
 }
@@ -150,7 +150,7 @@ void BSR::Rasterizer::Texture::operator= (Texture&& _Other) noexcept
 
 
 
-BSR::Rasterizer::Texture_R::Texture_R() : Texture(_LerpLinear, _WrapRepeat), Textures()
+BSR::Rasterizer::Texture_R::Texture_R() : Texture(), Textures()
 {
 
 }
@@ -335,7 +335,7 @@ const float BSR::Rasterizer::Texture_R::SampleNearest(const BSR::Math::Vec2f& _T
 
 
 
-BSR::Rasterizer::Texture_RG::Texture_RG() : Texture(_LerpLinear, _WrapRepeat), Textures()
+BSR::Rasterizer::Texture_RG::Texture_RG() : Texture(), Textures()
 {
 
 }
@@ -522,7 +522,7 @@ const BSR::Math::Vec2f BSR::Rasterizer::Texture_RG::SampleNearest(const BSR::Mat
 
 
 
-BSR::Rasterizer::Texture_RGB::Texture_RGB() : Texture(_LerpLinear, _WrapRepeat), Textures()
+BSR::Rasterizer::Texture_RGB::Texture_RGB() : Texture(), Textures()
 {
 
 }
@@ -711,7 +711,7 @@ const BSR::Math::Vec3f BSR::Rasterizer::Texture_RGB::SampleNearest(const BSR::Ma
 
 
 
-BSR::Rasterizer::Texture_RGBA::Texture_RGBA() : Texture(_LerpLinear, _WrapRepeat), Textures()
+BSR::Rasterizer::Texture_RGBA::Texture_RGBA() : Texture(), Textures()
 {
 
 }
@@ -895,7 +895,7 @@ const BSR::Math::Vec4f BSR::Rasterizer::Texture_RGBA::SampleNearest(const BSR::M
 
 
 
-BSR::Rasterizer::Texture_Float_R::Texture_Float_R() : Texture(_LerpLinear, _WrapRepeat), Textures()
+BSR::Rasterizer::Texture_Float_R::Texture_Float_R() : Texture(), Textures()
 {
 
 }
@@ -1080,7 +1080,7 @@ const float BSR::Rasterizer::Texture_Float_R::SampleNearest(const BSR::Math::Vec
 
 
 
-BSR::Rasterizer::Texture_Float_RG::Texture_Float_RG() : Texture(_LerpLinear, _WrapRepeat), Textures()
+BSR::Rasterizer::Texture_Float_RG::Texture_Float_RG() : Texture(), Textures()
 {
 
 }
@@ -1267,7 +1267,7 @@ const BSR::Math::Vec2f BSR::Rasterizer::Texture_Float_RG::SampleNearest(const BS
 
 
 
-BSR::Rasterizer::Texture_Float_RGB::Texture_Float_RGB() : Texture(_LerpLinear, _WrapRepeat), Textures()
+BSR::Rasterizer::Texture_Float_RGB::Texture_Float_RGB() : Texture(), Textures()
 {
 
 }
@@ -1456,7 +1456,7 @@ const BSR::Math::Vec3f BSR::Rasterizer::Texture_Float_RGB::SampleNearest(const B
 
 
 
-BSR::Rasterizer::Texture_Float_RGBA::Texture_Float_RGBA() : Texture(_LerpLinear, _WrapRepeat), Textures()
+BSR::Rasterizer::Texture_Float_RGBA::Texture_Float_RGBA() : Texture(), Textures()
 {
 
 }

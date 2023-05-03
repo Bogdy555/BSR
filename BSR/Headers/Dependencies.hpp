@@ -51,8 +51,6 @@ namespace BSR
 		_Current = 1
 	};
 
-	class OOM;
-
 	template <typename T> class Vector;
 
 	namespace Time
@@ -164,8 +162,6 @@ namespace BSR
 
 		class Model;
 
-		class Renderer;
-
 	}
 
 	namespace MultiProcessing
@@ -181,11 +177,16 @@ namespace BSR
 
 	}
 
-	class Application;
+	namespace RunTime
+	{
 
-	enum MenuTypes : const uint64_t;
+		class Application;
 
-	class Menu;
+		enum MenuTypes : const uint64_t;
+
+		class Menu;
+
+	}
 
 }
 

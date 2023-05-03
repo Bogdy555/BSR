@@ -65,7 +65,7 @@ void BSR::Window::Destroy()
 	WndThread.join();
 }
 
-bool BSR::Window::Show(const int _ShowCmd)
+bool BSR::Window::Show(const int32_t _ShowCmd)
 {
 	if (!_ShowCmd)
 	{

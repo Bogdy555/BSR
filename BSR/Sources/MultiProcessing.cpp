@@ -154,7 +154,7 @@ void BSR::MultiProcessing::SharedMutex::Destroy()
 	Handle = NULL;
 }
 
-void BSR::MultiProcessing::SharedMutex::Lock()
+void BSR::MultiProcessing::SharedMutex::Lock() const
 {
 	if (!Handle)
 	{
@@ -164,7 +164,7 @@ void BSR::MultiProcessing::SharedMutex::Lock()
 	WaitForSingleObject(Handle, INFINITE);
 }
 
-void BSR::MultiProcessing::SharedMutex::Unlock()
+void BSR::MultiProcessing::SharedMutex::Unlock() const
 {
 	if (!Handle)
 	{

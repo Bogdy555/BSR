@@ -21,32 +21,32 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{a7b1c832-17b6-407f-8d3f-0722196ac280}</ProjectGuid>
-    <RootNamespace>My3DViewer</RootNamespace>
+    <ProjectGuid>{70da2b2f-288d-4001-8c71-1839d0a0fc16}</ProjectGuid>
+    <RootNamespace>BSR</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -99,18 +99,11 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)Software Rasterizer\Headers\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\Software Rasterizer\$(Configuration)\$(PlatformShortName)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
     </Link>
-    <PostBuildEvent>
-      <Command>if exist "$(ProjectDir)Files\" xcopy "$(ProjectDir)Files\*" "$(OutDir)*" /h /e /y /q
-</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -123,20 +116,13 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)Software Rasterizer\Headers\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\Software Rasterizer\$(Configuration)\$(PlatformShortName)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
     </Link>
-    <PostBuildEvent>
-      <Command>if exist "$(ProjectDir)Files\" xcopy "$(ProjectDir)Files\*" "$(OutDir)*" /h /e /y /q
-</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -147,18 +133,11 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)Software Rasterizer\Headers\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\Software Rasterizer\$(Configuration)\$(PlatformShortName)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
     </Link>
-    <PostBuildEvent>
-      <Command>if exist "$(ProjectDir)Files\" xcopy "$(ProjectDir)Files\*" "$(OutDir)*" /h /e /y /q
-</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -171,64 +150,45 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)Software Rasterizer\Headers\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\Software Rasterizer\$(Configuration)\$(PlatformShortName)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
     </Link>
-    <PostBuildEvent>
-      <Command>if exist "$(ProjectDir)Files\" xcopy "$(ProjectDir)Files\*" "$(OutDir)*" /h /e /y /q
-</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="Files\3D Models\Objects.wfobj" />
-    <None Include="Files\Environments\ParkingLot\Environment.hdr" />
-    <None Include="Files\Environments\ParkingLot\Iradiance.hdr" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Files\Intern\BRDFLookUp.bmp" />
-    <Image Include="Files\Materials\Aluminum\Albedo.bmp" />
-    <Image Include="Files\Materials\Aluminum\Metalness.bmp" />
-    <Image Include="Files\Materials\Aluminum\Normal.bmp" />
-    <Image Include="Files\Materials\Aluminum\Roughness.bmp" />
-    <Image Include="Files\Materials\Container\Albedo.bmp" />
-    <Image Include="Files\Materials\Container\AmbientOcclusion.bmp" />
-    <Image Include="Files\Materials\Container\Metalness.bmp" />
-    <Image Include="Files\Materials\Container\Normal.bmp" />
-    <Image Include="Files\Materials\Container\Roughness.bmp" />
-    <Image Include="Files\Materials\Gold\Albedo.bmp" />
-    <Image Include="Files\Materials\Gold\Metalness.bmp" />
-    <Image Include="Files\Materials\Gold\Normal.bmp" />
-    <Image Include="Files\Materials\Gold\Roughness.bmp" />
-    <Image Include="Files\Materials\Iron\Albedo.bmp" />
-    <Image Include="Files\Materials\Iron\Metalness.bmp" />
-    <Image Include="Files\Materials\Iron\Normal.bmp" />
-    <Image Include="Files\Materials\Iron\Roughness.bmp" />
-    <Image Include="Files\Materials\Plastic\Albedo Green.bmp" />
-    <Image Include="Files\Materials\Plastic\Albedo Red.bmp" />
-    <Image Include="Files\Materials\Plastic\AmbientOcclusion.bmp" />
-    <Image Include="Files\Materials\Plastic\Metalness.bmp" />
-    <Image Include="Files\Materials\Plastic\Normal.bmp" />
-    <Image Include="Files\Materials\Plastic\Roughness.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Sources\Application.cpp" />
-    <ClCompile Include="Sources\EntryPoint.cpp" />
-    <ClCompile Include="Sources\MainMenu.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Headers\Application.hpp" />
+    <ClInclude Include="Headers\AssetManager.hpp" />
+    <ClInclude Include="Headers\BSR.hpp" />
     <ClInclude Include="Headers\Dependencies.hpp" />
+    <ClInclude Include="Headers\Image.hpp" />
     <ClInclude Include="Headers\Macros.hpp" />
-    <ClInclude Include="Headers\BSR_APP.hpp" />
-    <ClInclude Include="Headers\MainMenu.hpp" />
+    <ClInclude Include="Headers\Math.hpp" />
+    <ClInclude Include="Headers\MultiProcessing.hpp" />
+    <ClInclude Include="Headers\Rasterizer.hpp" />
+    <ClInclude Include="Headers\RunTime.hpp" />
+    <ClInclude Include="Headers\String.hpp" />
     <ClInclude Include="Headers\Templates.hpp" />
+    <ClInclude Include="Headers\Time.hpp" />
+    <ClInclude Include="Headers\Vector.hpp" />
+    <ClInclude Include="Headers\Window.hpp" />
+    <ClInclude Include="Headers\WinTargetVer.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sources\AssetManager.cpp" />
+    <ClCompile Include="Sources\Image.cpp" />
+    <ClCompile Include="Sources\Math.cpp" />
+    <ClCompile Include="Sources\Math_Matrix.cpp" />
+    <ClCompile Include="Sources\Math_Vector.cpp" />
+    <ClCompile Include="Sources\MultiProcessing.cpp" />
+    <ClCompile Include="Sources\Rasterizer.cpp" />
+    <ClCompile Include="Sources\Rasterizer_Geometry.cpp" />
+    <ClCompile Include="Sources\Rasterizer_Texture.cpp" />
+    <ClCompile Include="Sources\RunTime.cpp" />
+    <ClCompile Include="Sources\String.cpp" />
+    <ClCompile Include="Sources\Time.cpp" />
+    <ClCompile Include="Sources\Window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

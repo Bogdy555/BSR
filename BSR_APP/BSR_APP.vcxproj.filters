@@ -50,10 +50,10 @@
     <Image Include="Files\Materials\Container\Roughness.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Files\Materials\Gold\Metalness.bmp">
+    <Image Include="Files\Materials\Gold\Albedo.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Files\Materials\Gold\Albedo.bmp">
+    <Image Include="Files\Materials\Gold\Metalness.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Files\Materials\Gold\Normal.bmp">
@@ -62,10 +62,10 @@
     <Image Include="Files\Materials\Gold\Roughness.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Files\Materials\Iron\Metalness.bmp">
+    <Image Include="Files\Materials\Iron\Albedo.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Files\Materials\Iron\Albedo.bmp">
+    <Image Include="Files\Materials\Iron\Metalness.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Files\Materials\Iron\Normal.bmp">
@@ -94,17 +94,9 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sources\EntryPoint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\MainMenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="Headers\Application.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Headers\BSR_APP.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -114,14 +106,22 @@
     <ClInclude Include="Headers\Macros.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Templates.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\Application.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Headers\MainMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\Templates.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sources\Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\EntryPoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\MainMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -17,16 +17,16 @@ namespace BSR
 		LPCWSTR lpClassName = nullptr;
 		LPCWSTR lpWindowName = nullptr;
 		DWORD dwStyle = NULL;
-		int X = 0;
-		int Y = 0;
-		int nWidth = 0;
-		int nHeight = 0;
+		int32_t X = 0;
+		int32_t Y = 0;
+		int32_t nWidth = 0;
+		int32_t nHeight = 0;
 		HWND HandleParent = NULL;
 		HMENU hMenu = NULL;
 		HINSTANCE hInstance = NULL;
 		LPVOID lpParam = nullptr;
 		HACCEL hAccel = NULL;
-		int ShowCmd = SW_HIDE;
+		int32_t ShowCmd = SW_HIDE;
 		bool (*ThreadInitFnc)(void* _UserData) = nullptr;
 		bool (*WndInitFunc)(Window* _Wnd) = nullptr;
 		void* UserData = nullptr;
@@ -46,7 +46,7 @@ namespace BSR
 
 		bool Create(const WindowCreationDescriptor* _Descriptor);
 		void Destroy();
-		bool Show(const int _ShowCmd);
+		bool Show(const int32_t _ShowCmd);
 		bool UpdateContent();
 
 		const bool CheckOn() const;

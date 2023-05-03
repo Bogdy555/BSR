@@ -17,6 +17,8 @@ It is necessary to be compiled with MSVC. The C++ version used is C++20.
 
 It works out of the box since I only use relative paths and the project does not have external dependencies.
 
+
+
 ## Copy right
 
 I am not the author of the amazing PBR materials, nor the HDR sIBL environment maps. I got them from https://freepbr.com and http://www.hdrlabs.com/sibl/archive.html. I only use them to test my software and I do not own any ownership over them.
@@ -27,7 +29,7 @@ The actual software is free for anyone as long as it is not used commercially, b
 
 ## Features
 
-* Rasterizer
+* Rasterizer (fully featured)
 
 ![Render example](./ReadMe%20Resources/Render.bmp)
 
@@ -40,10 +42,6 @@ The actual software is free for anyone as long as it is not used commercially, b
 ## Classes and structs
 
 Here I will list all of the classes and structures found in the project and a short description of them. This software was designed in a modular way so I will also provide the module name before the class name.
-
-* class BSR::OOM : public std::exception
-
-Out of memory exception class.
 
 * class BSR::Vector
 
@@ -101,39 +99,39 @@ A structure that packs all of the parameteres required for creating a window.
 
 A class that manages the threads for the grapthic windows used.
 
-* class BSR::Texture
+* class BSR::Rasterizer::Texture
 
 Base class for any texture.
 
-* class BSR::Texture_R : public Texture
+* class BSR::Rasterizer::Texture_R : public BSR::Rasterizer::Texture
 
 A texture with 1 component.
 
-* class BSR::Texture_RG : public Texture
+* class BSR::Rasterizer::Texture_RG : public BSR::Rasterizer::Texture
 
 A texture with 2 components.
 
-* class BSR::Texture_RGB : public Texture
+* class BSR::Rasterizer::Texture_RGB : public BSR::Rasterizer::Texture
 
 A texture with 3 components.
 
-* class BSR::Texture_RGBA : public Texture
+* class BSR::Rasterizer::Texture_RGBA : public BSR::Rasterizer::Texture
 
 A texture with 4 components.
 
-* class BSR::Texture_Float_R : public Texture
+* class BSR::Rasterizer::Texture_Float_R : public BSR::Rasterizer::Texture
 
 A texture with 1 floating point component.
 
-* class BSR::Texture_Float_RG : public Texture
+* class BSR::Rasterizer::Texture_Float_RG : public BSR::Rasterizer::Texture
 
 A texture with 2 floating point components.
 
-* class BSR::Texture_Float_RGB : public Texture
+* class BSR::Rasterizer::Texture_Float_RGB : public BSR::Rasterizer::Texture
 
 A texture with 3 floating point components.
 
-* class BSR::Texture_Float_RGBA : public Texture
+* class BSR::Rasterizer::Texture_Float_RGBA : public BSR::Rasterizer::Texture
 
 A texture with 4 floating point components.
 
@@ -181,10 +179,6 @@ Quick and dirty hack to pair up a VBO and an IBO.
 
 A set of meshes that describe a 3D model.
 
-* class BSR::Renderer
-
-An interface that is used for renderers.
-
 * class BSR::MultiProcessing::SharedMemory
 
 Used to comunicate between processes.
@@ -197,18 +191,18 @@ Used to comunicate between processes as well.
 
 Used to create and manage processes.
 
-* class BSR::Application
+* class BSR::RunTime::Application
 
 A class made for managing the runtime.
 
-* class BSR::Menu
+* class BSR::RunTime::Menu
 
 For the runtime as well.
 
-* class BSR_APP::Application : public BSR::Application
+* class BSR_APP::RunTime::Application : public BSR::RunTime::Application
 
 A class made for managing the runtime.
 
-* class BSR_APP::MainMenu : public BSR::Menu
+* class BSR_APP::RunTime::MainMenu : public BSR::RunTime::Menu
 
 For the runtime as well.
