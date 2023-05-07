@@ -21,13 +21,30 @@ namespace BSR_APP
 
 			Application();
 			Application(const Application& _Other) = delete;
-			Application(Application&& _Other) noexcept;
+			Application(Application&& _Other) noexcept = delete;
 			~Application();
 
+			BSR::Window& GetMainWindow();
+			const BSR::Window& GetMainWindow() const;
+
+			WindowData& GetMainWindowData();
+			const WindowData& GetMainWindowData() const;
+
 			void operator= (const Application& _Other) = delete;
-			void operator= (Application&& _Other) noexcept;
+			void operator= (Application&& _Other) noexcept = delete;
 
 		private:
+
+			BSR::Window MainWindow;
+			WindowData MainWindowData;
+			std::mutex CloseMutex;
+			std::mutex MinSizeMutex;
+			std::mutex InputMutex;
+
+			bool InitInstance();
+
+			bool InitMainWindow();
+			void CleanUpMainWindow();
 
 			void Setup() override;
 			void Update() override;

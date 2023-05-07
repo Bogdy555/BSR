@@ -27,6 +27,8 @@
 namespace BSR_APP
 {
 
+	struct WindowData;
+
 	namespace RunTime
 	{
 

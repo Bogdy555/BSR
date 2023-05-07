@@ -12,27 +12,6 @@ BSR::RunTime::Application::Application() :
 
 }
 
-BSR::RunTime::Application::Application(Application&& _Other) noexcept :
-	On(_Other.On), ReturnValue(_Other.ReturnValue),
-	CurrentMenu(_Other.CurrentMenu),
-	SharedInstanceMemory(std::move(_Other.SharedInstanceMemory)), SharedInstanceMutex(std::move(_Other.SharedInstanceMutex)),
-	FrameTime(), LagTime(_Other.LagTime), SimulationSpeed(_Other.SimulationSpeed), Sync(_Other.Sync),
-	InstanceHandle(_Other.InstanceHandle), CmdLine(_Other.CmdLine), ShowCmd(_Other.ShowCmd)
-{
-	FrameTime[_Previous] = std::move(_Other.FrameTime[_Previous]);
-	FrameTime[_Current] = std::move(_Other.FrameTime[_Current]);
-
-	_Other.On = false;
-	_Other.ReturnValue = MultiProcessing::_ReturnError;
-	_Other.CurrentMenu = _NullMenu;
-	_Other.LagTime = 1.0f / 10.0f;
-	_Other.SimulationSpeed = 1.0f;
-	_Other.Sync = 60;
-	_Other.InstanceHandle = NULL;
-	_Other.CmdLine = nullptr;
-	_Other.ShowCmd = SW_HIDE;
-}
-
 BSR::RunTime::Application::~Application()
 {
 	BSR_ASSERT_MSG(On == false, BSR_STRING_TYPE("Can not delete an application object that is running."));
@@ -213,50 +192,11 @@ const wchar_t* BSR::RunTime::Application::GetArgV(const size_t _Index) const
 	return __wargv[_Index];
 }
 
-void BSR::RunTime::Application::operator= (Application&& _Other) noexcept
-{
-	if (On)
-	{
-		BSR_DEBUG_BREAK_MSG(BSR_STRING_TYPE("Can not move an application object to one that is running."));
-	}
-
-	On = _Other.On;
-	ReturnValue = _Other.ReturnValue;
-	CurrentMenu = _Other.CurrentMenu;
-	SharedInstanceMemory = std::move(_Other.SharedInstanceMemory);
-	SharedInstanceMutex = std::move(_Other.SharedInstanceMutex);
-	FrameTime[_Previous] = std::move(_Other.FrameTime[_Previous]);
-	FrameTime[_Current] = std::move(_Other.FrameTime[_Current]);
-	LagTime = _Other.LagTime;
-	SimulationSpeed = _Other.SimulationSpeed;
-	Sync = _Other.Sync;
-	InstanceHandle = _Other.InstanceHandle;
-	CmdLine = _Other.CmdLine;
-	ShowCmd = _Other.ShowCmd;
-
-	_Other.On = false;
-	_Other.ReturnValue = MultiProcessing::_ReturnError;
-	_Other.CurrentMenu = _NullMenu;
-	_Other.LagTime = 1.0f / 10.0f;
-	_Other.SimulationSpeed = 1.0f;
-	_Other.Sync = 60;
-	_Other.InstanceHandle = NULL;
-	_Other.CmdLine = nullptr;
-	_Other.ShowCmd = SW_HIDE;
-}
-
 
 
 BSR::RunTime::Menu::Menu() : On(false), NextMenu(_NullMenu), ApplicationObj(nullptr)
 {
 
-}
-
-BSR::RunTime::Menu::Menu(Menu&& _Other) noexcept : On(_Other.On), NextMenu(_Other.NextMenu), ApplicationObj(_Other.ApplicationObj)
-{
-	_Other.On = false;
-	_Other.NextMenu = _NullMenu;
-	_Other.ApplicationObj = nullptr;
 }
 
 BSR::RunTime::Menu::~Menu()
@@ -306,22 +246,6 @@ void BSR::RunTime::Menu::Run(Application* _ApplicationObj)
 	NextMenu = _NullMenu;
 
 	ApplicationObj = nullptr;
-}
-
-void BSR::RunTime::Menu::operator= (Menu&& _Other) noexcept
-{
-	if (On)
-	{
-		BSR_DEBUG_BREAK_MSG(BSR_STRING_TYPE("Can not move a menu object to one that is running."));
-	}
-
-	On = _Other.On;
-	NextMenu = _Other.NextMenu;
-	ApplicationObj = _Other.ApplicationObj;
-
-	_Other.On = false;
-	_Other.NextMenu = _NullMenu;
-	_Other.ApplicationObj = nullptr;
 }
 
 void BSR::RunTime::Menu::TurnOn()

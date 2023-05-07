@@ -224,11 +224,13 @@
     <ClInclude Include="Headers\Macros.hpp" />
     <ClInclude Include="Headers\MainMenu.hpp" />
     <ClInclude Include="Headers\Templates.hpp" />
+    <ClInclude Include="Headers\Window.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\Application.cpp" />
     <ClCompile Include="Sources\EntryPoint.cpp" />
     <ClCompile Include="Sources\MainMenu.cpp" />
+    <ClCompile Include="Sources\Window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

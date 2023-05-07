@@ -199,6 +199,10 @@ A class made for managing the runtime.
 
 For the runtime as well.
 
+* struct BSR_APP::WindowData
+
+Data used for the main window.
+
 * class BSR_APP::RunTime::Application : public BSR::RunTime::Application
 
 A class made for managing the runtime.

@@ -21,7 +21,7 @@ namespace BSR
 
 			Application();
 			Application(const Application& _Other) = delete;
-			Application(Application&& _Other) noexcept;
+			Application(Application&& _Other) noexcept = delete;
 			virtual ~Application();
 
 			int32_t Run(const HINSTANCE _InstanceHandle, const LPWSTR _CmdLine, const int32_t _ShowCmd, const wchar_t* _SharedMemoryName, const wchar_t* _SharedMutexName);
@@ -58,7 +58,7 @@ namespace BSR
 			const wchar_t* GetArgV(const size_t _Index) const;
 
 			void operator= (const Application& _Other) = delete;
-			void operator= (Application&& _Other) noexcept;
+			void operator= (Application&& _Other) noexcept = delete;
 
 		protected:
 
@@ -99,13 +99,15 @@ namespace BSR
 
 			Menu();
 			Menu(const Menu& _Other) = delete;
-			Menu(Menu&& _Other) noexcept;
+			Menu(Menu&& _Other) noexcept = delete;
 			virtual ~Menu();
 
 			void Run(Application* _ApplicationObj);
 
+			virtual const uint64_t GetType() const = 0;
+
 			void operator= (const Menu& _Other) = delete;
-			void operator= (Menu&& _Other) noexcept;
+			void operator= (Menu&& _Other) noexcept = delete;
 
 		protected:
 
@@ -129,8 +131,6 @@ namespace BSR
 			const float GetLagTime() const;
 			const float GetSimulationSpeed() const;
 			const uint64_t GetSync() const;
-
-			virtual const uint64_t GetType() const = 0;
 
 			virtual void Setup() = 0;
 			virtual void Update() = 0;

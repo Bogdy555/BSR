@@ -26,19 +26,25 @@ namespace BSR_APP
 
 			MainMenu();
 			MainMenu(const MainMenu& _Other) = delete;
-			MainMenu(MainMenu&& _Other) noexcept;
+			MainMenu(MainMenu&& _Other) noexcept = delete;
 			~MainMenu();
 
+			const uint64_t GetType() const override;
+
 			void operator= (const MainMenu& _Other) = delete;
-			void operator= (MainMenu&& _Other) noexcept;
+			void operator= (MainMenu&& _Other) noexcept = delete;
 
 		private:
 
-			const uint64_t GetType() const override;
+			bool Keys[2][256];
 
 			void Setup() override;
 			void Update() override;
 			void Stop() override;
+
+			void Input();
+			void Engine();
+			void FrameBuild();
 
 		};
 
