@@ -1,4 +1,4 @@
-# Software Rasterizer (Florescu Bogdan - 143)
+# Software Rasterizer
 
 
 
