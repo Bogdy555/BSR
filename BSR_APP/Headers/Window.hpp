@@ -14,6 +14,15 @@ namespace BSR_APP
 	struct WindowData
 	{
 
+		std::mutex* PlacementMutex;
+		WINDOWPLACEMENT Placement;
+
+		std::mutex* RectMutex;
+		RECT Rect;
+
+		std::mutex* FullScreenMutex;
+		bool FullScreen;
+
 		std::mutex* CloseMutex;
 		bool Close;
 

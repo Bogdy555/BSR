@@ -63,6 +63,9 @@
     <ClInclude Include="Headers\Resources.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\Renderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\AssetManager.cpp">
@@ -86,9 +89,6 @@
     <ClCompile Include="Sources\Rasterizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Rasterizer_Geometry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\Rasterizer_Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -102,6 +102,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Renderer_Instance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

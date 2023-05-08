@@ -4,7 +4,7 @@
 
 BSR_APP::RunTime::Application::Application() :
 	BSR::RunTime::Application(),
-	MainWindow(), MainWindowData(), CloseMutex(), MinSizeMutex(), InputMutex(), ImageMutex(),
+	MainWindow(), MainWindowData(), PlacementMutex(), RectMutex(), FullScreenMutex(), CloseMutex(), MinSizeMutex(), InputMutex(), ImageMutex(),
 	SceneAssets()
 {
 
@@ -43,6 +43,73 @@ BSR::AssetManager& BSR_APP::RunTime::Application::GetSceneAssets()
 const BSR::AssetManager& BSR_APP::RunTime::Application::GetSceneAssets() const
 {
 	return SceneAssets;
+}
+
+void BSR_APP::RunTime::Application::UpdateFullScreen()
+{
+	MainWindowData.FullScreenMutex->lock();
+
+	MainWindowData.FullScreen = !MainWindowData.FullScreen;
+
+	if (MainWindowData.FullScreen)
+	{
+		MainWindowData.FullScreenMutex->unlock();
+
+		MainWindowData.PlacementMutex->lock();
+
+		GetWindowPlacement(MainWindow, &MainWindowData.Placement);
+
+		MainWindowData.PlacementMutex->unlock();
+
+		MainWindowData.RectMutex->lock();
+
+		GetWindowRect(MainWindow, &MainWindowData.Rect);
+
+		MainWindowData.RectMutex->unlock();
+
+		HMONITOR _hMonitor = MonitorFromWindow(MainWindow, MONITOR_DEFAULTTOPRIMARY);
+
+		MONITORINFOEX _MonitorInfo = { 0 };
+
+		_MonitorInfo.cbSize = sizeof(MONITORINFOEX);
+
+		GetMonitorInfo(_hMonitor, &_MonitorInfo);
+
+		SetWindowLongPtr(MainWindow, GWL_STYLE, WS_POPUP);
+
+		SetWindowPos(MainWindow, HWND_TOP, _MonitorInfo.rcMonitor.left, _MonitorInfo.rcMonitor.top, _MonitorInfo.rcMonitor.right - _MonitorInfo.rcMonitor.left, _MonitorInfo.rcMonitor.bottom - _MonitorInfo.rcMonitor.top, SWP_ASYNCWINDOWPOS);
+
+		MainWindow.Show(SW_SHOW);
+	}
+	else
+	{
+		MainWindowData.FullScreenMutex->unlock();
+
+		SetWindowLongPtr(MainWindow, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+
+		MainWindowData.PlacementMutex->lock();
+
+		if (MainWindowData.Placement.showCmd != SW_NORMAL)
+		{
+			SetWindowPos(MainWindow, HWND_TOP, MainWindowData.Placement.rcNormalPosition.left, MainWindowData.Placement.rcNormalPosition.top, MainWindowData.Placement.rcNormalPosition.right - MainWindowData.Placement.rcNormalPosition.left, MainWindowData.Placement.rcNormalPosition.bottom - MainWindowData.Placement.rcNormalPosition.top, SWP_ASYNCWINDOWPOS);
+
+			MainWindow.Show(MainWindowData.Placement.showCmd);
+
+			MainWindowData.PlacementMutex->unlock();
+		}
+		else
+		{
+			MainWindowData.PlacementMutex->unlock();
+
+			MainWindowData.RectMutex->lock();
+
+			SetWindowPos(MainWindow, HWND_TOP, MainWindowData.Rect.left, MainWindowData.Rect.top, MainWindowData.Rect.right - MainWindowData.Rect.left, MainWindowData.Rect.bottom - MainWindowData.Rect.top, SWP_ASYNCWINDOWPOS);
+
+			MainWindow.Show(SW_SHOW);
+
+			MainWindowData.RectMutex->unlock();
+		}
+	}
 }
 
 BSR_APP::RunTime::Application* BSR_APP::RunTime::Application::GetInstance()
@@ -97,6 +164,9 @@ bool BSR_APP::RunTime::Application::InitMainWindow()
 		return false;
 	}
 
+	MainWindowData.PlacementMutex = &PlacementMutex;
+	MainWindowData.RectMutex = &RectMutex;
+	MainWindowData.FullScreenMutex = &FullScreenMutex;
 	MainWindowData.CloseMutex = &CloseMutex;
 	MainWindowData.MinSizeMutex = &MinSizeMutex;
 	MainWindowData.InputMutex = &InputMutex;
@@ -168,7 +238,7 @@ void BSR_APP::RunTime::Application::CleanUpMainWindow()
 
 bool BSR_APP::RunTime::Application::LoadModel(const wchar_t* _Path, const wchar_t* _AssetName)
 {
-	BSR::Rasterizer::Model* _Model = new BSR::Rasterizer::Model;
+	BSR::Renderer::Model* _Model = new BSR::Renderer::Model;
 
 	if (!_Model)
 	{
@@ -192,7 +262,7 @@ bool BSR_APP::RunTime::Application::LoadModel(const wchar_t* _Path, const wchar_
 
 void BSR_APP::RunTime::Application::CleanUpModel(const wchar_t* _AssetName)
 {
-	delete (BSR::Rasterizer::Model*)(SceneAssets.GetAssetData(_AssetName));
+	delete (BSR::Renderer::Model*)(SceneAssets.GetAssetData(_AssetName));
 	SceneAssets.RemoveAsset(_AssetName);
 }
 
@@ -662,7 +732,7 @@ void BSR_APP::RunTime::Application::CleanUpWhiteTextures()
 
 bool BSR_APP::RunTime::Application::GenerateMaterial(const wchar_t* _AssetName, const wchar_t* _Albedo, const wchar_t* _Metalness, const wchar_t* _Roughness, const wchar_t* _AmbientOcclusion, const wchar_t* _NormalMap)
 {
-	BSR::Rasterizer::Material* _Material = new BSR::Rasterizer::Material;
+	BSR::Renderer::Material* _Material = new BSR::Renderer::Material;
 
 	if (!_Material)
 	{
@@ -686,7 +756,7 @@ bool BSR_APP::RunTime::Application::GenerateMaterial(const wchar_t* _AssetName, 
 
 void BSR_APP::RunTime::Application::CleanUpMaterial(const wchar_t* _AssetName)
 {
-	delete (BSR::Rasterizer::Material*)(SceneAssets.GetAssetData(_AssetName));
+	delete (BSR::Renderer::Material*)(SceneAssets.GetAssetData(_AssetName));
 	SceneAssets.RemoveAsset(_AssetName);
 }
 

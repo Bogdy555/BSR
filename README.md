@@ -9,6 +9,7 @@ This project is a software rasterizer able to render 3D graphics in *real time (
 ## Requirements
 
 The only supported platform is Windows (7 all the way up to 11 on both 32 and 64 bit architectures).
+
 It is necessary to be compiled with MSVC. The C++ version used is C++20.
 
 
@@ -21,13 +22,21 @@ It works out of the box since I only use relative paths and the project does not
 
 ## Controls
 
-Use W, A, S, D, Shift and Space to move.
-Use the arrow keys, F7 and F8 to rotate your head around.
-Hit F5 to render the scene with PBR and save it to disk.
+W, A, S, D, Shift and Space move the camera.
+
+The arrow keys, F7 and F8 rotate your head around.
+
+F5 renders the scene with PBR and saves it to disk.
+
 F6 swaps projection type.
+
 F3 decreases the FOV.
+
 F4 increases the FOV.
+
 Escape closes the app.
+
+F11 toggles full screen on or off.
 
 
 
@@ -151,45 +160,49 @@ A texture with 4 floating point components.
 
 The thing that actually renders.
 
-* struct BSR::Rasterizer::Material
+* struct BSR::Renderer::Material
 
 Data structure that holds the material properties of a 3D model.
 
-* struct BSR::Rasterizer::Light
+* struct BSR::Renderer::Light
 
 The data of a light source.
 
-* struct BSR::Rasterizer::Camera
+* struct BSR::Renderer::Camera
 
 Used to store and manage the position and orientation data from which to render the scene.
 
-* struct BSR::Rasterizer::Transform
+* struct BSR::Renderer::Transform
 
 It is used to store the position and orientation of a 3D model.
 
-* struct BSR::Rasterizer::VertexData
+* struct BSR::Renderer::VertexData
 
 The properties of a point on the 3D model.
 
-* class BSR::Rasterizer::VertexBuffer
+* class BSR::Renderer::VertexBuffer
 
 A pool of verteces.
 
-* struct BSR::Rasterizer::IndexData
+* struct BSR::Renderer::IndexData
 
 A set of 3 indexs into the vertex buffer. Such a triplet forms a triangle.
 
-* class BSR::Rasterizer::IndexBuffer
+* class BSR::Renderer::IndexBuffer
 
 A pool of indexed triangles.
 
-* struct BSR::Rasterizer::Mesh
+* struct BSR::Renderer::Mesh
 
 Quick and dirty hack to pair up a VBO and an IBO.
 
-* class BSR::Rasterizer::Model
+* class BSR::Renderer::Model
 
 A set of meshes that describe a 3D model.
+
+* class BSR::Renderer::Instance
+
+An instance of the renderer.
 
 * class BSR::MultiProcessing::SharedMemory
 

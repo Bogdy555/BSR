@@ -167,6 +167,7 @@
     <ClInclude Include="Headers\Math.hpp" />
     <ClInclude Include="Headers\MultiProcessing.hpp" />
     <ClInclude Include="Headers\Rasterizer.hpp" />
+    <ClInclude Include="Headers\Renderer.hpp" />
     <ClInclude Include="Headers\Resources.hpp" />
     <ClInclude Include="Headers\RunTime.hpp" />
     <ClInclude Include="Headers\String.hpp" />
@@ -184,8 +185,9 @@
     <ClCompile Include="Sources\Math_Vector.cpp" />
     <ClCompile Include="Sources\MultiProcessing.cpp" />
     <ClCompile Include="Sources\Rasterizer.cpp" />
-    <ClCompile Include="Sources\Rasterizer_Geometry.cpp" />
     <ClCompile Include="Sources\Rasterizer_Texture.cpp" />
+    <ClCompile Include="Sources\Renderer.cpp" />
+    <ClCompile Include="Sources\Renderer_Instance.cpp" />
     <ClCompile Include="Sources\RunTime.cpp" />
     <ClCompile Include="Sources\String.cpp" />
     <ClCompile Include="Sources\Time.cpp" />

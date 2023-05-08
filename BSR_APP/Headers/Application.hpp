@@ -32,6 +32,8 @@ namespace BSR_APP
 			BSR::AssetManager& GetSceneAssets();
 			const BSR::AssetManager& GetSceneAssets() const;
 
+			void UpdateFullScreen();
+
 			static Application* GetInstance();
 
 			void operator= (const Application& _Other) = delete;
@@ -43,6 +45,9 @@ namespace BSR_APP
 
 			BSR::Window MainWindow;
 			WindowData MainWindowData;
+			std::mutex PlacementMutex;
+			std::mutex RectMutex;
+			std::mutex FullScreenMutex;
 			std::mutex CloseMutex;
 			std::mutex MinSizeMutex;
 			std::mutex InputMutex;

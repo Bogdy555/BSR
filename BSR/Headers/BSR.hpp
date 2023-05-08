@@ -26,6 +26,8 @@
 
 #include "Rasterizer.hpp"
 
+#include "Renderer.hpp"
+
 #include "MultiProcessing.hpp"
 
 #include "RunTime.hpp"

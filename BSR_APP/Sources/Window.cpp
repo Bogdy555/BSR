@@ -2,7 +2,7 @@
 
 
 
-BSR_APP::WindowData::WindowData() : CloseMutex(nullptr), Close(false), InputMutex(nullptr), Focus(false), Keys(), MinSizeMutex(nullptr), MinWidth(700), MinHeight(400), ImageMutex(nullptr), Image()
+BSR_APP::WindowData::WindowData() : PlacementMutex(nullptr), Placement({ 0 }), RectMutex(nullptr), Rect({ 0 }), FullScreenMutex(nullptr), FullScreen(false), CloseMutex(nullptr), Close(false), InputMutex(nullptr), Focus(false), Keys(), MinSizeMutex(nullptr), MinWidth(700), MinHeight(400), ImageMutex(nullptr), Image()
 {
 	for (size_t _Index = 0; _Index < 256; _Index++)
 	{
@@ -10,7 +10,7 @@ BSR_APP::WindowData::WindowData() : CloseMutex(nullptr), Close(false), InputMute
 	}
 }
 
-BSR_APP::WindowData::WindowData(const WindowData& _Other) : CloseMutex(_Other.CloseMutex), Close(_Other.Close), InputMutex(_Other.InputMutex), Focus(_Other.Focus), Keys(), MinSizeMutex(_Other.MinSizeMutex), MinWidth(_Other.MinWidth), MinHeight(_Other.MinHeight), ImageMutex(_Other.ImageMutex), Image(_Other.Image)
+BSR_APP::WindowData::WindowData(const WindowData& _Other) : PlacementMutex(_Other.PlacementMutex), Placement(_Other.Placement), RectMutex(_Other.RectMutex), Rect(_Other.Rect), FullScreenMutex(_Other.FullScreenMutex), FullScreen(_Other.FullScreen), CloseMutex(_Other.CloseMutex), Close(_Other.Close), InputMutex(_Other.InputMutex), Focus(_Other.Focus), Keys(), MinSizeMutex(_Other.MinSizeMutex), MinWidth(_Other.MinWidth), MinHeight(_Other.MinHeight), ImageMutex(_Other.ImageMutex), Image(_Other.Image)
 {
 	for (size_t _Index = 0; _Index < 256; _Index++)
 	{
@@ -18,7 +18,7 @@ BSR_APP::WindowData::WindowData(const WindowData& _Other) : CloseMutex(_Other.Cl
 	}
 }
 
-BSR_APP::WindowData::WindowData(WindowData&& _Other) noexcept : CloseMutex(_Other.CloseMutex), Close(_Other.Close), InputMutex(_Other.InputMutex), Focus(_Other.Focus), Keys(), MinSizeMutex(_Other.MinSizeMutex), MinWidth(_Other.MinWidth), MinHeight(_Other.MinHeight), ImageMutex(_Other.ImageMutex), Image(_Other.Image)
+BSR_APP::WindowData::WindowData(WindowData&& _Other) noexcept : PlacementMutex(_Other.PlacementMutex), Placement(_Other.Placement), RectMutex(_Other.RectMutex), Rect(_Other.Rect), FullScreenMutex(_Other.FullScreenMutex), FullScreen(_Other.FullScreen), CloseMutex(_Other.CloseMutex), Close(_Other.Close), InputMutex(_Other.InputMutex), Focus(_Other.Focus), Keys(), MinSizeMutex(_Other.MinSizeMutex), MinWidth(_Other.MinWidth), MinHeight(_Other.MinHeight), ImageMutex(_Other.ImageMutex), Image(_Other.Image)
 {
 	for (size_t _Index = 0; _Index < 256; _Index++)
 	{
@@ -26,6 +26,12 @@ BSR_APP::WindowData::WindowData(WindowData&& _Other) noexcept : CloseMutex(_Othe
 		_Other.Keys[_Index] = false;
 	}
 
+	_Other.PlacementMutex = nullptr;
+	_Other.Placement = { 0 };
+	_Other.RectMutex = nullptr;
+	_Other.Rect = { 0 };
+	_Other.FullScreenMutex = nullptr;
+	_Other.FullScreen = false;
 	_Other.CloseMutex = nullptr;
 	_Other.Close = false;
 	_Other.InputMutex = nullptr;
@@ -44,6 +50,12 @@ BSR_APP::WindowData::~WindowData()
 
 void BSR_APP::WindowData::operator= (const WindowData& _Other)
 {
+	PlacementMutex = _Other.PlacementMutex;
+	Placement = _Other.Placement;
+	RectMutex = _Other.RectMutex;
+	Rect = _Other.Rect;
+	FullScreenMutex = _Other.FullScreenMutex;
+	FullScreen = _Other.FullScreen;
 	CloseMutex = _Other.CloseMutex;
 	Close = _Other.Close;
 	InputMutex = _Other.InputMutex;
@@ -61,6 +73,12 @@ void BSR_APP::WindowData::operator= (const WindowData& _Other)
 
 void BSR_APP::WindowData::operator= (WindowData&& _Other) noexcept
 {
+	PlacementMutex = _Other.PlacementMutex;
+	Placement = _Other.Placement;
+	RectMutex = _Other.RectMutex;
+	Rect = _Other.Rect;
+	FullScreenMutex = _Other.FullScreenMutex;
+	FullScreen = _Other.FullScreen;
 	CloseMutex = _Other.CloseMutex;
 	Close = _Other.Close;
 	InputMutex = _Other.InputMutex;
@@ -77,6 +95,12 @@ void BSR_APP::WindowData::operator= (WindowData&& _Other) noexcept
 		_Other.Keys[_Index] = false;
 	}
 
+	_Other.PlacementMutex = nullptr;
+	_Other.Placement = { 0 };
+	_Other.RectMutex = nullptr;
+	_Other.Rect = { 0 };
+	_Other.FullScreenMutex = nullptr;
+	_Other.FullScreen = false;
 	_Other.CloseMutex = nullptr;
 	_Other.Close = false;
 	_Other.InputMutex = nullptr;
@@ -87,6 +111,8 @@ void BSR_APP::WindowData::operator= (WindowData&& _Other) noexcept
 	_Other.ImageMutex = nullptr;
 	_Other.Image = BSR::Image::Image();
 }
+
+
 
 bool BSR_APP::InitWindowThread(void* _UserData)
 {

@@ -82,6 +82,16 @@ void BSR_APP::RunTime::MainMenu::Engine()
 		_ApplicationObj->Close(BSR::MultiProcessing::_ReturnNoError);
 	}
 
+	if (!Keys[BSR::_Previous][VK_F11] && Keys[BSR::_Current][VK_F11])
+	{
+		_ApplicationObj->UpdateFullScreen();
+	}
+
+	if (!Keys[BSR::_Previous][VK_F5] && Keys[BSR::_Current][VK_F5])
+	{
+		RenderAndSave();
+	}
+
 	{
 		BSR::Math::Vec3f _MoveVec;
 
@@ -197,16 +207,21 @@ void BSR_APP::RunTime::MainMenu::FrameBuild()
 		_MainWindowData.Image.Data = new uint8_t[_MainWindowData.Image.Width * _MainWindowData.Image.Height * 3];
 	}
 
-	RenderPhong(_MainWindowData.Image);
+	Render(_MainWindowData.Image);
 
 	_MainWindowData.ImageMutex->unlock();
 
 	_MainWindow.UpdateContent();
 }
 
-void BSR_APP::RunTime::MainMenu::RenderPhong(BSR::Image::Image& _Image)
+void BSR_APP::RunTime::MainMenu::RenderAndSave()
 {
-	struct PhongUniforms
+
+}
+
+void BSR_APP::RunTime::MainMenu::Render(BSR::Image::Image& _Image)
+{
+	struct Uniforms
 	{
 		BSR::Math::Mat4f Model;
 		BSR::Math::Mat3f ModelInversedTransposed;
@@ -215,9 +230,9 @@ void BSR_APP::RunTime::MainMenu::RenderPhong(BSR::Image::Image& _Image)
 		BSR::Math::Mat4f Mvp;
 	};
 
-	typedef BSR::Rasterizer::VertexData PhongLerpers;
+	typedef BSR::Renderer::VertexData Lerpers;
 
-	PhongUniforms _Uniforms;
+	Uniforms _Uniforms;
 
 	_Uniforms.Model = Transform.GetModelMatrix();
 	_Uniforms.ModelInversedTransposed = BSR::Math::Mat3f(_Uniforms.Model).Inversed().Transposed();
@@ -225,7 +240,7 @@ void BSR_APP::RunTime::MainMenu::RenderPhong(BSR::Image::Image& _Image)
 	_Uniforms.Projection = Camera.GetProjectionMatrix((float)(_Image.Width) / (float)(_Image.Height));
 	_Uniforms.Mvp = _Uniforms.Projection * _Uniforms.View * _Uniforms.Model;
 
-	BSR::Rasterizer::Model& _Model = *(BSR::Rasterizer::Model*)(((Application*)(GetApplicationObj()))->GetSceneAssets().GetAssetData(L"Model"));
+	BSR::Renderer::Model& _Model = *(BSR::Renderer::Model*)(((Application*)(GetApplicationObj()))->GetSceneAssets().GetAssetData(L"Model"));
 
 	BSR::Rasterizer::Context _Context;
 
@@ -245,16 +260,16 @@ void BSR_APP::RunTime::MainMenu::RenderPhong(BSR::Image::Image& _Image)
 	{
 		_Context.RenderMesh
 		(
-			_Model[_MeshIndex].VBO.GetData(), _Model[_MeshIndex].VBO.GetSize(), sizeof(BSR::Rasterizer::VertexData),
+			_Model[_MeshIndex].VBO.GetData(), _Model[_MeshIndex].VBO.GetSize(), sizeof(BSR::Renderer::VertexData),
 			_Model[_MeshIndex].IBO.GetData(), 0, _Model[_MeshIndex].IBO.GetSize() * 3,
 			&_Uniforms,
-			sizeof(PhongLerpers) / sizeof(float),
-			sizeof(PhongLerpers) / sizeof(float),
+			sizeof(Lerpers) / sizeof(float),
+			sizeof(Lerpers) / sizeof(float),
 			[](const void* _Vertex, const void* _Uniforms, float* _OutLerpers) -> const BSR::Math::Vec4f
 			{
-				const BSR::Rasterizer::VertexData& _TrueVertex = *(const BSR::Rasterizer::VertexData*)(_Vertex);
-				const PhongUniforms& _TrueUniforms = *(const PhongUniforms*)(_Uniforms);
-				PhongLerpers& _TrueLerpers = *(PhongLerpers*)(_OutLerpers);
+				const BSR::Renderer::VertexData& _TrueVertex = *(const BSR::Renderer::VertexData*)(_Vertex);
+				const Uniforms& _TrueUniforms = *(const Uniforms*)(_Uniforms);
+				Lerpers& _TrueLerpers = *(Lerpers*)(_OutLerpers);
 
 				_TrueLerpers.Position = BSR::Math::Vec3f(_TrueUniforms.Model * BSR::Math::Vec4f(_TrueVertex.Position, 1.0f));
 				_TrueLerpers.Normal = _TrueUniforms.ModelInversedTransposed * _TrueVertex.Normal;
@@ -266,8 +281,8 @@ void BSR_APP::RunTime::MainMenu::RenderPhong(BSR::Image::Image& _Image)
 			nullptr,
 			[](const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const BSR::Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType)
 			{
-				const PhongLerpers& _TrueLerpers = *(const PhongLerpers*)(_Lerpers);
-				const PhongUniforms& _TrueUniforms = *(const PhongUniforms*)(_Uniforms);
+				const Lerpers& _TrueLerpers = *(const Lerpers*)(_Lerpers);
+				const Uniforms& _TrueUniforms = *(const Uniforms*)(_Uniforms);
 				BSR::Image::Image& _TrueFrameBuffer = *(BSR::Image::Image*)(_FrameBuffer);
 
 				_TrueFrameBuffer.Data[(_X + _Y * _TrueFrameBuffer.Width) * 3 + 0] = 255;

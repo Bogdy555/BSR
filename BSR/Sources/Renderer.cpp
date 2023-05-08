@@ -2,7 +2,7 @@
 
 
 
-const BSR::Math::Mat4f BSR::Rasterizer::Camera::GetViewMatrix() const
+const BSR::Math::Mat4f BSR::Renderer::Camera::GetViewMatrix() const
 {
 	return
 		BSR::Math::Mat4f::GetRotation(-AngleTilt, BSR::Math::Vec3f(0.0f, 0.0f, 1.0f)) *
@@ -11,7 +11,7 @@ const BSR::Math::Mat4f BSR::Rasterizer::Camera::GetViewMatrix() const
 		BSR::Math::Mat4f::GetTranslation(-Position);
 }
 
-const BSR::Math::Mat4f BSR::Rasterizer::Camera::GetProjectionMatrix(const float _AspectRatio) const
+const BSR::Math::Mat4f BSR::Renderer::Camera::GetProjectionMatrix(const float _AspectRatio) const
 {
 	if (Perspective)
 	{
@@ -21,14 +21,14 @@ const BSR::Math::Mat4f BSR::Rasterizer::Camera::GetProjectionMatrix(const float 
 	return BSR::Math::Mat4f::GetOrtho(-FieldOfView / 2.0f * _AspectRatio, FieldOfView / 2.0f * _AspectRatio, -FieldOfView / 2.0f, FieldOfView / 2.0f, -NearPlane, -FarPlane);
 }
 
-const BSR::Math::Vec3f BSR::Rasterizer::Camera::GetForwardVector()
+const BSR::Math::Vec3f BSR::Renderer::Camera::GetForwardVector()
 {
 	return BSR::Math::Mat3f::GetRotation(-AngleFlat, BSR::Math::Vec3f(0.0f, 1.0f, 0.0f)) * BSR::Math::Mat3f::GetRotation(-AngleVertical, BSR::Math::Vec3f(1.0f, 0.0f, 0.0f)) * BSR::Math::Vec3f(0.0f, 0.0f, -1.0f);
 }
 
 
 
-const BSR::Math::Mat4f BSR::Rasterizer::Transform::GetModelMatrix() const
+const BSR::Math::Mat4f BSR::Renderer::Transform::GetModelMatrix() const
 {
 	return
 		BSR::Math::Mat4f::GetTranslation(Position) *
@@ -46,151 +46,151 @@ const BSR::Math::Mat4f BSR::Rasterizer::Transform::GetModelMatrix() const
 
 
 
-BSR::Rasterizer::VertexBuffer::VertexBuffer() : Verteces()
+BSR::Renderer::VertexBuffer::VertexBuffer() : Verteces()
 {
 
 }
 
-BSR::Rasterizer::VertexBuffer::VertexBuffer(const VertexBuffer& _Other) : Verteces(_Other.Verteces)
+BSR::Renderer::VertexBuffer::VertexBuffer(const VertexBuffer& _Other) : Verteces(_Other.Verteces)
 {
 
 }
 
-BSR::Rasterizer::VertexBuffer::VertexBuffer(VertexBuffer&& _Other) noexcept : Verteces(std::move(_Other.Verteces))
+BSR::Renderer::VertexBuffer::VertexBuffer(VertexBuffer&& _Other) noexcept : Verteces(std::move(_Other.Verteces))
 {
 
 }
 
-BSR::Rasterizer::VertexBuffer::~VertexBuffer()
+BSR::Renderer::VertexBuffer::~VertexBuffer()
 {
 
 }
 
-void BSR::Rasterizer::VertexBuffer::PushBack(const VertexData& _Vertex)
+void BSR::Renderer::VertexBuffer::PushBack(const VertexData& _Vertex)
 {
 	Verteces.push_back(_Vertex);
 }
 
-void BSR::Rasterizer::VertexBuffer::Erase(const size_t _Index)
+void BSR::Renderer::VertexBuffer::Erase(const size_t _Index)
 {
 	Verteces.erase(Verteces.begin() + _Index);
 }
 
-void BSR::Rasterizer::VertexBuffer::Clear()
+void BSR::Renderer::VertexBuffer::Clear()
 {
 	Verteces.clear();
 }
 
-const size_t BSR::Rasterizer::VertexBuffer::GetSize() const
+const size_t BSR::Renderer::VertexBuffer::GetSize() const
 {
 	return Verteces.size();
 }
 
-float* BSR::Rasterizer::VertexBuffer::GetData()
+float* BSR::Renderer::VertexBuffer::GetData()
 {
 	return (float*)(Verteces.data());
 }
 
-const float* BSR::Rasterizer::VertexBuffer::GetData() const
+const float* BSR::Renderer::VertexBuffer::GetData() const
 {
 	return (const float*)(Verteces.data());
 }
 
-BSR::Rasterizer::VertexData& BSR::Rasterizer::VertexBuffer::operator[] (const size_t _Index)
+BSR::Renderer::VertexData& BSR::Renderer::VertexBuffer::operator[] (const size_t _Index)
 {
 	return Verteces[_Index];
 }
 
-const BSR::Rasterizer::VertexData& BSR::Rasterizer::VertexBuffer::operator[] (const size_t _Index) const
+const BSR::Renderer::VertexData& BSR::Renderer::VertexBuffer::operator[] (const size_t _Index) const
 {
 	return Verteces[_Index];
 }
 
-void BSR::Rasterizer::VertexBuffer::operator= (const VertexBuffer& _Other)
+void BSR::Renderer::VertexBuffer::operator= (const VertexBuffer& _Other)
 {
 	Verteces = _Other.Verteces;
 }
 
-void BSR::Rasterizer::VertexBuffer::operator= (VertexBuffer&& _Other) noexcept
+void BSR::Renderer::VertexBuffer::operator= (VertexBuffer&& _Other) noexcept
 {
 	Verteces = std::move(_Other.Verteces);
 }
 
 
 
-BSR::Rasterizer::IndexBuffer::IndexBuffer() : Indexes()
+BSR::Renderer::IndexBuffer::IndexBuffer() : Indexes()
 {
 
 }
 
-BSR::Rasterizer::IndexBuffer::IndexBuffer(const IndexBuffer& _Other) : Indexes(_Other.Indexes)
+BSR::Renderer::IndexBuffer::IndexBuffer(const IndexBuffer& _Other) : Indexes(_Other.Indexes)
 {
 
 }
 
-BSR::Rasterizer::IndexBuffer::IndexBuffer(IndexBuffer&& _Other) noexcept : Indexes(std::move(_Other.Indexes))
+BSR::Renderer::IndexBuffer::IndexBuffer(IndexBuffer&& _Other) noexcept : Indexes(std::move(_Other.Indexes))
 {
 
 }
 
-BSR::Rasterizer::IndexBuffer::~IndexBuffer()
+BSR::Renderer::IndexBuffer::~IndexBuffer()
 {
 
 }
 
-void BSR::Rasterizer::IndexBuffer::PushBack(const IndexData& _Index)
+void BSR::Renderer::IndexBuffer::PushBack(const IndexData& _Index)
 {
 	Indexes.push_back(_Index);
 }
 
-void BSR::Rasterizer::IndexBuffer::Erase(const size_t _Index)
+void BSR::Renderer::IndexBuffer::Erase(const size_t _Index)
 {
 	Indexes.erase(Indexes.begin() + _Index);
 }
 
-void BSR::Rasterizer::IndexBuffer::Clear()
+void BSR::Renderer::IndexBuffer::Clear()
 {
 	Indexes.clear();
 }
 
-const size_t BSR::Rasterizer::IndexBuffer::GetSize() const
+const size_t BSR::Renderer::IndexBuffer::GetSize() const
 {
 	return Indexes.size();
 }
 
-size_t* BSR::Rasterizer::IndexBuffer::GetData()
+size_t* BSR::Renderer::IndexBuffer::GetData()
 {
 	return (size_t*)(Indexes.data());
 }
 
-const size_t* BSR::Rasterizer::IndexBuffer::GetData() const
+const size_t* BSR::Renderer::IndexBuffer::GetData() const
 {
 	return (const size_t*)(Indexes.data());
 }
 
-BSR::Rasterizer::IndexData& BSR::Rasterizer::IndexBuffer::operator[] (const size_t _Index)
+BSR::Renderer::IndexData& BSR::Renderer::IndexBuffer::operator[] (const size_t _Index)
 {
 	return Indexes[_Index];
 }
 
-const BSR::Rasterizer::IndexData& BSR::Rasterizer::IndexBuffer::operator[] (const size_t _Index) const
+const BSR::Renderer::IndexData& BSR::Renderer::IndexBuffer::operator[] (const size_t _Index) const
 {
 	return Indexes[_Index];
 }
 
-void BSR::Rasterizer::IndexBuffer::operator= (const IndexBuffer& _Other)
+void BSR::Renderer::IndexBuffer::operator= (const IndexBuffer& _Other)
 {
 	Indexes = _Other.Indexes;
 }
 
-void BSR::Rasterizer::IndexBuffer::operator= (IndexBuffer&& _Other) noexcept
+void BSR::Renderer::IndexBuffer::operator= (IndexBuffer&& _Other) noexcept
 {
 	Indexes = std::move(_Other.Indexes);
 }
 
 
 
-void BSR::Rasterizer::Mesh::GenerateCube(Mesh& _Mesh)
+void BSR::Renderer::Mesh::GenerateCube(Mesh& _Mesh)
 {
 	_Mesh.VBO.Clear();
 	_Mesh.IBO.Clear();
@@ -246,7 +246,7 @@ void BSR::Rasterizer::Mesh::GenerateCube(Mesh& _Mesh)
 	_Mesh.IBO.PushBack(IndexData(33, 34, 35));
 }
 
-void BSR::Rasterizer::Mesh::GenerateQuad(Mesh& _Mesh)
+void BSR::Renderer::Mesh::GenerateQuad(Mesh& _Mesh)
 {
 	_Mesh.VBO.Clear();
 	_Mesh.IBO.Clear();
@@ -262,17 +262,17 @@ void BSR::Rasterizer::Mesh::GenerateQuad(Mesh& _Mesh)
 
 
 
-BSR::Rasterizer::Model::Model() : Meshes()
+BSR::Renderer::Model::Model() : Meshes()
 {
 
 }
 
-BSR::Rasterizer::Model::Model(Model&& _Other) noexcept : Meshes(std::move(_Other.Meshes))
+BSR::Renderer::Model::Model(Model&& _Other) noexcept : Meshes(std::move(_Other.Meshes))
 {
 
 }
 
-BSR::Rasterizer::Model::~Model()
+BSR::Renderer::Model::~Model()
 {
 	for (size_t _Index = 0; _Index < Meshes.size(); _Index++)
 	{
@@ -280,7 +280,7 @@ BSR::Rasterizer::Model::~Model()
 	}
 }
 
-bool BSR::Rasterizer::Model::Load(const wchar_t* _Path)
+bool BSR::Renderer::Model::Load(const wchar_t* _Path)
 {
 	struct MeshFileData
 	{
@@ -824,7 +824,7 @@ bool BSR::Rasterizer::Model::Load(const wchar_t* _Path)
 	return true;
 }
 
-const bool BSR::Rasterizer::Model::Save(const wchar_t* _Path) const
+const bool BSR::Renderer::Model::Save(const wchar_t* _Path) const
 {
 	std::wofstream _fOut;
 
@@ -889,7 +889,7 @@ const bool BSR::Rasterizer::Model::Save(const wchar_t* _Path) const
 	return true;
 }
 
-void BSR::Rasterizer::Model::PushBack(const Mesh& _Mesh)
+void BSR::Renderer::Model::PushBack(const Mesh& _Mesh)
 {
 	for (size_t _Index = 0; _Index < Meshes.size(); _Index++)
 	{
@@ -923,7 +923,7 @@ void BSR::Rasterizer::Model::PushBack(const Mesh& _Mesh)
 	Meshes.emplace_back(_NewMesh);
 }
 
-void BSR::Rasterizer::Model::EmplaceBack(Mesh&& _Mesh) noexcept
+void BSR::Renderer::Model::EmplaceBack(Mesh&& _Mesh) noexcept
 {
 	for (size_t _Index = 0; _Index < Meshes.size(); _Index++)
 	{
@@ -937,13 +937,13 @@ void BSR::Rasterizer::Model::EmplaceBack(Mesh&& _Mesh) noexcept
 	Meshes.emplace_back(std::move(_Mesh));
 }
 
-void BSR::Rasterizer::Model::Erase(const size_t _Index)
+void BSR::Renderer::Model::Erase(const size_t _Index)
 {
 	delete[] Meshes[_Index].Name;
 	Meshes.erase(Meshes.begin() + _Index);
 }
 
-void BSR::Rasterizer::Model::Clear()
+void BSR::Renderer::Model::Clear()
 {
 	for (size_t _Index = 0; _Index < Meshes.size(); _Index++)
 	{
@@ -953,22 +953,22 @@ void BSR::Rasterizer::Model::Clear()
 	Meshes.clear();
 }
 
-const size_t BSR::Rasterizer::Model::GetSize() const
+const size_t BSR::Renderer::Model::GetSize() const
 {
 	return Meshes.size();
 }
 
-BSR::Rasterizer::Mesh& BSR::Rasterizer::Model::operator[] (const size_t _Index)
+BSR::Renderer::Mesh& BSR::Renderer::Model::operator[] (const size_t _Index)
 {
 	return Meshes[_Index];
 }
 
-const BSR::Rasterizer::Mesh& BSR::Rasterizer::Model::operator[] (const size_t _Index) const
+const BSR::Renderer::Mesh& BSR::Renderer::Model::operator[] (const size_t _Index) const
 {
 	return Meshes[_Index];
 }
 
-void BSR::Rasterizer::Model::operator= (Model&& _Other) noexcept
+void BSR::Renderer::Model::operator= (Model&& _Other) noexcept
 {
 	Clear();
 
