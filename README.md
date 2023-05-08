@@ -19,6 +19,18 @@ It works out of the box since I only use relative paths and the project does not
 
 
 
+## Controls
+
+Use W, A, S, D, Shift and Space to move.
+Use the arrow keys, F7 and F8 to rotate your head around.
+Hit F5 to render the scene with PBR and save it to disk.
+F6 swaps projection type.
+F3 decreases the FOV.
+F4 increases the FOV.
+Escape closes the app.
+
+
+
 ## Copy right
 
 I am not the author of the amazing PBR materials, nor the HDR sIBL environment maps. I got them from https://freepbr.com and http://www.hdrlabs.com/sibl/archive.html. I only use them to test my software and I do not own any ownership over them.

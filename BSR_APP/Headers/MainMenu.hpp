@@ -38,6 +38,12 @@ namespace BSR_APP
 
 			bool Keys[2][256];
 
+			BSR::Rasterizer::Camera Camera;
+			BSR::Rasterizer::Transform Transform;
+
+			float CameraMoveSpeed;
+			float CameraRotateSpeed;
+
 			void Setup() override;
 			void Update() override;
 			void Stop() override;
@@ -46,6 +52,8 @@ namespace BSR_APP
 			void DeleteInput();
 			void Engine();
 			void FrameBuild();
+
+			void RenderPhong(BSR::Image::Image& _Image);
 
 		};
 

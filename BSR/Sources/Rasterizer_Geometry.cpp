@@ -5,9 +5,9 @@
 const BSR::Math::Mat4f BSR::Rasterizer::Camera::GetViewMatrix() const
 {
 	return
-		BSR::Math::Mat4f::GetRotation(AngleTilt, BSR::Math::Vec3f(0.0f, 0.0f, 1.0f)) *
-		BSR::Math::Mat4f::GetRotation(AngleVertical, BSR::Math::Vec3f(1.0f, 0.0f, 0.0f)) *
-		BSR::Math::Mat4f::GetRotation(AngleFlat, BSR::Math::Vec3f(0.0f, 1.0f, 0.0f)) *
+		BSR::Math::Mat4f::GetRotation(-AngleTilt, BSR::Math::Vec3f(0.0f, 0.0f, 1.0f)) *
+		BSR::Math::Mat4f::GetRotation(-AngleVertical, BSR::Math::Vec3f(1.0f, 0.0f, 0.0f)) *
+		BSR::Math::Mat4f::GetRotation(-AngleFlat, BSR::Math::Vec3f(0.0f, 1.0f, 0.0f)) *
 		BSR::Math::Mat4f::GetTranslation(-Position);
 }
 
