@@ -43,6 +43,7 @@ namespace BSR_APP
 			void Stop() override;
 
 			void Input();
+			void DeleteInput();
 			void Engine();
 			void FrameBuild();
 

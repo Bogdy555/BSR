@@ -10,6 +10,8 @@
 
 #include "Dependencies.hpp"
 
+#include "Resources.hpp"
+
 #include "Window.hpp"
 
 #include "Application.hpp"

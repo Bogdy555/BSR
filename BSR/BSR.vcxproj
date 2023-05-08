@@ -167,6 +167,7 @@
     <ClInclude Include="Headers\Math.hpp" />
     <ClInclude Include="Headers\MultiProcessing.hpp" />
     <ClInclude Include="Headers\Rasterizer.hpp" />
+    <ClInclude Include="Headers\Resources.hpp" />
     <ClInclude Include="Headers\RunTime.hpp" />
     <ClInclude Include="Headers\String.hpp" />
     <ClInclude Include="Headers\Templates.hpp" />

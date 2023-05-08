@@ -111,6 +111,9 @@
       <Command>if exist "$(ProjectDir)Files\" xcopy "$(ProjectDir)Files\*" "$(OutDir)*" /h /e /y /q
 </Command>
     </PostBuildEvent>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)BSR\Headers\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -137,6 +140,9 @@
       <Command>if exist "$(ProjectDir)Files\" xcopy "$(ProjectDir)Files\*" "$(OutDir)*" /h /e /y /q
 </Command>
     </PostBuildEvent>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)BSR\Headers\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -159,6 +165,9 @@
       <Command>if exist "$(ProjectDir)Files\" xcopy "$(ProjectDir)Files\*" "$(OutDir)*" /h /e /y /q
 </Command>
     </PostBuildEvent>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)BSR\Headers\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -185,6 +194,9 @@
       <Command>if exist "$(ProjectDir)Files\" xcopy "$(ProjectDir)Files\*" "$(OutDir)*" /h /e /y /q
 </Command>
     </PostBuildEvent>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)BSR\Headers\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="Files\3D Models\Objects.wfobj" />
@@ -216,6 +228,7 @@
     <Image Include="Files\Materials\Plastic\Metalness.bmp" />
     <Image Include="Files\Materials\Plastic\Normal.bmp" />
     <Image Include="Files\Materials\Plastic\Roughness.bmp" />
+    <Image Include="Resources\Icons\MainIcon.ico" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Application.hpp" />
@@ -223,6 +236,7 @@
     <ClInclude Include="Headers\Dependencies.hpp" />
     <ClInclude Include="Headers\Macros.hpp" />
     <ClInclude Include="Headers\MainMenu.hpp" />
+    <ClInclude Include="Headers\Resources.hpp" />
     <ClInclude Include="Headers\Templates.hpp" />
     <ClInclude Include="Headers\Window.hpp" />
   </ItemGroup>
@@ -231,6 +245,9 @@
     <ClCompile Include="Sources\EntryPoint.cpp" />
     <ClCompile Include="Sources\MainMenu.cpp" />
     <ClCompile Include="Sources\Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\Resources.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

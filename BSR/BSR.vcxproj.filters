@@ -60,6 +60,9 @@
     <ClInclude Include="Headers\WinTargetVer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\Resources.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\AssetManager.cpp">

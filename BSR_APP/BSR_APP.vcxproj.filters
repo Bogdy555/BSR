@@ -92,6 +92,9 @@
     <Image Include="Files\Materials\Plastic\Roughness.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Resources\Icons\MainIcon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Application.hpp">
@@ -115,6 +118,9 @@
     <ClInclude Include="Headers\Window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\Resources.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\Application.cpp">
@@ -129,5 +135,10 @@
     <ClCompile Include="Sources\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\Resources.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -13,16 +13,29 @@ namespace BSR_APP
 
 	struct WindowData
 	{
-		std::mutex* CloseMutex = nullptr;
-		bool Close = false;
 
-		std::mutex* InputMutex = nullptr;
-		bool Focus = false;
+		std::mutex* CloseMutex;
+		bool Close;
+
+		std::mutex* InputMutex;
+		bool Focus;
 		bool Keys[256];
 
-		std::mutex* MinSizeMutex = nullptr;
-		int32_t MinWidth = 700;
-		int32_t MinHeight = 400;
+		std::mutex* MinSizeMutex;
+		int32_t MinWidth;
+		int32_t MinHeight;
+
+		std::mutex* ImageMutex;
+		BSR::Image::Image Image;
+
+		WindowData();
+		WindowData(const WindowData& _Other);
+		WindowData(WindowData&& _Other) noexcept;
+		~WindowData();
+
+		void operator= (const WindowData& _Other);
+		void operator= (WindowData&& _Other) noexcept;
+
 	};
 
 	bool InitWindowThread(void* _UserData);
