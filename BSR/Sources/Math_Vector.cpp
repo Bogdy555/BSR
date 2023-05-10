@@ -19,8 +19,7 @@ BSR::Math::Vec2f::Vec2f(const Vec2f& _Other) : x(_Other.x), y(_Other.y)
 
 BSR::Math::Vec2f::Vec2f(Vec2f&& _Other) noexcept : x(_Other.x), y(_Other.y)
 {
-	_Other.x = 0.0f;
-	_Other.y = 0.0f;
+
 }
 
 BSR::Math::Vec2f::~Vec2f()
@@ -202,9 +201,6 @@ const BSR::Math::Vec2f& BSR::Math::Vec2f::operator= (Vec2f&& _Other) noexcept
 	x = _Other.x;
 	y = _Other.y;
 
-	_Other.x = 0.0f;
-	_Other.y = 0.0f;
-
 	return *this;
 }
 
@@ -277,9 +273,7 @@ BSR::Math::Vec3f::Vec3f(const Vec3f& _Other) : x(_Other.x), y(_Other.y), z(_Othe
 
 BSR::Math::Vec3f::Vec3f(Vec3f&& _Other) noexcept : x(_Other.x), y(_Other.y), z(_Other.z)
 {
-	_Other.x = 0.0f;
-	_Other.y = 0.0f;
-	_Other.z = 0.0f;
+
 }
 
 BSR::Math::Vec3f::Vec3f(const Vec2f& _Other, const float _z) : x(_Other.x), y(_Other.y), z(_z)
@@ -481,10 +475,6 @@ const BSR::Math::Vec3f& BSR::Math::Vec3f::operator= (Vec3f&& _Other) noexcept
 	y = _Other.y;
 	z = _Other.z;
 
-	_Other.x = 0.0f;
-	_Other.y = 0.0f;
-	_Other.z = 0.0f;
-
 	return *this;
 }
 
@@ -562,10 +552,7 @@ BSR::Math::Vec4f::Vec4f(const Vec4f& _Other) : x(_Other.x), y(_Other.y), z(_Othe
 
 BSR::Math::Vec4f::Vec4f(Vec4f&& _Other) noexcept : x(_Other.x), y(_Other.y), z(_Other.z), w(_Other.w)
 {
-	_Other.x = 0.0f;
-	_Other.y = 0.0f;
-	_Other.z = 0.0f;
-	_Other.w = 0.0f;
+
 }
 
 BSR::Math::Vec4f::Vec4f(const Vec2f& _Other, const float _z, const float _w) : x(_Other.x), y(_Other.y), z(_z), w(_w)
@@ -786,11 +773,6 @@ const BSR::Math::Vec4f& BSR::Math::Vec4f::operator= (Vec4f&& _Other) noexcept
 	y = _Other.y;
 	z = _Other.z;
 	w = _Other.w;
-
-	_Other.x = 0.0f;
-	_Other.y = 0.0f;
-	_Other.z = 0.0f;
-	_Other.w = 0.0f;
 
 	return *this;
 }

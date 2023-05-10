@@ -167,6 +167,8 @@ namespace BSR
 
 		class Model;
 
+		struct FrameBuffer;
+
 		class Instance;
 
 	}

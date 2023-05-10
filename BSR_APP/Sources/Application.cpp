@@ -174,10 +174,20 @@ bool BSR_APP::RunTime::Application::InitMainWindow()
 
 	MainWindowData.Image.Width = 160;
 	MainWindowData.Image.Height = 90;
-	MainWindowData.Image.Data = new uint8_t[MainWindowData.Image.Width * MainWindowData.Image.Height * 3];
+	MainWindowData.Image.Data = new uint8_t[MainWindowData.Image.Width * MainWindowData.Image.Height * 4];
 
 	if (!MainWindowData.Image.Data)
 	{
+		MainWindowData = WindowData();
+		UnregisterClass(_WndClass.lpszClassName, _WndClass.hInstance);
+		return false;
+	}
+
+	MainWindowData.Depth = new float[MainWindowData.Image.Width * MainWindowData.Image.Height];
+
+	if (!MainWindowData.Depth)
+	{
+		delete[] MainWindowData.Image.Data;
 		MainWindowData = WindowData();
 		UnregisterClass(_WndClass.lpszClassName, _WndClass.hInstance);
 		return false;
@@ -212,6 +222,7 @@ bool BSR_APP::RunTime::Application::InitMainWindow()
 
 	if (!MainWindow.Create(&_WindowCreationDescriptor))
 	{
+		delete[] MainWindowData.Depth;
 		delete[] MainWindowData.Image.Data;
 		MainWindowData = WindowData();
 		UnregisterClass(_WndClass.lpszClassName, _WndClass.hInstance);
@@ -231,6 +242,7 @@ void BSR_APP::RunTime::Application::CleanUpMainWindow()
 	}
 
 	MainWindow.Destroy();
+	delete[] MainWindowData.Depth;
 	delete[] MainWindowData.Image.Data;
 	MainWindowData = WindowData();
 	UnregisterClass(L"BSR_APP_MainWindow", GetInstanceHandle());

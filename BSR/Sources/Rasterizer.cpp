@@ -185,6 +185,7 @@ const bool BSR::Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _
 
 	struct GeometryShaderOutput
 	{
+		bool Render = true;
 		VertexShaderOutput A;
 		VertexShaderOutput B;
 		VertexShaderOutput C;
@@ -320,367 +321,375 @@ const bool BSR::Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _
 
 	for (size_t _IndexTriangle = 0; _IndexTriangle < _GeometryShaderOutputs.size(); _IndexTriangle++)
 	{
-		bool _AInside = InsideNearPlane(_GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w);
-		bool _BInside = InsideNearPlane(_GeometryShaderOutputs[_IndexTriangle].B.Position.z, _GeometryShaderOutputs[_IndexTriangle].B.Position.w);
-		bool _CInside = InsideNearPlane(_GeometryShaderOutputs[_IndexTriangle].C.Position.z, _GeometryShaderOutputs[_IndexTriangle].C.Position.w);
-
-		size_t _CountInside = (size_t)(_AInside) + (size_t)(_BInside) + (size_t)(_CInside);
-
-		switch (_CountInside)
+		if (_GeometryShaderOutputs[_IndexTriangle].Render)
 		{
-		case 0:
-		{
-			delete[] _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-			delete[] _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-			delete[] _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+			bool _AInside = InsideNearPlane(_GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w);
+			bool _BInside = InsideNearPlane(_GeometryShaderOutputs[_IndexTriangle].B.Position.z, _GeometryShaderOutputs[_IndexTriangle].B.Position.w);
+			bool _CInside = InsideNearPlane(_GeometryShaderOutputs[_IndexTriangle].C.Position.z, _GeometryShaderOutputs[_IndexTriangle].C.Position.w);
 
-			_GeometryShaderOutputs.erase(_GeometryShaderOutputs.begin() + _IndexTriangle);
+			size_t _CountInside = (size_t)(_AInside)+(size_t)(_BInside)+(size_t)(_CInside);
 
-			_IndexTriangle--;
-
-			break;
-		}
-		case 1:
-		{
-			if (_BInside)
+			switch (_CountInside)
 			{
-				BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
-				float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
+			case 0:
+			{
+				delete[] _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
+				delete[] _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
+				delete[] _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+				_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].Render = false;
 
-				_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
-				_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].B.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
-				_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].C.Position = _AuxPosition;
-				_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _AuxLerpers;
+				break;
 			}
-
-			if (_CInside)
+			case 1:
 			{
-				BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
-				float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
-				_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].C.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
-				_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].B.Position = _AuxPosition;
-				_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _AuxLerpers;
-			}
-
-			float _TB = GetTNearPlane(_GeometryShaderOutputs[_IndexTriangle].B.Position.z, _GeometryShaderOutputs[_IndexTriangle].B.Position.w, _GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w);
-			float _TC = GetTNearPlane(_GeometryShaderOutputs[_IndexTriangle].C.Position.z, _GeometryShaderOutputs[_IndexTriangle].C.Position.w, _GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w);
-
-			GeometryShaderOutput _NewTriangle;
-
-			_NewTriangle.A.Position = _GeometryShaderOutputs[_IndexTriangle].A.Position;
-			_NewTriangle.A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-
-			_NewTriangle.B.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].B.Position, _GeometryShaderOutputs[_IndexTriangle].A.Position, _TB);
-			_NewTriangle.B.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-			LerpAll(_GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _LerpersCountGeomToFrag, _TB, _NewTriangle.B.Lerpers);
-
-			_NewTriangle.C.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].C.Position, _GeometryShaderOutputs[_IndexTriangle].A.Position, _TC);
-			_NewTriangle.C.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
-			LerpAll(_GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _LerpersCountGeomToFrag, _TC, _NewTriangle.C.Lerpers);
-
-			_GeometryShaderOutputs.push_back(_NewTriangle);
-
-			_GeometryShaderOutputs.erase(_GeometryShaderOutputs.begin() + _IndexTriangle);
-
-			_IndexTriangle--;
-
-			break;
-		}
-		case 2:
-		{
-			if (!_BInside)
-			{
-				BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
-				float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
-				_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].B.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
-				_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].C.Position = _AuxPosition;
-				_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _AuxLerpers;
-			}
-
-			if (!_CInside)
-			{
-				BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
-				float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
-				_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].C.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
-				_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].B.Position = _AuxPosition;
-				_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _AuxLerpers;
-			}
-
-			float _TB = GetTNearPlane(_GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w, _GeometryShaderOutputs[_IndexTriangle].B.Position.z, _GeometryShaderOutputs[_IndexTriangle].B.Position.w);
-			float _TC = GetTNearPlane(_GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w, _GeometryShaderOutputs[_IndexTriangle].C.Position.z, _GeometryShaderOutputs[_IndexTriangle].C.Position.w);
-
-			GeometryShaderOutput _NewTriangle1;
-			GeometryShaderOutput _NewTriangle2;
-
-			if (_LerpersCountGeomToFrag)
-			{
-				_NewTriangle1.A.Lerpers = new float[_LerpersCountGeomToFrag];
-				_NewTriangle1.B.Lerpers = new float[_LerpersCountGeomToFrag];
-				_NewTriangle1.C.Lerpers = new float[_LerpersCountGeomToFrag];
-
-				_NewTriangle2.A.Lerpers = new float[_LerpersCountGeomToFrag];
-				_NewTriangle2.B.Lerpers = new float[_LerpersCountGeomToFrag];
-				_NewTriangle2.C.Lerpers = new float[_LerpersCountGeomToFrag];
-
-				if (!_NewTriangle1.A.Lerpers || !_NewTriangle1.B.Lerpers || !_NewTriangle1.C.Lerpers || !_NewTriangle2.A.Lerpers || !_NewTriangle2.B.Lerpers || !_NewTriangle2.C.Lerpers)
+				if (_BInside)
 				{
-					delete[] _NewTriangle1.A.Lerpers;
-					delete[] _NewTriangle1.B.Lerpers;
-					delete[] _NewTriangle1.C.Lerpers;
+					BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
+					float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
 
-					delete[] _NewTriangle2.A.Lerpers;
-					delete[] _NewTriangle2.B.Lerpers;
-					delete[] _NewTriangle2.C.Lerpers;
+					_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
+					_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
 
-					for (size_t _IndexDelete = 0; _IndexDelete < _GeometryShaderOutputs.size(); _IndexDelete++)
-					{
-						delete[] _GeometryShaderOutputs[_IndexDelete].A.Lerpers;
-						delete[] _GeometryShaderOutputs[_IndexDelete].B.Lerpers;
-						delete[] _GeometryShaderOutputs[_IndexDelete].C.Lerpers;
-					}
+					_GeometryShaderOutputs[_IndexTriangle].B.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
+					_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
 
-					return false;
+					_GeometryShaderOutputs[_IndexTriangle].C.Position = _AuxPosition;
+					_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _AuxLerpers;
 				}
 
-				LerpAll(_GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _LerpersCountGeomToFrag, _TB, _NewTriangle1.A.Lerpers);
-				CopyAll(_GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _NewTriangle1.B.Lerpers, _LerpersCountGeomToFrag);
-				LerpAll(_GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _LerpersCountGeomToFrag, _TC, _NewTriangle1.C.Lerpers);
+				if (_CInside)
+				{
+					BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
+					float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
 
-				LerpAll(_GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _LerpersCountGeomToFrag, _TC, _NewTriangle2.A.Lerpers);
-				CopyAll(_GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _NewTriangle2.B.Lerpers, _LerpersCountGeomToFrag);
-				CopyAll(_GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _NewTriangle2.C.Lerpers, _LerpersCountGeomToFrag);
+					_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
+					_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+
+					_GeometryShaderOutputs[_IndexTriangle].C.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
+					_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
+
+					_GeometryShaderOutputs[_IndexTriangle].B.Position = _AuxPosition;
+					_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _AuxLerpers;
+				}
+
+				float _TB = GetTNearPlane(_GeometryShaderOutputs[_IndexTriangle].B.Position.z, _GeometryShaderOutputs[_IndexTriangle].B.Position.w, _GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w);
+				float _TC = GetTNearPlane(_GeometryShaderOutputs[_IndexTriangle].C.Position.z, _GeometryShaderOutputs[_IndexTriangle].C.Position.w, _GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w);
+
+				GeometryShaderOutput _NewTriangle;
+
+				_NewTriangle.A.Position = _GeometryShaderOutputs[_IndexTriangle].A.Position;
+				_NewTriangle.A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
+
+				_NewTriangle.B.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].B.Position, _GeometryShaderOutputs[_IndexTriangle].A.Position, _TB);
+				_NewTriangle.B.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
+				LerpAll(_GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _LerpersCountGeomToFrag, _TB, _NewTriangle.B.Lerpers);
+
+				_NewTriangle.C.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].C.Position, _GeometryShaderOutputs[_IndexTriangle].A.Position, _TC);
+				_NewTriangle.C.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+				LerpAll(_GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _LerpersCountGeomToFrag, _TC, _NewTriangle.C.Lerpers);
+
+				_GeometryShaderOutputs.push_back(_NewTriangle);
+
+				_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].Render = false;
+
+				break;
 			}
+			case 2:
+			{
+				if (!_BInside)
+				{
+					BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
+					float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
 
-			_NewTriangle1.A.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].A.Position, _GeometryShaderOutputs[_IndexTriangle].B.Position, _TB);
-			_NewTriangle1.B.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
-			_NewTriangle1.C.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].A.Position, _GeometryShaderOutputs[_IndexTriangle].C.Position, _TC);
+					_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
+					_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
 
-			_NewTriangle2.A.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].A.Position, _GeometryShaderOutputs[_IndexTriangle].C.Position, _TC);
-			_NewTriangle2.B.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
-			_NewTriangle2.C.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
+					_GeometryShaderOutputs[_IndexTriangle].B.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
+					_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
 
-			_GeometryShaderOutputs.push_back(_NewTriangle1);
-			_GeometryShaderOutputs.push_back(_NewTriangle2);
+					_GeometryShaderOutputs[_IndexTriangle].C.Position = _AuxPosition;
+					_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _AuxLerpers;
+				}
 
-			delete[] _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-			delete[] _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-			delete[] _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+				if (!_CInside)
+				{
+					BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
+					float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
 
-			_GeometryShaderOutputs.erase(_GeometryShaderOutputs.begin() + _IndexTriangle);
+					_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
+					_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
 
-			_IndexTriangle--;
+					_GeometryShaderOutputs[_IndexTriangle].C.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
+					_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
 
-			break;
-		}
-		case 3:
-		{
-			break;
-		}
+					_GeometryShaderOutputs[_IndexTriangle].B.Position = _AuxPosition;
+					_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _AuxLerpers;
+				}
+
+				float _TB = GetTNearPlane(_GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w, _GeometryShaderOutputs[_IndexTriangle].B.Position.z, _GeometryShaderOutputs[_IndexTriangle].B.Position.w);
+				float _TC = GetTNearPlane(_GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w, _GeometryShaderOutputs[_IndexTriangle].C.Position.z, _GeometryShaderOutputs[_IndexTriangle].C.Position.w);
+
+				GeometryShaderOutput _NewTriangle1;
+				GeometryShaderOutput _NewTriangle2;
+
+				if (_LerpersCountGeomToFrag)
+				{
+					_NewTriangle1.A.Lerpers = new float[_LerpersCountGeomToFrag];
+					_NewTriangle1.B.Lerpers = new float[_LerpersCountGeomToFrag];
+					_NewTriangle1.C.Lerpers = new float[_LerpersCountGeomToFrag];
+
+					_NewTriangle2.A.Lerpers = new float[_LerpersCountGeomToFrag];
+					_NewTriangle2.B.Lerpers = new float[_LerpersCountGeomToFrag];
+					_NewTriangle2.C.Lerpers = new float[_LerpersCountGeomToFrag];
+
+					if (!_NewTriangle1.A.Lerpers || !_NewTriangle1.B.Lerpers || !_NewTriangle1.C.Lerpers || !_NewTriangle2.A.Lerpers || !_NewTriangle2.B.Lerpers || !_NewTriangle2.C.Lerpers)
+					{
+						delete[] _NewTriangle1.A.Lerpers;
+						delete[] _NewTriangle1.B.Lerpers;
+						delete[] _NewTriangle1.C.Lerpers;
+
+						delete[] _NewTriangle2.A.Lerpers;
+						delete[] _NewTriangle2.B.Lerpers;
+						delete[] _NewTriangle2.C.Lerpers;
+
+						for (size_t _IndexDelete = 0; _IndexDelete < _GeometryShaderOutputs.size(); _IndexDelete++)
+						{
+							delete[] _GeometryShaderOutputs[_IndexDelete].A.Lerpers;
+							delete[] _GeometryShaderOutputs[_IndexDelete].B.Lerpers;
+							delete[] _GeometryShaderOutputs[_IndexDelete].C.Lerpers;
+						}
+
+						return false;
+					}
+
+					LerpAll(_GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _LerpersCountGeomToFrag, _TB, _NewTriangle1.A.Lerpers);
+					CopyAll(_GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _NewTriangle1.B.Lerpers, _LerpersCountGeomToFrag);
+					LerpAll(_GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _LerpersCountGeomToFrag, _TC, _NewTriangle1.C.Lerpers);
+
+					LerpAll(_GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _LerpersCountGeomToFrag, _TC, _NewTriangle2.A.Lerpers);
+					CopyAll(_GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _NewTriangle2.B.Lerpers, _LerpersCountGeomToFrag);
+					CopyAll(_GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _NewTriangle2.C.Lerpers, _LerpersCountGeomToFrag);
+				}
+
+				_NewTriangle1.A.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].A.Position, _GeometryShaderOutputs[_IndexTriangle].B.Position, _TB);
+				_NewTriangle1.B.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
+				_NewTriangle1.C.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].A.Position, _GeometryShaderOutputs[_IndexTriangle].C.Position, _TC);
+
+				_NewTriangle2.A.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].A.Position, _GeometryShaderOutputs[_IndexTriangle].C.Position, _TC);
+				_NewTriangle2.B.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
+				_NewTriangle2.C.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
+
+				_GeometryShaderOutputs.push_back(_NewTriangle1);
+				_GeometryShaderOutputs.push_back(_NewTriangle2);
+
+				delete[] _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
+				delete[] _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
+				delete[] _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+				_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].Render = false;
+
+				break;
+			}
+			case 3:
+			{
+				break;
+			}
+			}
 		}
 	}
 
 	for (size_t _IndexTriangle = 0; _IndexTriangle < _GeometryShaderOutputs.size(); _IndexTriangle++)
 	{
-		bool _AInside = InsideFarPlane(_GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w);
-		bool _BInside = InsideFarPlane(_GeometryShaderOutputs[_IndexTriangle].B.Position.z, _GeometryShaderOutputs[_IndexTriangle].B.Position.w);
-		bool _CInside = InsideFarPlane(_GeometryShaderOutputs[_IndexTriangle].C.Position.z, _GeometryShaderOutputs[_IndexTriangle].C.Position.w);
-
-		size_t _CountInside = (size_t)(_AInside) + (size_t)(_BInside) + (size_t)(_CInside);
-
-		switch (_CountInside)
+		if (_GeometryShaderOutputs[_IndexTriangle].Render)
 		{
-		case 0:
-		{
-			delete[] _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-			delete[] _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-			delete[] _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+			bool _AInside = InsideFarPlane(_GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w);
+			bool _BInside = InsideFarPlane(_GeometryShaderOutputs[_IndexTriangle].B.Position.z, _GeometryShaderOutputs[_IndexTriangle].B.Position.w);
+			bool _CInside = InsideFarPlane(_GeometryShaderOutputs[_IndexTriangle].C.Position.z, _GeometryShaderOutputs[_IndexTriangle].C.Position.w);
 
-			_GeometryShaderOutputs.erase(_GeometryShaderOutputs.begin() + _IndexTriangle);
+			size_t _CountInside = (size_t)(_AInside)+(size_t)(_BInside)+(size_t)(_CInside);
 
-			_IndexTriangle--;
-
-			break;
-		}
-		case 1:
-		{
-			if (_BInside)
+			switch (_CountInside)
 			{
-				BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
-				float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
+			case 0:
+			{
+				delete[] _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
+				delete[] _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
+				delete[] _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+				_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].Render = false;
 
-				_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
-				_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].B.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
-				_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].C.Position = _AuxPosition;
-				_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _AuxLerpers;
+				break;
 			}
-
-			if (_CInside)
+			case 1:
 			{
-				BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
-				float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
-				_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].C.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
-				_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].B.Position = _AuxPosition;
-				_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _AuxLerpers;
-			}
-
-			float _TB = GetTFarPlane(_GeometryShaderOutputs[_IndexTriangle].B.Position.z, _GeometryShaderOutputs[_IndexTriangle].B.Position.w, _GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w);
-			float _TC = GetTFarPlane(_GeometryShaderOutputs[_IndexTriangle].C.Position.z, _GeometryShaderOutputs[_IndexTriangle].C.Position.w, _GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w);
-
-			GeometryShaderOutput _NewTriangle;
-
-			_NewTriangle.A.Position = _GeometryShaderOutputs[_IndexTriangle].A.Position;
-			_NewTriangle.A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-
-			_NewTriangle.B.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].B.Position, _GeometryShaderOutputs[_IndexTriangle].A.Position, _TB);
-			_NewTriangle.B.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-			LerpAll(_GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _LerpersCountGeomToFrag, _TB, _NewTriangle.B.Lerpers);
-
-			_NewTriangle.C.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].C.Position, _GeometryShaderOutputs[_IndexTriangle].A.Position, _TC);
-			_NewTriangle.C.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
-			LerpAll(_GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _LerpersCountGeomToFrag, _TC, _NewTriangle.C.Lerpers);
-
-			_GeometryShaderOutputs.push_back(_NewTriangle);
-
-			_GeometryShaderOutputs.erase(_GeometryShaderOutputs.begin() + _IndexTriangle);
-
-			_IndexTriangle--;
-
-			break;
-		}
-		case 2:
-		{
-			if (!_BInside)
-			{
-				BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
-				float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
-				_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].B.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
-				_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].C.Position = _AuxPosition;
-				_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _AuxLerpers;
-			}
-
-			if (!_CInside)
-			{
-				BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
-				float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
-				_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].C.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
-				_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-
-				_GeometryShaderOutputs[_IndexTriangle].B.Position = _AuxPosition;
-				_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _AuxLerpers;
-			}
-
-			float _TB = GetTFarPlane(_GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w, _GeometryShaderOutputs[_IndexTriangle].B.Position.z, _GeometryShaderOutputs[_IndexTriangle].B.Position.w);
-			float _TC = GetTFarPlane(_GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w, _GeometryShaderOutputs[_IndexTriangle].C.Position.z, _GeometryShaderOutputs[_IndexTriangle].C.Position.w);
-
-			GeometryShaderOutput _NewTriangle1;
-			GeometryShaderOutput _NewTriangle2;
-
-			if (_LerpersCountGeomToFrag)
-			{
-				_NewTriangle1.A.Lerpers = new float[_LerpersCountGeomToFrag];
-				_NewTriangle1.B.Lerpers = new float[_LerpersCountGeomToFrag];
-				_NewTriangle1.C.Lerpers = new float[_LerpersCountGeomToFrag];
-
-				_NewTriangle2.A.Lerpers = new float[_LerpersCountGeomToFrag];
-				_NewTriangle2.B.Lerpers = new float[_LerpersCountGeomToFrag];
-				_NewTriangle2.C.Lerpers = new float[_LerpersCountGeomToFrag];
-
-				if (!_NewTriangle1.A.Lerpers || !_NewTriangle1.B.Lerpers || !_NewTriangle1.C.Lerpers || !_NewTriangle2.A.Lerpers || !_NewTriangle2.B.Lerpers || !_NewTriangle2.C.Lerpers)
+				if (_BInside)
 				{
-					delete[] _NewTriangle1.A.Lerpers;
-					delete[] _NewTriangle1.B.Lerpers;
-					delete[] _NewTriangle1.C.Lerpers;
+					BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
+					float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
 
-					delete[] _NewTriangle2.A.Lerpers;
-					delete[] _NewTriangle2.B.Lerpers;
-					delete[] _NewTriangle2.C.Lerpers;
+					_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
+					_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
 
-					for (size_t _IndexDelete = 0; _IndexDelete < _GeometryShaderOutputs.size(); _IndexDelete++)
-					{
-						delete[] _GeometryShaderOutputs[_IndexDelete].A.Lerpers;
-						delete[] _GeometryShaderOutputs[_IndexDelete].B.Lerpers;
-						delete[] _GeometryShaderOutputs[_IndexDelete].C.Lerpers;
-					}
+					_GeometryShaderOutputs[_IndexTriangle].B.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
+					_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
 
-					return false;
+					_GeometryShaderOutputs[_IndexTriangle].C.Position = _AuxPosition;
+					_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _AuxLerpers;
 				}
 
-				LerpAll(_GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _LerpersCountGeomToFrag, _TB, _NewTriangle1.A.Lerpers);
-				CopyAll(_GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _NewTriangle1.B.Lerpers, _LerpersCountGeomToFrag);
-				LerpAll(_GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _LerpersCountGeomToFrag, _TC, _NewTriangle1.C.Lerpers);
+				if (_CInside)
+				{
+					BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
+					float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
 
-				LerpAll(_GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _LerpersCountGeomToFrag, _TC, _NewTriangle2.A.Lerpers);
-				CopyAll(_GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _NewTriangle2.B.Lerpers, _LerpersCountGeomToFrag);
-				CopyAll(_GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _NewTriangle2.C.Lerpers, _LerpersCountGeomToFrag);
+					_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
+					_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+
+					_GeometryShaderOutputs[_IndexTriangle].C.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
+					_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
+
+					_GeometryShaderOutputs[_IndexTriangle].B.Position = _AuxPosition;
+					_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _AuxLerpers;
+				}
+
+				float _TB = GetTFarPlane(_GeometryShaderOutputs[_IndexTriangle].B.Position.z, _GeometryShaderOutputs[_IndexTriangle].B.Position.w, _GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w);
+				float _TC = GetTFarPlane(_GeometryShaderOutputs[_IndexTriangle].C.Position.z, _GeometryShaderOutputs[_IndexTriangle].C.Position.w, _GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w);
+
+				GeometryShaderOutput _NewTriangle;
+
+				_NewTriangle.A.Position = _GeometryShaderOutputs[_IndexTriangle].A.Position;
+				_NewTriangle.A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
+
+				_NewTriangle.B.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].B.Position, _GeometryShaderOutputs[_IndexTriangle].A.Position, _TB);
+				_NewTriangle.B.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
+				LerpAll(_GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _LerpersCountGeomToFrag, _TB, _NewTriangle.B.Lerpers);
+
+				_NewTriangle.C.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].C.Position, _GeometryShaderOutputs[_IndexTriangle].A.Position, _TC);
+				_NewTriangle.C.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+				LerpAll(_GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _LerpersCountGeomToFrag, _TC, _NewTriangle.C.Lerpers);
+
+				_GeometryShaderOutputs.push_back(_NewTriangle);
+
+				_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].Render = false;
+
+				break;
 			}
+			case 2:
+			{
+				if (!_BInside)
+				{
+					BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
+					float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
 
-			_NewTriangle1.A.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].A.Position, _GeometryShaderOutputs[_IndexTriangle].B.Position, _TB);
-			_NewTriangle1.B.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
-			_NewTriangle1.C.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].A.Position, _GeometryShaderOutputs[_IndexTriangle].C.Position, _TC);
+					_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
+					_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
 
-			_NewTriangle2.A.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].A.Position, _GeometryShaderOutputs[_IndexTriangle].C.Position, _TC);
-			_NewTriangle2.B.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
-			_NewTriangle2.C.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
+					_GeometryShaderOutputs[_IndexTriangle].B.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
+					_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
 
-			_GeometryShaderOutputs.push_back(_NewTriangle1);
-			_GeometryShaderOutputs.push_back(_NewTriangle2);
+					_GeometryShaderOutputs[_IndexTriangle].C.Position = _AuxPosition;
+					_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _AuxLerpers;
+				}
 
-			delete[] _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-			delete[] _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-			delete[] _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+				if (!_CInside)
+				{
+					BSR::Math::Vec4f _AuxPosition = _GeometryShaderOutputs[_IndexTriangle].A.Position;
+					float* _AuxLerpers = _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
 
-			_GeometryShaderOutputs.erase(_GeometryShaderOutputs.begin() + _IndexTriangle);
+					_GeometryShaderOutputs[_IndexTriangle].A.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
+					_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
 
-			_IndexTriangle--;
+					_GeometryShaderOutputs[_IndexTriangle].C.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
+					_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
 
-			break;
-		}
-		case 3:
-		{
-			break;
-		}
+					_GeometryShaderOutputs[_IndexTriangle].B.Position = _AuxPosition;
+					_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = _AuxLerpers;
+				}
+
+				float _TB = GetTFarPlane(_GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w, _GeometryShaderOutputs[_IndexTriangle].B.Position.z, _GeometryShaderOutputs[_IndexTriangle].B.Position.w);
+				float _TC = GetTFarPlane(_GeometryShaderOutputs[_IndexTriangle].A.Position.z, _GeometryShaderOutputs[_IndexTriangle].A.Position.w, _GeometryShaderOutputs[_IndexTriangle].C.Position.z, _GeometryShaderOutputs[_IndexTriangle].C.Position.w);
+
+				GeometryShaderOutput _NewTriangle1;
+				GeometryShaderOutput _NewTriangle2;
+
+				if (_LerpersCountGeomToFrag)
+				{
+					_NewTriangle1.A.Lerpers = new float[_LerpersCountGeomToFrag];
+					_NewTriangle1.B.Lerpers = new float[_LerpersCountGeomToFrag];
+					_NewTriangle1.C.Lerpers = new float[_LerpersCountGeomToFrag];
+
+					_NewTriangle2.A.Lerpers = new float[_LerpersCountGeomToFrag];
+					_NewTriangle2.B.Lerpers = new float[_LerpersCountGeomToFrag];
+					_NewTriangle2.C.Lerpers = new float[_LerpersCountGeomToFrag];
+
+					if (!_NewTriangle1.A.Lerpers || !_NewTriangle1.B.Lerpers || !_NewTriangle1.C.Lerpers || !_NewTriangle2.A.Lerpers || !_NewTriangle2.B.Lerpers || !_NewTriangle2.C.Lerpers)
+					{
+						delete[] _NewTriangle1.A.Lerpers;
+						delete[] _NewTriangle1.B.Lerpers;
+						delete[] _NewTriangle1.C.Lerpers;
+
+						delete[] _NewTriangle2.A.Lerpers;
+						delete[] _NewTriangle2.B.Lerpers;
+						delete[] _NewTriangle2.C.Lerpers;
+
+						for (size_t _IndexDelete = 0; _IndexDelete < _GeometryShaderOutputs.size(); _IndexDelete++)
+						{
+							delete[] _GeometryShaderOutputs[_IndexDelete].A.Lerpers;
+							delete[] _GeometryShaderOutputs[_IndexDelete].B.Lerpers;
+							delete[] _GeometryShaderOutputs[_IndexDelete].C.Lerpers;
+						}
+
+						return false;
+					}
+
+					LerpAll(_GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _LerpersCountGeomToFrag, _TB, _NewTriangle1.A.Lerpers);
+					CopyAll(_GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _NewTriangle1.B.Lerpers, _LerpersCountGeomToFrag);
+					LerpAll(_GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _LerpersCountGeomToFrag, _TC, _NewTriangle1.C.Lerpers);
+
+					LerpAll(_GeometryShaderOutputs[_IndexTriangle].A.Lerpers, _GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _LerpersCountGeomToFrag, _TC, _NewTriangle2.A.Lerpers);
+					CopyAll(_GeometryShaderOutputs[_IndexTriangle].B.Lerpers, _NewTriangle2.B.Lerpers, _LerpersCountGeomToFrag);
+					CopyAll(_GeometryShaderOutputs[_IndexTriangle].C.Lerpers, _NewTriangle2.C.Lerpers, _LerpersCountGeomToFrag);
+				}
+
+				_NewTriangle1.A.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].A.Position, _GeometryShaderOutputs[_IndexTriangle].B.Position, _TB);
+				_NewTriangle1.B.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
+				_NewTriangle1.C.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].A.Position, _GeometryShaderOutputs[_IndexTriangle].C.Position, _TC);
+
+				_NewTriangle2.A.Position = BSR::Math::Vec4f::Mix(_GeometryShaderOutputs[_IndexTriangle].A.Position, _GeometryShaderOutputs[_IndexTriangle].C.Position, _TC);
+				_NewTriangle2.B.Position = _GeometryShaderOutputs[_IndexTriangle].B.Position;
+				_NewTriangle2.C.Position = _GeometryShaderOutputs[_IndexTriangle].C.Position;
+
+				_GeometryShaderOutputs.push_back(_NewTriangle1);
+				_GeometryShaderOutputs.push_back(_NewTriangle2);
+
+				delete[] _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
+				delete[] _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
+				delete[] _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+				_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = nullptr;
+				_GeometryShaderOutputs[_IndexTriangle].Render = false;
+
+				break;
+			}
+			case 3:
+			{
+				break;
+			}
+			}
 		}
 	}
 
@@ -692,19 +701,22 @@ const bool BSR::Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _
 		{
 			GeometryShaderOutput& _CurrentTriangle = _GeometryShaderOutputs[_IndexTriangle];
 
-			BSR::Math::Vec3f _A = BSR::Math::Vec3f(_CurrentTriangle.A.Position) / _CurrentTriangle.A.Position.w;
-			BSR::Math::Vec3f _B = BSR::Math::Vec3f(_CurrentTriangle.B.Position) / _CurrentTriangle.B.Position.w;
-			BSR::Math::Vec3f _C = BSR::Math::Vec3f(_CurrentTriangle.C.Position) / _CurrentTriangle.C.Position.w;
-
-			if (BSR::Math::Vec3f::Cross(_B - _A, _C - _A).z == 0.0f)
+			if (_CurrentTriangle.Render)
 			{
-				delete[] _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-				delete[] _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-				delete[] _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+				BSR::Math::Vec3f _A = BSR::Math::Vec3f(_CurrentTriangle.A.Position) / _CurrentTriangle.A.Position.w;
+				BSR::Math::Vec3f _B = BSR::Math::Vec3f(_CurrentTriangle.B.Position) / _CurrentTriangle.B.Position.w;
+				BSR::Math::Vec3f _C = BSR::Math::Vec3f(_CurrentTriangle.C.Position) / _CurrentTriangle.C.Position.w;
 
-				_GeometryShaderOutputs.erase(_GeometryShaderOutputs.begin() + _IndexTriangle);
-
-				_IndexTriangle--;
+				if (BSR::Math::Vec3f::Cross(_B - _A, _C - _A).z == 0.0f)
+				{
+					delete[] _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
+					delete[] _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
+					delete[] _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+					_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = nullptr;
+					_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = nullptr;
+					_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = nullptr;
+					_GeometryShaderOutputs[_IndexTriangle].Render = false;
+				}
 			}
 		}
 
@@ -716,19 +728,22 @@ const bool BSR::Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _
 		{
 			GeometryShaderOutput& _CurrentTriangle = _GeometryShaderOutputs[_IndexTriangle];
 
-			BSR::Math::Vec3f _A = BSR::Math::Vec3f(_CurrentTriangle.A.Position) / _CurrentTriangle.A.Position.w;
-			BSR::Math::Vec3f _B = BSR::Math::Vec3f(_CurrentTriangle.B.Position) / _CurrentTriangle.B.Position.w;
-			BSR::Math::Vec3f _C = BSR::Math::Vec3f(_CurrentTriangle.C.Position) / _CurrentTriangle.C.Position.w;
-
-			if (BSR::Math::Vec3f::Cross(_B - _A, _C - _A).z <= 0.0f)
+			if (_CurrentTriangle.Render)
 			{
-				delete[] _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-				delete[] _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-				delete[] _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+				BSR::Math::Vec3f _A = BSR::Math::Vec3f(_CurrentTriangle.A.Position) / _CurrentTriangle.A.Position.w;
+				BSR::Math::Vec3f _B = BSR::Math::Vec3f(_CurrentTriangle.B.Position) / _CurrentTriangle.B.Position.w;
+				BSR::Math::Vec3f _C = BSR::Math::Vec3f(_CurrentTriangle.C.Position) / _CurrentTriangle.C.Position.w;
 
-				_GeometryShaderOutputs.erase(_GeometryShaderOutputs.begin() + _IndexTriangle);
-
-				_IndexTriangle--;
+				if (BSR::Math::Vec3f::Cross(_B - _A, _C - _A).z <= 0.0f)
+				{
+					delete[] _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
+					delete[] _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
+					delete[] _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+					_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = nullptr;
+					_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = nullptr;
+					_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = nullptr;
+					_GeometryShaderOutputs[_IndexTriangle].Render = false;
+				}
 			}
 		}
 
@@ -740,19 +755,22 @@ const bool BSR::Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _
 		{
 			GeometryShaderOutput& _CurrentTriangle = _GeometryShaderOutputs[_IndexTriangle];
 
-			BSR::Math::Vec3f _A = BSR::Math::Vec3f(_CurrentTriangle.A.Position) / _CurrentTriangle.A.Position.w;
-			BSR::Math::Vec3f _B = BSR::Math::Vec3f(_CurrentTriangle.B.Position) / _CurrentTriangle.B.Position.w;
-			BSR::Math::Vec3f _C = BSR::Math::Vec3f(_CurrentTriangle.C.Position) / _CurrentTriangle.C.Position.w;
-
-			if (BSR::Math::Vec3f::Cross(_B - _A, _C - _A).z >= 0.0f)
+			if (_CurrentTriangle.Render)
 			{
-				delete[] _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
-				delete[] _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
-				delete[] _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+				BSR::Math::Vec3f _A = BSR::Math::Vec3f(_CurrentTriangle.A.Position) / _CurrentTriangle.A.Position.w;
+				BSR::Math::Vec3f _B = BSR::Math::Vec3f(_CurrentTriangle.B.Position) / _CurrentTriangle.B.Position.w;
+				BSR::Math::Vec3f _C = BSR::Math::Vec3f(_CurrentTriangle.C.Position) / _CurrentTriangle.C.Position.w;
 
-				_GeometryShaderOutputs.erase(_GeometryShaderOutputs.begin() + _IndexTriangle);
-
-				_IndexTriangle--;
+				if (BSR::Math::Vec3f::Cross(_B - _A, _C - _A).z >= 0.0f)
+				{
+					delete[] _GeometryShaderOutputs[_IndexTriangle].A.Lerpers;
+					delete[] _GeometryShaderOutputs[_IndexTriangle].B.Lerpers;
+					delete[] _GeometryShaderOutputs[_IndexTriangle].C.Lerpers;
+					_GeometryShaderOutputs[_IndexTriangle].A.Lerpers = nullptr;
+					_GeometryShaderOutputs[_IndexTriangle].B.Lerpers = nullptr;
+					_GeometryShaderOutputs[_IndexTriangle].C.Lerpers = nullptr;
+					_GeometryShaderOutputs[_IndexTriangle].Render = false;
+				}
 			}
 		}
 
@@ -796,43 +814,46 @@ const bool BSR::Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _
 	{
 		GeometryShaderOutput& _CurrentTriangle = _GeometryShaderOutputs[_IndexTriangle];
 
-		MultiplyAll(_CurrentTriangle.A.Lerpers, _LerpersCountGeomToFrag, 1.0f / _CurrentTriangle.A.Position.w);
-		MultiplyAll(_CurrentTriangle.B.Lerpers, _LerpersCountGeomToFrag, 1.0f / _CurrentTriangle.B.Position.w);
-		MultiplyAll(_CurrentTriangle.C.Lerpers, _LerpersCountGeomToFrag, 1.0f / _CurrentTriangle.C.Position.w);
-
-		BSR::Math::Vec3f _ScreenA = BSR::Math::Vec3f(_CurrentTriangle.A.Position) / _CurrentTriangle.A.Position.w;
-		BSR::Math::Vec3f _ScreenB = BSR::Math::Vec3f(_CurrentTriangle.B.Position) / _CurrentTriangle.B.Position.w;
-		BSR::Math::Vec3f _ScreenC = BSR::Math::Vec3f(_CurrentTriangle.C.Position) / _CurrentTriangle.C.Position.w;
-
-		bool _FrontFacing = BSR::Math::Vec3f::Cross(_ScreenB - _ScreenA, _ScreenC - _ScreenA).z > 0.0f;
-
-		size_t _StartX = (size_t)(BSR::Math::Clamp(floorf(BSR::Math::Min(BSR::Math::Min((_ScreenA.x + 1.0f) / 2.0f, (_ScreenB.x + 1.0f) / 2.0f), (_ScreenC.x + 1.0f) / 2.0f) * (float)(ViewPortWidth)), 0.0f, (float)(ViewPortWidth)));
-		size_t _StartY = (size_t)(BSR::Math::Clamp(floorf(BSR::Math::Min(BSR::Math::Min((_ScreenA.y + 1.0f) / 2.0f, (_ScreenB.y + 1.0f) / 2.0f), (_ScreenC.y + 1.0f) / 2.0f) * (float)(ViewPortHeight)), 0.0f, (float)(ViewPortHeight)));
-
-		size_t _EndX = (size_t)(BSR::Math::Clamp(ceilf(BSR::Math::Max(BSR::Math::Max((_ScreenA.x + 1.0f) / 2.0f, (_ScreenB.x + 1.0f) / 2.0f), (_ScreenC.x + 1.0f) / 2.0f) * (float)(ViewPortWidth)), 0.0f, (float)(ViewPortWidth)));
-		size_t _EndY = (size_t)(BSR::Math::Clamp(ceilf(BSR::Math::Max(BSR::Math::Max((_ScreenA.y + 1.0f) / 2.0f, (_ScreenB.y + 1.0f) / 2.0f), (_ScreenC.y + 1.0f) / 2.0f) * (float)(ViewPortHeight)), 0.0f, (float)(ViewPortHeight)));
-
-		for (size_t _Y = ViewPortY + _StartY; _Y < ViewPortY + _EndY; _Y++)
+		if (_CurrentTriangle.Render)
 		{
-			for (size_t _X = ViewPortX + _StartX; _X < ViewPortX + _EndX; _X++)
+			MultiplyAll(_CurrentTriangle.A.Lerpers, _LerpersCountGeomToFrag, 1.0f / _CurrentTriangle.A.Position.w);
+			MultiplyAll(_CurrentTriangle.B.Lerpers, _LerpersCountGeomToFrag, 1.0f / _CurrentTriangle.B.Position.w);
+			MultiplyAll(_CurrentTriangle.C.Lerpers, _LerpersCountGeomToFrag, 1.0f / _CurrentTriangle.C.Position.w);
+
+			BSR::Math::Vec3f _ScreenA = BSR::Math::Vec3f(_CurrentTriangle.A.Position) / _CurrentTriangle.A.Position.w;
+			BSR::Math::Vec3f _ScreenB = BSR::Math::Vec3f(_CurrentTriangle.B.Position) / _CurrentTriangle.B.Position.w;
+			BSR::Math::Vec3f _ScreenC = BSR::Math::Vec3f(_CurrentTriangle.C.Position) / _CurrentTriangle.C.Position.w;
+
+			bool _FrontFacing = BSR::Math::Vec3f::Cross(_ScreenB - _ScreenA, _ScreenC - _ScreenA).z > 0.0f;
+
+			size_t _StartX = (size_t)(BSR::Math::Clamp(std::floorf(BSR::Math::Min(BSR::Math::Min((_ScreenA.x + 1.0f) / 2.0f, (_ScreenB.x + 1.0f) / 2.0f), (_ScreenC.x + 1.0f) / 2.0f) * (float)(ViewPortWidth)), 0.0f, (float)(ViewPortWidth)));
+			size_t _StartY = (size_t)(BSR::Math::Clamp(std::floorf(BSR::Math::Min(BSR::Math::Min((_ScreenA.y + 1.0f) / 2.0f, (_ScreenB.y + 1.0f) / 2.0f), (_ScreenC.y + 1.0f) / 2.0f) * (float)(ViewPortHeight)), 0.0f, (float)(ViewPortHeight)));
+
+			size_t _EndX = (size_t)(BSR::Math::Clamp(std::ceilf(BSR::Math::Max(BSR::Math::Max((_ScreenA.x + 1.0f) / 2.0f, (_ScreenB.x + 1.0f) / 2.0f), (_ScreenC.x + 1.0f) / 2.0f) * (float)(ViewPortWidth)), 0.0f, (float)(ViewPortWidth)));
+			size_t _EndY = (size_t)(BSR::Math::Clamp(std::ceilf(BSR::Math::Max(BSR::Math::Max((_ScreenA.y + 1.0f) / 2.0f, (_ScreenB.y + 1.0f) / 2.0f), (_ScreenC.y + 1.0f) / 2.0f) * (float)(ViewPortHeight)), 0.0f, (float)(ViewPortHeight)));
+
+			for (size_t _Y = ViewPortY + _StartY; _Y < ViewPortY + _EndY; _Y++)
 			{
-				BSR::Math::Vec2f _ScreenP = BSR::Math::Vec2f(((float)(_X - ViewPortX) / (float)(ViewPortWidth) + 0.5f / (float)(ViewPortWidth)) * 2.0f - 1.0f, ((float)(_Y - ViewPortY) / (float)(ViewPortHeight) + 0.5f / (float)(ViewPortHeight)) * 2.0f - 1.0f);
-
-				if (PointInside(_ScreenP, BSR::Math::Vec2f(_ScreenA), BSR::Math::Vec2f(_ScreenB), BSR::Math::Vec2f(_ScreenC)))
+				for (size_t _X = ViewPortX + _StartX; _X < ViewPortX + _EndX; _X++)
 				{
-					float _T1 = GetT1(BSR::Math::Vec2f(_ScreenA), BSR::Math::Vec2f(_ScreenB), BSR::Math::Vec2f(_ScreenC), _ScreenP);
-					float _T2 = GetT2(BSR::Math::Vec2f(_ScreenA), BSR::Math::Vec2f(_ScreenB), BSR::Math::Vec2f(_ScreenC), _ScreenP, _T1);
+					BSR::Math::Vec2f _ScreenP = BSR::Math::Vec2f(((float)(_X - ViewPortX) / (float)(ViewPortWidth)+0.5f / (float)(ViewPortWidth)) * 2.0f - 1.0f, ((float)(_Y - ViewPortY) / (float)(ViewPortHeight)+0.5f / (float)(ViewPortHeight)) * 2.0f - 1.0f);
 
-					float _PerspectiveCorrection = BSR::Math::Mix(BSR::Math::Mix(1.0f / _CurrentTriangle.A.Position.w, 1.0f / _CurrentTriangle.B.Position.w, _T1), 1.0f / _CurrentTriangle.C.Position.w, _T2);
+					if (PointInside(_ScreenP, BSR::Math::Vec2f(_ScreenA), BSR::Math::Vec2f(_ScreenB), BSR::Math::Vec2f(_ScreenC)))
+					{
+						float _T1 = GetT1(BSR::Math::Vec2f(_ScreenA), BSR::Math::Vec2f(_ScreenB), BSR::Math::Vec2f(_ScreenC), _ScreenP);
+						float _T2 = GetT2(BSR::Math::Vec2f(_ScreenA), BSR::Math::Vec2f(_ScreenB), BSR::Math::Vec2f(_ScreenC), _ScreenP, _T1);
 
-					LerpAll(_CurrentTriangle.A.Lerpers, _CurrentTriangle.B.Lerpers, _LerpersCountGeomToFrag, _T1, _FragmentLerpers);
-					LerpAll(_FragmentLerpers, _CurrentTriangle.C.Lerpers, _LerpersCountGeomToFrag, _T2, _FragmentLerpers);
-					MultiplyAll(_FragmentLerpers, _LerpersCountGeomToFrag, 1.0f / _PerspectiveCorrection);
+						float _PerspectiveCorrection = BSR::Math::Mix(BSR::Math::Mix(1.0f / _CurrentTriangle.A.Position.w, 1.0f / _CurrentTriangle.B.Position.w, _T1), 1.0f / _CurrentTriangle.C.Position.w, _T2);
 
-					BSR::Math::Vec4f _FragCoord = BSR::Math::Vec4f(_ScreenP.x, _ScreenP.y, BSR::Math::Mix(BSR::Math::Mix(_ScreenA.z, _ScreenB.z, _T1), _ScreenC.z, _T2), _PerspectiveCorrection);
-					_FragCoord.z = (_FragCoord.z + 1.0f) / 2.0f;
+						LerpAll(_CurrentTriangle.A.Lerpers, _CurrentTriangle.B.Lerpers, _LerpersCountGeomToFrag, _T1, _FragmentLerpers);
+						LerpAll(_FragmentLerpers, _CurrentTriangle.C.Lerpers, _LerpersCountGeomToFrag, _T2, _FragmentLerpers);
+						MultiplyAll(_FragmentLerpers, _LerpersCountGeomToFrag, 1.0f / _PerspectiveCorrection);
 
-					_FragmentShader(_X, _Y, _X - ViewPortX, _Y - ViewPortY, _FragmentLerpers, _Uniforms, _FrameBuffer, _FragCoord, _FrontFacing, DepthTestingType, BlendingType);
+						BSR::Math::Vec4f _FragCoord = BSR::Math::Vec4f(_ScreenP.x, _ScreenP.y, BSR::Math::Mix(BSR::Math::Mix(_ScreenA.z, _ScreenB.z, _T1), _ScreenC.z, _T2), _PerspectiveCorrection);
+						_FragCoord.z = (_FragCoord.z + 1.0f) / 2.0f;
+
+						_FragmentShader(_X, _Y, _X - ViewPortX, _Y - ViewPortY, _FragmentLerpers, _Uniforms, _FrameBuffer, _FragCoord, _FrontFacing, DepthTestingType, BlendingType);
+					}
 				}
 			}
 		}

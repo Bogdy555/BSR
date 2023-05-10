@@ -18,9 +18,6 @@ BSR::Math::Mat2f::Mat2f(Mat2f&& _Other) noexcept : Matrix()
 {
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1];
-
-	_Other[0][0] = 1.0f; _Other[0][1] = 0.0f;
-	_Other[1][0] = 0.0f; _Other[1][1] = 1.0f;
 }
 
 BSR::Math::Mat2f::~Mat2f()
@@ -274,9 +271,6 @@ const BSR::Math::Mat2f& BSR::Math::Mat2f::operator= (Mat2f&& _Other) noexcept
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1];
 
-	_Other[0][0] = 1.0f; _Other[0][1] = 0.0f;
-	_Other[1][0] = 0.0f; _Other[1][1] = 1.0f;
-
 	return *this;
 }
 
@@ -343,10 +337,6 @@ BSR::Math::Mat3f::Mat3f(Mat3f&& _Other) noexcept : Matrix()
 	Matrix[0][0] = _Other[0][0]; Matrix[0][1] = _Other[0][1]; Matrix[0][2] = _Other[0][2];
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2];
 	Matrix[2][0] = _Other[2][0]; Matrix[2][1] = _Other[2][1]; Matrix[2][2] = _Other[2][2];
-
-	_Other[0][0] = 1.0f; _Other[0][1] = 0.0f; _Other[0][2] = 0.0f;
-	_Other[1][0] = 0.0f; _Other[1][1] = 1.0f; _Other[1][2] = 0.0f;
-	_Other[2][0] = 0.0f; _Other[2][1] = 0.0f; _Other[2][2] = 1.0f;
 }
 
 BSR::Math::Mat3f::Mat3f(const Mat2f& _Other) : Matrix()
@@ -701,10 +691,6 @@ const BSR::Math::Mat3f& BSR::Math::Mat3f::operator= (Mat3f&& _Other) noexcept
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2];
 	Matrix[2][0] = _Other[2][0]; Matrix[2][1] = _Other[2][1]; Matrix[2][2] = _Other[2][2];
 
-	_Other[0][0] = 1.0f; _Other[0][1] = 0.0f; _Other[0][2] = 0.0f;
-	_Other[1][0] = 0.0f; _Other[1][1] = 1.0f; _Other[1][2] = 0.0f;
-	_Other[2][0] = 0.0f; _Other[2][1] = 0.0f; _Other[2][2] = 1.0f;
-
 	return *this;
 }
 
@@ -808,11 +794,6 @@ BSR::Math::Mat4f::Mat4f(Mat4f&& _Other) noexcept : Matrix()
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2]; Matrix[1][3] = _Other[1][3];
 	Matrix[2][0] = _Other[2][0]; Matrix[2][1] = _Other[2][1]; Matrix[2][2] = _Other[2][2]; Matrix[2][3] = _Other[2][3];
 	Matrix[3][0] = _Other[3][0]; Matrix[3][1] = _Other[3][1]; Matrix[3][2] = _Other[3][2]; Matrix[3][3] = _Other[3][3];
-
-	_Other[0][0] = 1.0f; _Other[0][1] = 0.0f; _Other[0][2] = 0.0f; _Other[0][3] = 0.0f;
-	_Other[1][0] = 0.0f; _Other[1][1] = 1.0f; _Other[1][2] = 0.0f; _Other[1][3] = 0.0f;
-	_Other[2][0] = 0.0f; _Other[2][1] = 0.0f; _Other[2][2] = 1.0f; _Other[2][3] = 0.0f;
-	_Other[3][0] = 0.0f; _Other[3][1] = 0.0f; _Other[3][2] = 0.0f; _Other[3][3] = 1.0f;
 }
 
 BSR::Math::Mat4f::Mat4f(const Mat2f& _Other) : Matrix()
@@ -1290,11 +1271,6 @@ const BSR::Math::Mat4f& BSR::Math::Mat4f::operator= (Mat4f&& _Other) noexcept
 	Matrix[1][0] = _Other[1][0]; Matrix[1][1] = _Other[1][1]; Matrix[1][2] = _Other[1][2]; Matrix[1][3] = _Other[1][3];
 	Matrix[2][0] = _Other[2][0]; Matrix[2][1] = _Other[2][1]; Matrix[2][2] = _Other[2][2]; Matrix[2][3] = _Other[2][3];
 	Matrix[3][0] = _Other[3][0]; Matrix[3][1] = _Other[3][1]; Matrix[3][2] = _Other[3][2]; Matrix[3][3] = _Other[3][3];
-
-	_Other[0][0] = 1.0f; _Other[0][1] = 0.0f; _Other[0][2] = 0.0f; _Other[0][3] = 0.0f;
-	_Other[1][0] = 0.0f; _Other[1][1] = 1.0f; _Other[1][2] = 0.0f; _Other[1][3] = 0.0f;
-	_Other[2][0] = 0.0f; _Other[2][1] = 0.0f; _Other[2][2] = 1.0f; _Other[2][3] = 0.0f;
-	_Other[3][0] = 0.0f; _Other[3][1] = 0.0f; _Other[3][2] = 0.0f; _Other[3][3] = 1.0f;
 
 	return *this;
 }

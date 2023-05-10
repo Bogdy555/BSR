@@ -974,3 +974,39 @@ void BSR::Renderer::Model::operator= (Model&& _Other) noexcept
 
 	Meshes = std::move(_Other.Meshes);
 }
+
+
+
+const bool BSR::Renderer::FrameBuffer::Valid() const
+{
+	return
+		Width != 0 &&
+		Height != 0 &&
+		Albedo != nullptr &&
+		Metalness != nullptr &&
+		Roughness != nullptr &&
+		AmbientOcclusion != nullptr &&
+		NormalMap != nullptr &&
+		Emission != nullptr &&
+		Position != nullptr &&
+		Depth != nullptr &&
+		Stencil != nullptr &&
+		Result != nullptr;
+}
+
+const bool BSR::Renderer::FrameBuffer::operator== (const FrameBuffer& _Other) const
+{
+	return
+		Width == _Other.Width &&
+		Height == _Other.Height &&
+		Albedo == _Other.Albedo &&
+		Metalness == _Other.Metalness &&
+		Roughness == _Other.Roughness &&
+		AmbientOcclusion == _Other.AmbientOcclusion &&
+		NormalMap == _Other.NormalMap &&
+		Emission == _Other.Emission &&
+		Position == _Other.Position &&
+		Depth == _Other.Depth &&
+		Stencil == _Other.Stencil &&
+		Result == _Other.Result;
+}

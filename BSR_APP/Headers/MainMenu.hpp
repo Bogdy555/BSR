@@ -54,7 +54,7 @@ namespace BSR_APP
 			void FrameBuild();
 
 			void RenderAndSave();
-			void Render(BSR::Image::Image& _Image);
+			void Render();
 
 		};
 

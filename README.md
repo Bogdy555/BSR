@@ -200,6 +200,10 @@ Quick and dirty hack to pair up a VBO and an IBO.
 
 A set of meshes that describe a 3D model.
 
+* struct BSR::Renderer::FrameBuffer
+
+Storage for the frame data.
+
 * class BSR::Renderer::Instance
 
 An instance of the renderer.

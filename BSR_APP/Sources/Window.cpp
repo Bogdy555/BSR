@@ -2,7 +2,7 @@
 
 
 
-BSR_APP::WindowData::WindowData() : PlacementMutex(nullptr), Placement({ 0 }), RectMutex(nullptr), Rect({ 0 }), FullScreenMutex(nullptr), FullScreen(false), CloseMutex(nullptr), Close(false), InputMutex(nullptr), Focus(false), Keys(), MinSizeMutex(nullptr), MinWidth(700), MinHeight(400), ImageMutex(nullptr), Image()
+BSR_APP::WindowData::WindowData() : PlacementMutex(nullptr), Placement({ 0 }), RectMutex(nullptr), Rect({ 0 }), FullScreenMutex(nullptr), FullScreen(false), CloseMutex(nullptr), Close(false), InputMutex(nullptr), Focus(false), Keys(), MinSizeMutex(nullptr), MinWidth(700), MinHeight(400), ImageMutex(nullptr), Image(), Depth(nullptr)
 {
 	for (size_t _Index = 0; _Index < 256; _Index++)
 	{
@@ -10,7 +10,7 @@ BSR_APP::WindowData::WindowData() : PlacementMutex(nullptr), Placement({ 0 }), R
 	}
 }
 
-BSR_APP::WindowData::WindowData(const WindowData& _Other) : PlacementMutex(_Other.PlacementMutex), Placement(_Other.Placement), RectMutex(_Other.RectMutex), Rect(_Other.Rect), FullScreenMutex(_Other.FullScreenMutex), FullScreen(_Other.FullScreen), CloseMutex(_Other.CloseMutex), Close(_Other.Close), InputMutex(_Other.InputMutex), Focus(_Other.Focus), Keys(), MinSizeMutex(_Other.MinSizeMutex), MinWidth(_Other.MinWidth), MinHeight(_Other.MinHeight), ImageMutex(_Other.ImageMutex), Image(_Other.Image)
+BSR_APP::WindowData::WindowData(const WindowData& _Other) : PlacementMutex(_Other.PlacementMutex), Placement(_Other.Placement), RectMutex(_Other.RectMutex), Rect(_Other.Rect), FullScreenMutex(_Other.FullScreenMutex), FullScreen(_Other.FullScreen), CloseMutex(_Other.CloseMutex), Close(_Other.Close), InputMutex(_Other.InputMutex), Focus(_Other.Focus), Keys(), MinSizeMutex(_Other.MinSizeMutex), MinWidth(_Other.MinWidth), MinHeight(_Other.MinHeight), ImageMutex(_Other.ImageMutex), Image(_Other.Image), Depth(_Other.Depth)
 {
 	for (size_t _Index = 0; _Index < 256; _Index++)
 	{
@@ -18,7 +18,7 @@ BSR_APP::WindowData::WindowData(const WindowData& _Other) : PlacementMutex(_Othe
 	}
 }
 
-BSR_APP::WindowData::WindowData(WindowData&& _Other) noexcept : PlacementMutex(_Other.PlacementMutex), Placement(_Other.Placement), RectMutex(_Other.RectMutex), Rect(_Other.Rect), FullScreenMutex(_Other.FullScreenMutex), FullScreen(_Other.FullScreen), CloseMutex(_Other.CloseMutex), Close(_Other.Close), InputMutex(_Other.InputMutex), Focus(_Other.Focus), Keys(), MinSizeMutex(_Other.MinSizeMutex), MinWidth(_Other.MinWidth), MinHeight(_Other.MinHeight), ImageMutex(_Other.ImageMutex), Image(_Other.Image)
+BSR_APP::WindowData::WindowData(WindowData&& _Other) noexcept : PlacementMutex(_Other.PlacementMutex), Placement(_Other.Placement), RectMutex(_Other.RectMutex), Rect(_Other.Rect), FullScreenMutex(_Other.FullScreenMutex), FullScreen(_Other.FullScreen), CloseMutex(_Other.CloseMutex), Close(_Other.Close), InputMutex(_Other.InputMutex), Focus(_Other.Focus), Keys(), MinSizeMutex(_Other.MinSizeMutex), MinWidth(_Other.MinWidth), MinHeight(_Other.MinHeight), ImageMutex(_Other.ImageMutex), Image(_Other.Image), Depth(_Other.Depth)
 {
 	for (size_t _Index = 0; _Index < 256; _Index++)
 	{
@@ -41,6 +41,7 @@ BSR_APP::WindowData::WindowData(WindowData&& _Other) noexcept : PlacementMutex(_
 	_Other.MinHeight = 400;
 	_Other.ImageMutex = nullptr;
 	_Other.Image = BSR::Image::Image();
+	_Other.Depth = nullptr;
 }
 
 BSR_APP::WindowData::~WindowData()
@@ -69,6 +70,7 @@ void BSR_APP::WindowData::operator= (const WindowData& _Other)
 	MinHeight = _Other.MinHeight;
 	ImageMutex = _Other.ImageMutex;
 	Image = _Other.Image;
+	Depth = _Other.Depth;
 }
 
 void BSR_APP::WindowData::operator= (WindowData&& _Other) noexcept
@@ -88,6 +90,7 @@ void BSR_APP::WindowData::operator= (WindowData&& _Other) noexcept
 	MinHeight = _Other.MinHeight;
 	ImageMutex = _Other.ImageMutex;
 	Image = _Other.Image;
+	Depth = _Other.Depth;
 
 	for (size_t _Index = 0; _Index < 256; _Index++)
 	{
@@ -110,6 +113,7 @@ void BSR_APP::WindowData::operator= (WindowData&& _Other) noexcept
 	_Other.MinHeight = 400;
 	_Other.ImageMutex = nullptr;
 	_Other.Image = BSR::Image::Image();
+	_Other.Depth = nullptr;
 }
 
 
@@ -216,22 +220,7 @@ LRESULT CALLBACK BSR_APP::WindowProcedure(_In_ HWND _hWnd, _In_ UINT _Msg, _In_ 
 		HDC _BackDC = CreateCompatibleDC(_WndDC);
 		HBITMAP _OldBmp = (HBITMAP)(SelectObject(_BackDC, _BackBmp));
 
-		uint8_t* _Image = new uint8_t[(size_t)(_WndData->Image.Width) * (size_t)(_WndData->Image.Height) * 4];
-
-		for (size_t _Y = 0; _Y < _WndData->Image.Height; _Y++)
-		{
-			for (size_t _X = 0; _X < _WndData->Image.Width; _X++)
-			{
-				_Image[(_X + _Y * _WndData->Image.Width) * 4 + 0] = _WndData->Image.Data[(_X + (_WndData->Image.Height - 1 - _Y) * _WndData->Image.Width) * 3 + 2];
-				_Image[(_X + _Y * _WndData->Image.Width) * 4 + 1] = _WndData->Image.Data[(_X + (_WndData->Image.Height - 1 - _Y) * _WndData->Image.Width) * 3 + 1];
-				_Image[(_X + _Y * _WndData->Image.Width) * 4 + 2] = _WndData->Image.Data[(_X + (_WndData->Image.Height - 1 - _Y) * _WndData->Image.Width) * 3 + 0];
-				_Image[(_X + _Y * _WndData->Image.Width) * 4 + 3] = 0;
-			}
-		}
-
-		SetBitmapBits(_BackBmp, (DWORD)(_WndData->Image.Width) * (DWORD)(_WndData->Image.Height) * 4, _Image);
-
-		delete[] _Image;
+		SetBitmapBits(_BackBmp, (DWORD)(_WndData->Image.Width) * (DWORD)(_WndData->Image.Height) * 4, _WndData->Image.Data);
 
 		StretchBlt(_WndDC, 0, 0, _Width, _Height, _BackDC, 0, 0, (int)(_WndData->Image.Width), (int)(_WndData->Image.Height), SRCCOPY);
 
@@ -248,6 +237,16 @@ LRESULT CALLBACK BSR_APP::WindowProcedure(_In_ HWND _hWnd, _In_ UINT _Msg, _In_ 
 	case WM_NCHITTEST:
 	{
 		LRESULT _Result = DefWindowProc(_hWnd, _Msg, _wParam, _lParam);
+
+		_WndData->FullScreenMutex->lock();
+
+		if (_WndData->FullScreen)
+		{
+			_WndData->FullScreenMutex->unlock();
+			return _Result;
+		}
+
+		_WndData->FullScreenMutex->unlock();
 
 		if (_Result != HTCLIENT)
 		{

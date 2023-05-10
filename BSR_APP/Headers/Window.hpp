@@ -36,6 +36,7 @@ namespace BSR_APP
 
 		std::mutex* ImageMutex;
 		BSR::Image::Image Image;
+		float* Depth;
 
 		WindowData();
 		WindowData(const WindowData& _Other);

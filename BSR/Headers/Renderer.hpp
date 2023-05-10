@@ -17,7 +17,6 @@ namespace BSR
 		struct Material
 		{
 			Rasterizer::Texture_RGB* Albedo = nullptr;
-			Rasterizer::Texture_R* Alpha = nullptr;
 			Rasterizer::Texture_R* Metalness = nullptr;
 			Rasterizer::Texture_R* Roughness = nullptr;
 			Rasterizer::Texture_R* AmbientOcclusion = nullptr;
@@ -25,7 +24,6 @@ namespace BSR
 			Rasterizer::Texture_RGB* Emission = nullptr;
 
 			Math::Vec3f AlbedoMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
-			float AlphaMultiplier = 1.0f;
 			float MetalnessMultiplier = 1.0f;
 			float RoughnessMultiplier = 1.0f;
 			float AmbientOcclusionMultiplier = 1.0f;
@@ -33,7 +31,6 @@ namespace BSR
 			Math::Vec3f EmissionMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
 
 			Rasterizer::Texture_RGB* AlbedoBack = nullptr;
-			Rasterizer::Texture_R* AlphaBack = nullptr;
 			Rasterizer::Texture_R* MetalnessBack = nullptr;
 			Rasterizer::Texture_R* RoughnessBack = nullptr;
 			Rasterizer::Texture_R* AmbientOcclusionBack = nullptr;
@@ -41,7 +38,6 @@ namespace BSR
 			Rasterizer::Texture_RGB* EmissionBack = nullptr;
 
 			Math::Vec3f AlbedoBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
-			float AlphaBackMultiplier = 1.0f;
 			float MetalnessBackMultiplier = 1.0f;
 			float RoughnessBackMultiplier = 1.0f;
 			float AmbientOcclusionBackMultiplier = 1.0f;
@@ -79,8 +75,8 @@ namespace BSR
 			bool Perspective = true;
 
 			float FieldOfView = 90.0f * Math::fDegreesToRadians;
-			float NearPlane = 0.001f;
-			float FarPlane = 1000.0f;
+			float NearPlane = 0.3f;
+			float FarPlane = 100.0f;
 
 			const Math::Mat4f GetViewMatrix() const;
 			const Math::Mat4f GetProjectionMatrix(const float _AspectRatio) const;
@@ -233,6 +229,27 @@ namespace BSR
 
 		};
 
+		struct FrameBuffer
+		{
+			size_t Width = 0;
+			size_t Height = 0;
+
+			Math::Vec3f* Albedo = nullptr;
+			float* Metalness = nullptr;
+			float* Roughness = nullptr;
+			float* AmbientOcclusion = nullptr;
+			Math::Vec3f* NormalMap = nullptr;
+			Math::Vec3f* Emission = nullptr;
+			Math::Vec3f* Position = nullptr;
+			float* Depth = nullptr;
+			uint64_t* Stencil = nullptr;
+			Math::Vec3f* Result = nullptr;
+
+			const bool Valid() const;
+
+			const bool operator== (const FrameBuffer& _Other) const;
+		};
+
 		class Instance
 		{
 
@@ -243,12 +260,23 @@ namespace BSR
 			Instance(Instance&& _Other) noexcept = delete;
 			~Instance();
 
+			bool StartScene(FrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera);
+			bool FlushScene();
+
+			void SubmitModel(const Mesh& _TargetMesh, const Material& _TargetMaterial, const Transform& _TargetTransform);
+			void SubmitLight(const Light& _TargetLight);
+
 			void operator= (const Instance& _Other) = delete;
 			void operator= (Instance&& _Other) noexcept = delete;
 
 		private:
 
-
+			FrameBuffer TargetFrameBuffer;
+			Camera TargetCamera;
+			std::vector<const Mesh*> TargetMeshes;
+			std::vector<Material> TargetMaterials;
+			std::vector<Transform> TargetTransforms;
+			std::vector<Light> TargetLights;
 
 		};
 
