@@ -2,28 +2,89 @@
 
 
 
+const bool BSR::Renderer::Material::HasFrontFace() const
+{
+	return Albedo != nullptr && Metalness != nullptr && Roughness != nullptr && AmbientOcclusion != nullptr && NormalMap != nullptr && Emission != nullptr;
+}
+
+const bool BSR::Renderer::Material::HasBackFace() const
+{
+	return AlbedoBack != nullptr && MetalnessBack != nullptr && RoughnessBack != nullptr && AmbientOcclusionBack != nullptr && NormalMapBack != nullptr && EmissionBack != nullptr;
+}
+
+const uint8_t BSR::Renderer::Material::GetCullingType() const
+{
+	if (HasFrontFace())
+	{
+		if (HasBackFace())
+		{
+			return Rasterizer::_NoCulling;
+		}
+		else
+		{
+			return Rasterizer::_ClockWiseCulling;
+		}
+	}
+	else
+	{
+		if (HasBackFace())
+		{
+			return Rasterizer::_CounterClockWiseCulling;
+		}
+	}
+
+	BSR_DEBUG_BREAK();
+
+	return Rasterizer::_NoCulling;
+}
+
+
+
 const BSR::Math::Mat4f BSR::Renderer::Camera::GetViewMatrix() const
 {
 	return
-		BSR::Math::Mat4f::GetRotation(-AngleTilt, BSR::Math::Vec3f(0.0f, 0.0f, 1.0f)) *
-		BSR::Math::Mat4f::GetRotation(-AngleVertical, BSR::Math::Vec3f(1.0f, 0.0f, 0.0f)) *
-		BSR::Math::Mat4f::GetRotation(-AngleFlat, BSR::Math::Vec3f(0.0f, 1.0f, 0.0f)) *
-		BSR::Math::Mat4f::GetTranslation(-Position);
+		Math::Mat4f::GetRotation(-AngleTilt, Math::Vec3f(0.0f, 0.0f, 1.0f)) *
+		Math::Mat4f::GetRotation(-AngleVertical, Math::Vec3f(1.0f, 0.0f, 0.0f)) *
+		Math::Mat4f::GetRotation(-AngleFlat, Math::Vec3f(0.0f, 1.0f, 0.0f)) *
+		Math::Mat4f::GetTranslation(-Position);
 }
 
 const BSR::Math::Mat4f BSR::Renderer::Camera::GetProjectionMatrix(const float _AspectRatio) const
 {
 	if (Perspective)
 	{
-		return BSR::Math::Mat4f::GetPerspective(FieldOfView, _AspectRatio, NearPlane, FarPlane);
+		return Math::Mat4f::GetPerspective(FieldOfView, _AspectRatio, NearPlane, FarPlane);
 	}
 
-	return BSR::Math::Mat4f::GetOrtho(-FieldOfView / 2.0f * _AspectRatio, FieldOfView / 2.0f * _AspectRatio, -FieldOfView / 2.0f, FieldOfView / 2.0f, -NearPlane, -FarPlane);
+	return Math::Mat4f::GetOrtho(-FieldOfView / 2.0f * _AspectRatio, FieldOfView / 2.0f * _AspectRatio, -FieldOfView / 2.0f, FieldOfView / 2.0f, -NearPlane, -FarPlane);
+}
+
+const BSR::Math::Mat4f BSR::Renderer::Camera::GetCubeMapMatrix(const float _AspectRatio) const
+{
+	Camera _CubeMapCamera;
+
+	_CubeMapCamera.Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
+	_CubeMapCamera.AngleFlat = AngleFlat;
+	_CubeMapCamera.AngleVertical = AngleVertical;
+	_CubeMapCamera.AngleTilt = AngleTilt;
+	_CubeMapCamera.Perspective = true;
+	if (Perspective)
+	{
+		_CubeMapCamera.FieldOfView = FieldOfView;
+	}
+	else
+	{
+		_CubeMapCamera.FieldOfView = 90.0f * Math::fDegreesToRadians;
+	}
+	_CubeMapCamera.NearPlane = 0.1f;
+	_CubeMapCamera.FarPlane = 10.0f;
+
+	return _CubeMapCamera.GetProjectionMatrix(_AspectRatio) * _CubeMapCamera.GetViewMatrix();
 }
 
 const BSR::Math::Vec3f BSR::Renderer::Camera::GetForwardVector()
 {
-	return BSR::Math::Mat3f::GetRotation(-AngleFlat, BSR::Math::Vec3f(0.0f, 1.0f, 0.0f)) * BSR::Math::Mat3f::GetRotation(-AngleVertical, BSR::Math::Vec3f(1.0f, 0.0f, 0.0f)) * BSR::Math::Vec3f(0.0f, 0.0f, -1.0f);
+	return Math::Mat3f::GetRotation(AngleFlat, Math::Vec3f(0.0f, 1.0f, 0.0f)) * Math::Mat3f::GetRotation(AngleVertical, Math::Vec3f(1.0f, 0.0f, 0.0f)) * Math::Vec3f(0.0f, 0.0f, -1.0f);
 }
 
 
@@ -31,17 +92,17 @@ const BSR::Math::Vec3f BSR::Renderer::Camera::GetForwardVector()
 const BSR::Math::Mat4f BSR::Renderer::Transform::GetModelMatrix() const
 {
 	return
-		BSR::Math::Mat4f::GetTranslation(Position) *
-		BSR::Math::Mat4f::GetRotation(AngleFlat, BSR::Math::Vec3f(0.0f, -1.0f, 0.0f)) *
-		BSR::Math::Mat4f::GetRotation(AngleVertical, BSR::Math::Vec3f(-1.0f, 0.0f, 0.0f)) *
-		BSR::Math::Mat4f::GetRotation(AngleTilt, BSR::Math::Vec3f(0.0f, 0.0f, 1.0f)) *
-		BSR::Math::Mat4f::GetScale(Scale.x, Scale.y, Scale.z, 1.0f) *
-		BSR::Math::Mat4f::GetShear(ShearXByY, 0, 1) *
-		BSR::Math::Mat4f::GetShear(ShearXByZ, 0, 2) *
-		BSR::Math::Mat4f::GetShear(ShearYByZ, 1, 2) *
-		BSR::Math::Mat4f::GetShear(ShearYByX, 1, 0) *
-		BSR::Math::Mat4f::GetShear(ShearZByX, 2, 0) *
-		BSR::Math::Mat4f::GetShear(ShearZByY, 2, 1);
+		Math::Mat4f::GetTranslation(Position) *
+		Math::Mat4f::GetRotation(AngleFlat, Math::Vec3f(0.0f, -1.0f, 0.0f)) *
+		Math::Mat4f::GetRotation(AngleVertical, Math::Vec3f(-1.0f, 0.0f, 0.0f)) *
+		Math::Mat4f::GetRotation(AngleTilt, Math::Vec3f(0.0f, 0.0f, 1.0f)) *
+		Math::Mat4f::GetScale(Scale.x, Scale.y, Scale.z, 1.0f) *
+		Math::Mat4f::GetShear(ShearXByY, 0, 1) *
+		Math::Mat4f::GetShear(ShearXByZ, 0, 2) *
+		Math::Mat4f::GetShear(ShearYByZ, 1, 2) *
+		Math::Mat4f::GetShear(ShearYByX, 1, 0) *
+		Math::Mat4f::GetShear(ShearZByX, 2, 0) *
+		Math::Mat4f::GetShear(ShearZByY, 2, 1);
 }
 
 

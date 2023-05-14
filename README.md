@@ -2,7 +2,7 @@
 
 
 
-This project is a software rasterizer able to render 3D graphics in *real time (hopefully)* and save the rendered results to disk.
+This project is a software rasterizer able to render 3D graphics in real time and save the rendered results to disk.
 
 
 

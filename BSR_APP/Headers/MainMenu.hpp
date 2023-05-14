@@ -41,9 +41,6 @@ namespace BSR_APP
 			BSR::Renderer::Camera Camera;
 			BSR::Renderer::Transform Transform;
 
-			float CameraMoveSpeed;
-			float CameraRotateSpeed;
-
 			void Setup() override;
 			void Update() override;
 			void Stop() override;

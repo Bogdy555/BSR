@@ -374,7 +374,7 @@ void BSR_APP::RunTime::Application::CleanUpTexture_RG(const wchar_t* _AssetName)
 	SceneAssets.RemoveAsset(_AssetName);
 }
 
-bool BSR_APP::RunTime::Application::LoadTexture_RGB(const wchar_t* _Path, const wchar_t* _AssetName, const uint8_t _LerpType, const uint8_t _WrapType)
+bool BSR_APP::RunTime::Application::LoadTexture_RGB(const wchar_t* _Path, const wchar_t* _AssetName, const uint8_t _LerpType, const uint8_t _WrapType, const bool _GammaCorrect)
 {
 	BSR::Image::Image _Image;
 
@@ -383,6 +383,23 @@ bool BSR_APP::RunTime::Application::LoadTexture_RGB(const wchar_t* _Path, const 
 	if (!_Image.Data)
 	{
 		return false;
+	}
+
+	if (_GammaCorrect)
+	{
+		for (size_t _Y = 0; _Y < _Image.Height; _Y++)
+		{
+			for (size_t _X = 0; _X < _Image.Width; _X++)
+			{
+				BSR::Math::Vec3f _Color((float)(_Image.Data[(_X + _Y * _Image.Width) * 4 + 0]) / 255.0f, (float)(_Image.Data[(_X + _Y * _Image.Width) * 4 + 1]) / 255.0f, (float)(_Image.Data[(_X + _Y * _Image.Width) * 4 + 2]) / 255.0f);
+
+				_Color = BSR::Math::Vec3f::Pow(_Color, BSR::Math::Vec3f(2.2f, 2.2f, 2.2f));
+
+				_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = (uint8_t)(_Color.x * 255.0f);
+				_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = (uint8_t)(_Color.y * 255.0f);
+				_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = (uint8_t)(_Color.z * 255.0f);
+			}
+		}
 	}
 
 	BSR::Rasterizer::Texture_RGB* _Texture = new BSR::Rasterizer::Texture_RGB;
@@ -756,6 +773,8 @@ bool BSR_APP::RunTime::Application::GenerateMaterial(const wchar_t* _AssetName, 
 	_Material->Roughness = (BSR::Rasterizer::Texture_R*)(SceneAssets.GetAssetData(_Roughness));
 	_Material->AmbientOcclusion = (BSR::Rasterizer::Texture_R*)(SceneAssets.GetAssetData(_AmbientOcclusion));
 	_Material->NormalMap = (BSR::Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(_NormalMap));
+	_Material->Emission = (BSR::Rasterizer::Texture_RGB*)(SceneAssets.GetAssetData(L"White Texture_RGB"));
+	_Material->EmissionMultiplier = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
 
 	if (!SceneAssets.AddAsset(_Material, _AssetName))
 	{
@@ -793,7 +812,7 @@ bool BSR_APP::RunTime::Application::InitSceneAssets()
 		return false;
 	}
 
-	if (!LoadTexture_RGB(L".\\Materials\\Aluminum\\Albedo.bmp", L"Aluminum albedo", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat))
+	if (!LoadTexture_RGB(L".\\Materials\\Aluminum\\Albedo.bmp", L"Aluminum albedo", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat, true))
 	{
 		return false;
 	}
@@ -803,7 +822,7 @@ bool BSR_APP::RunTime::Application::InitSceneAssets()
 		return false;
 	}
 
-	if (!LoadTexture_RGB(L".\\Materials\\Aluminum\\Normal.bmp", L"Aluminum normal", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat))
+	if (!LoadTexture_RGB(L".\\Materials\\Aluminum\\Normal.bmp", L"Aluminum normal", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat, false))
 	{
 		return false;
 	}
@@ -813,7 +832,7 @@ bool BSR_APP::RunTime::Application::InitSceneAssets()
 		return false;
 	}
 
-	if (!LoadTexture_RGB(L".\\Materials\\Container\\Albedo.bmp", L"Container albedo", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat))
+	if (!LoadTexture_RGB(L".\\Materials\\Container\\Albedo.bmp", L"Container albedo", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat, true))
 	{
 		return false;
 	}
@@ -828,7 +847,7 @@ bool BSR_APP::RunTime::Application::InitSceneAssets()
 		return false;
 	}
 
-	if (!LoadTexture_RGB(L".\\Materials\\Container\\Normal.bmp", L"Container normal", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat))
+	if (!LoadTexture_RGB(L".\\Materials\\Container\\Normal.bmp", L"Container normal", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat, false))
 	{
 		return false;
 	}
@@ -838,7 +857,7 @@ bool BSR_APP::RunTime::Application::InitSceneAssets()
 		return false;
 	}
 
-	if (!LoadTexture_RGB(L".\\Materials\\Gold\\Albedo.bmp", L"Gold albedo", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat))
+	if (!LoadTexture_RGB(L".\\Materials\\Gold\\Albedo.bmp", L"Gold albedo", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat, true))
 	{
 		return false;
 	}
@@ -848,7 +867,7 @@ bool BSR_APP::RunTime::Application::InitSceneAssets()
 		return false;
 	}
 
-	if (!LoadTexture_RGB(L".\\Materials\\Gold\\Normal.bmp", L"Gold normal", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat))
+	if (!LoadTexture_RGB(L".\\Materials\\Gold\\Normal.bmp", L"Gold normal", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat, false))
 	{
 		return false;
 	}
@@ -858,7 +877,7 @@ bool BSR_APP::RunTime::Application::InitSceneAssets()
 		return false;
 	}
 
-	if (!LoadTexture_RGB(L".\\Materials\\Iron\\Albedo.bmp", L"Iron albedo", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat))
+	if (!LoadTexture_RGB(L".\\Materials\\Iron\\Albedo.bmp", L"Iron albedo", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat, true))
 	{
 		return false;
 	}
@@ -868,7 +887,7 @@ bool BSR_APP::RunTime::Application::InitSceneAssets()
 		return false;
 	}
 
-	if (!LoadTexture_RGB(L".\\Materials\\Iron\\Normal.bmp", L"Iron normal", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat))
+	if (!LoadTexture_RGB(L".\\Materials\\Iron\\Normal.bmp", L"Iron normal", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat, false))
 	{
 		return false;
 	}
@@ -878,12 +897,12 @@ bool BSR_APP::RunTime::Application::InitSceneAssets()
 		return false;
 	}
 
-	if (!LoadTexture_RGB(L".\\Materials\\Plastic\\Albedo Green.bmp", L"Plastic albedo green", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat))
+	if (!LoadTexture_RGB(L".\\Materials\\Plastic\\Albedo Green.bmp", L"Plastic albedo green", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat, true))
 	{
 		return false;
 	}
 
-	if (!LoadTexture_RGB(L".\\Materials\\Plastic\\Albedo Red.bmp", L"Plastic albedo red", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat))
+	if (!LoadTexture_RGB(L".\\Materials\\Plastic\\Albedo Red.bmp", L"Plastic albedo red", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat, true))
 	{
 		return false;
 	}
@@ -898,7 +917,7 @@ bool BSR_APP::RunTime::Application::InitSceneAssets()
 		return false;
 	}
 
-	if (!LoadTexture_RGB(L".\\Materials\\Plastic\\Normal.bmp", L"Plastic normal", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat))
+	if (!LoadTexture_RGB(L".\\Materials\\Plastic\\Normal.bmp", L"Plastic normal", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat, false))
 	{
 		return false;
 	}

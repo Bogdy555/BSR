@@ -2,7 +2,7 @@
 
 
 
-BSR_APP::RunTime::MainMenu::MainMenu() : BSR::RunTime::Menu(), Keys(), Camera(), Transform(), CameraMoveSpeed(3.0f), CameraRotateSpeed(180.0f * BSR::Math::fDegreesToRadians)
+BSR_APP::RunTime::MainMenu::MainMenu() : BSR::RunTime::Menu(), Keys(), Camera(), Transform()
 {
 
 }
@@ -92,6 +92,11 @@ void BSR_APP::RunTime::MainMenu::Engine()
 		RenderAndSave();
 	}
 
+	const float _CameraMoveSpeed = 3.0f;
+	const float _CameraRotateSpeed = 180.0f * BSR::Math::fDegreesToRadians;
+	const float _CameraFovSpeedOrthographic = 2.0f;
+	const float _CameraFovSpeedPerspective = 180.0f * BSR::Math::fDegreesToRadians;
+
 	{
 		BSR::Math::Vec3f _MoveVec;
 
@@ -107,17 +112,17 @@ void BSR_APP::RunTime::MainMenu::Engine()
 			_MoveVec.Normalize();
 		}
 
-		_MoveVec *= CameraMoveSpeed * GetTimeStep();
+		_MoveVec *= _CameraMoveSpeed * GetTimeStep();
 
 		Camera.Position += BSR::Math::Vec3f(BSR::Math::Mat4f::GetRotation(Camera.AngleFlat, BSR::Math::Vec3f(0.0f, 1.0f, 0.0f)) * BSR::Math::Vec4f(_MoveVec, 1.0f));
 	}
 
-	Camera.AngleFlat -= CameraRotateSpeed * GetTimeStep() * Keys[BSR::_Current][VK_RIGHT];
-	Camera.AngleVertical -= CameraRotateSpeed * GetTimeStep() * Keys[BSR::_Current][VK_DOWN];
-	Camera.AngleTilt -= CameraRotateSpeed * GetTimeStep() * Keys[BSR::_Current][VK_F8];
-	Camera.AngleFlat += CameraRotateSpeed * GetTimeStep() * Keys[BSR::_Current][VK_LEFT];
-	Camera.AngleVertical += CameraRotateSpeed * GetTimeStep() * Keys[BSR::_Current][VK_UP];
-	Camera.AngleTilt += CameraRotateSpeed * GetTimeStep() * Keys[BSR::_Current][VK_F7];
+	Camera.AngleFlat -= _CameraRotateSpeed * GetTimeStep() * Keys[BSR::_Current][VK_RIGHT];
+	Camera.AngleVertical -= _CameraRotateSpeed * GetTimeStep() * Keys[BSR::_Current][VK_DOWN];
+	Camera.AngleTilt -= _CameraRotateSpeed * GetTimeStep() * Keys[BSR::_Current][VK_F8];
+	Camera.AngleFlat += _CameraRotateSpeed * GetTimeStep() * Keys[BSR::_Current][VK_LEFT];
+	Camera.AngleVertical += _CameraRotateSpeed * GetTimeStep() * Keys[BSR::_Current][VK_UP];
+	Camera.AngleTilt += _CameraRotateSpeed * GetTimeStep() * Keys[BSR::_Current][VK_F7];
 
 	while (Camera.AngleFlat < -180.0f * BSR::Math::fDegreesToRadians)
 	{
@@ -134,11 +139,11 @@ void BSR_APP::RunTime::MainMenu::Engine()
 	{
 		if (Keys[BSR::_Current][VK_F3])
 		{
-			Camera.FieldOfView -= CameraRotateSpeed * GetTimeStep();
+			Camera.FieldOfView -= _CameraFovSpeedPerspective * GetTimeStep();
 		}
 		if (Keys[BSR::_Current][VK_F4])
 		{
-			Camera.FieldOfView += CameraRotateSpeed * GetTimeStep();
+			Camera.FieldOfView += _CameraFovSpeedPerspective * GetTimeStep();
 		}
 
 		Camera.FieldOfView = BSR::Math::Clamp(Camera.FieldOfView, 10.0f * BSR::Math::fDegreesToRadians, 160.0f * BSR::Math::fDegreesToRadians);
@@ -147,11 +152,11 @@ void BSR_APP::RunTime::MainMenu::Engine()
 	{
 		if (Keys[BSR::_Current][VK_F3])
 		{
-			Camera.FieldOfView -= 2.0f * GetTimeStep();
+			Camera.FieldOfView -= _CameraFovSpeedOrthographic * GetTimeStep();
 		}
 		if (Keys[BSR::_Current][VK_F4])
 		{
-			Camera.FieldOfView += 2.0f * GetTimeStep();
+			Camera.FieldOfView += _CameraFovSpeedOrthographic * GetTimeStep();
 		}
 
 		if (Camera.FieldOfView < 0.1f)
@@ -229,6 +234,10 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 	const BSR::AssetManager& _SceneAssets = _ApplicationObj->GetSceneAssets();
 
 	const BSR::Renderer::Model& _Model = *(const BSR::Renderer::Model*)(_SceneAssets.GetAssetData(L"Model"));
+	const BSR::Rasterizer::Texture_Float_RGB& _Environment = *(const BSR::Rasterizer::Texture_Float_RGB*)(_SceneAssets.GetAssetData(L"Environment texture"));
+	const BSR::Rasterizer::Texture_Float_RGB& _Iradiance = *(const BSR::Rasterizer::Texture_Float_RGB*)(_SceneAssets.GetAssetData(L"Iradiance texture"));
+
+	const float _Exposure = 1.0f;
 
 	BSR::Renderer::FrameBuffer _FrameBuffer;
 
@@ -247,7 +256,7 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 
 	BSR::Renderer::Instance _RendererInstance;
 
-	_RendererInstance.StartScene(_FrameBuffer, Camera);
+	_RendererInstance.StartScene(_FrameBuffer, Camera, _Exposure, Camera.FarPlane, Camera.FarPlane + 1.0f, _Environment, _Iradiance);
 
 	for (size_t _Index = 0; _Index < _Model.GetSize(); _Index++)
 	{
@@ -266,9 +275,9 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 	{
 		for (size_t _X = 0; _X < _Image.Width; _X++)
 		{
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = 0;
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = (uint8_t)(_FrameBuffer.Albedo[_X + _Y * _FrameBuffer.Width].x * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = (uint8_t)(_FrameBuffer.Albedo[_X + _Y * _FrameBuffer.Width].y * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = (uint8_t)(_FrameBuffer.Albedo[_X + _Y * _FrameBuffer.Width].z * 255.0f);
 			_Image.Data[(_X + _Y * _Image.Width) * 4 + 3] = 255;
 		}
 	}
@@ -279,9 +288,9 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 	{
 		for (size_t _X = 0; _X < _Image.Width; _X++)
 		{
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = 0;
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = (uint8_t)(_FrameBuffer.Metalness[_X + _Y * _FrameBuffer.Width] * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = (uint8_t)(_FrameBuffer.Metalness[_X + _Y * _FrameBuffer.Width] * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = (uint8_t)(_FrameBuffer.Metalness[_X + _Y * _FrameBuffer.Width] * 255.0f);
 			_Image.Data[(_X + _Y * _Image.Width) * 4 + 3] = 255;
 		}
 	}
@@ -292,9 +301,9 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 	{
 		for (size_t _X = 0; _X < _Image.Width; _X++)
 		{
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = 0;
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = (uint8_t)(_FrameBuffer.Roughness[_X + _Y * _FrameBuffer.Width] * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = (uint8_t)(_FrameBuffer.Roughness[_X + _Y * _FrameBuffer.Width] * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = (uint8_t)(_FrameBuffer.Roughness[_X + _Y * _FrameBuffer.Width] * 255.0f);
 			_Image.Data[(_X + _Y * _Image.Width) * 4 + 3] = 255;
 		}
 	}
@@ -305,9 +314,9 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 	{
 		for (size_t _X = 0; _X < _Image.Width; _X++)
 		{
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = 0;
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = (uint8_t)(_FrameBuffer.AmbientOcclusion[_X + _Y * _FrameBuffer.Width] * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = (uint8_t)(_FrameBuffer.AmbientOcclusion[_X + _Y * _FrameBuffer.Width] * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = (uint8_t)(_FrameBuffer.AmbientOcclusion[_X + _Y * _FrameBuffer.Width] * 255.0f);
 			_Image.Data[(_X + _Y * _Image.Width) * 4 + 3] = 255;
 		}
 	}
@@ -318,9 +327,9 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 	{
 		for (size_t _X = 0; _X < _Image.Width; _X++)
 		{
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = 0;
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = (uint8_t)(BSR::Math::Clamp(_FrameBuffer.NormalMap[_X + _Y * _FrameBuffer.Width].x, 0.0f, 1.0f) * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = (uint8_t)(BSR::Math::Clamp(_FrameBuffer.NormalMap[_X + _Y * _FrameBuffer.Width].y, 0.0f, 1.0f) * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = (uint8_t)(BSR::Math::Clamp(_FrameBuffer.NormalMap[_X + _Y * _FrameBuffer.Width].z, 0.0f, 1.0f) * 255.0f);
 			_Image.Data[(_X + _Y * _Image.Width) * 4 + 3] = 255;
 		}
 	}
@@ -331,9 +340,9 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 	{
 		for (size_t _X = 0; _X < _Image.Width; _X++)
 		{
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = 0;
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = (uint8_t)(BSR::Math::Clamp(_FrameBuffer.Emission[_X + _Y * _FrameBuffer.Width].x, 0.0f, 1.0f) * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = (uint8_t)(BSR::Math::Clamp(_FrameBuffer.Emission[_X + _Y * _FrameBuffer.Width].y, 0.0f, 1.0f) * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = (uint8_t)(BSR::Math::Clamp(_FrameBuffer.Emission[_X + _Y * _FrameBuffer.Width].z, 0.0f, 1.0f) * 255.0f);
 			_Image.Data[(_X + _Y * _Image.Width) * 4 + 3] = 255;
 		}
 	}
@@ -344,9 +353,9 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 	{
 		for (size_t _X = 0; _X < _Image.Width; _X++)
 		{
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = 0;
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = (uint8_t)(BSR::Math::Clamp(_FrameBuffer.Position[_X + _Y * _FrameBuffer.Width].x, 0.0f, 1.0f) * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = (uint8_t)(BSR::Math::Clamp(_FrameBuffer.Position[_X + _Y * _FrameBuffer.Width].y, 0.0f, 1.0f) * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = (uint8_t)(BSR::Math::Clamp(_FrameBuffer.Position[_X + _Y * _FrameBuffer.Width].z, 0.0f, 1.0f) * 255.0f);
 			_Image.Data[(_X + _Y * _Image.Width) * 4 + 3] = 255;
 		}
 	}
@@ -357,9 +366,9 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 	{
 		for (size_t _X = 0; _X < _Image.Width; _X++)
 		{
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = 0;
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = (uint8_t)(_FrameBuffer.Depth[_X + _Y * _FrameBuffer.Width] * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = (uint8_t)(_FrameBuffer.Depth[_X + _Y * _FrameBuffer.Width] * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = (uint8_t)(_FrameBuffer.Depth[_X + _Y * _FrameBuffer.Width] * 255.0f);
 			_Image.Data[(_X + _Y * _Image.Width) * 4 + 3] = 255;
 		}
 	}
@@ -370,9 +379,9 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 	{
 		for (size_t _X = 0; _X < _Image.Width; _X++)
 		{
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = 0;
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = (uint8_t)((float)(_FrameBuffer.Stencil[_X + _Y * _FrameBuffer.Width]) / (float)(_Model.GetSize()) * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = (uint8_t)((float)(_FrameBuffer.Stencil[_X + _Y * _FrameBuffer.Width]) / (float)(_Model.GetSize()) * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = (uint8_t)((float)(_FrameBuffer.Stencil[_X + _Y * _FrameBuffer.Width]) / (float)(_Model.GetSize()) * 255.0f);
 			_Image.Data[(_X + _Y * _Image.Width) * 4 + 3] = 255;
 		}
 	}
@@ -383,9 +392,9 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 	{
 		for (size_t _X = 0; _X < _Image.Width; _X++)
 		{
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = 0;
-			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = 0;
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 0] = (uint8_t)(_FrameBuffer.Result[_X + _Y * _FrameBuffer.Width].x * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 1] = (uint8_t)(_FrameBuffer.Result[_X + _Y * _FrameBuffer.Width].y * 255.0f);
+			_Image.Data[(_X + _Y * _Image.Width) * 4 + 2] = (uint8_t)(_FrameBuffer.Result[_X + _Y * _FrameBuffer.Width].z * 255.0f);
 			_Image.Data[(_X + _Y * _Image.Width) * 4 + 3] = 255;
 		}
 	}

@@ -69,7 +69,7 @@ namespace BSR_APP
 			bool LoadTexture_RG(const wchar_t* _Path, const wchar_t* _AssetName, const uint8_t _LerpType, const uint8_t _WrapType);
 			void CleanUpTexture_RG(const wchar_t* _AssetName);
 
-			bool LoadTexture_RGB(const wchar_t* _Path, const wchar_t* _AssetName, const uint8_t _LerpType, const uint8_t _WrapType);
+			bool LoadTexture_RGB(const wchar_t* _Path, const wchar_t* _AssetName, const uint8_t _LerpType, const uint8_t _WrapType, const bool _GammaCorrect);
 			void CleanUpTexture_RGB(const wchar_t* _AssetName);
 
 			bool LoadTexture_Float_RGB(const wchar_t* _Path, const wchar_t* _AssetName, const uint8_t _LerpType, const uint8_t _WrapType);

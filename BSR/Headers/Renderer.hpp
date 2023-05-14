@@ -16,12 +16,12 @@ namespace BSR
 
 		struct Material
 		{
-			Rasterizer::Texture_RGB* Albedo = nullptr;
-			Rasterizer::Texture_R* Metalness = nullptr;
-			Rasterizer::Texture_R* Roughness = nullptr;
-			Rasterizer::Texture_R* AmbientOcclusion = nullptr;
-			Rasterizer::Texture_RGB* NormalMap = nullptr;
-			Rasterizer::Texture_RGB* Emission = nullptr;
+			const Rasterizer::Texture_RGB* Albedo = nullptr;
+			const Rasterizer::Texture_R* Metalness = nullptr;
+			const Rasterizer::Texture_R* Roughness = nullptr;
+			const Rasterizer::Texture_R* AmbientOcclusion = nullptr;
+			const Rasterizer::Texture_RGB* NormalMap = nullptr;
+			const Rasterizer::Texture_RGB* Emission = nullptr;
 
 			Math::Vec3f AlbedoMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
 			float MetalnessMultiplier = 1.0f;
@@ -30,12 +30,12 @@ namespace BSR
 			Math::Vec3f NormalMapMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
 			Math::Vec3f EmissionMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
 
-			Rasterizer::Texture_RGB* AlbedoBack = nullptr;
-			Rasterizer::Texture_R* MetalnessBack = nullptr;
-			Rasterizer::Texture_R* RoughnessBack = nullptr;
-			Rasterizer::Texture_R* AmbientOcclusionBack = nullptr;
-			Rasterizer::Texture_RGB* NormalMapBack = nullptr;
-			Rasterizer::Texture_RGB* EmissionBack = nullptr;
+			const Rasterizer::Texture_RGB* AlbedoBack = nullptr;
+			const Rasterizer::Texture_R* MetalnessBack = nullptr;
+			const Rasterizer::Texture_R* RoughnessBack = nullptr;
+			const Rasterizer::Texture_R* AmbientOcclusionBack = nullptr;
+			const Rasterizer::Texture_RGB* NormalMapBack = nullptr;
+			const Rasterizer::Texture_RGB* EmissionBack = nullptr;
 
 			Math::Vec3f AlbedoBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
 			float MetalnessBackMultiplier = 1.0f;
@@ -43,6 +43,11 @@ namespace BSR
 			float AmbientOcclusionBackMultiplier = 1.0f;
 			Math::Vec3f NormalMapBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
 			Math::Vec3f EmissionBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+
+			const bool HasFrontFace() const;
+			const bool HasBackFace() const;
+
+			const uint8_t GetCullingType() const;
 		};
 
 		enum LightTypes : uint8_t
@@ -76,10 +81,11 @@ namespace BSR
 
 			float FieldOfView = 90.0f * Math::fDegreesToRadians;
 			float NearPlane = 0.3f;
-			float FarPlane = 100.0f;
+			float FarPlane = 10.0f;
 
 			const Math::Mat4f GetViewMatrix() const;
 			const Math::Mat4f GetProjectionMatrix(const float _AspectRatio) const;
+			const Math::Mat4f GetCubeMapMatrix(const float _AspectRatio) const;
 			const Math::Vec3f GetForwardVector();
 
 		};
@@ -260,7 +266,7 @@ namespace BSR
 			Instance(Instance&& _Other) noexcept = delete;
 			~Instance();
 
-			bool StartScene(FrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera);
+			bool StartScene(FrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera, const float _TargetExposure, const float _TargetFogStart, const float _TargetFogEnd, const Rasterizer::Texture_Float_RGB& _TargetEnvironment, const Rasterizer::Texture_Float_RGB& _TargetIradiance);
 			bool FlushScene();
 
 			void SubmitModel(const Mesh& _TargetMesh, const Material& _TargetMaterial, const Transform& _TargetTransform);
@@ -273,6 +279,11 @@ namespace BSR
 
 			FrameBuffer TargetFrameBuffer;
 			Camera TargetCamera;
+			float TargetExposure;
+			float TargetFogStart;
+			float TargetFogEnd;
+			const Rasterizer::Texture_Float_RGB* TargetEnvironment;
+			const Rasterizer::Texture_Float_RGB* TargetIradiance;
 			std::vector<const Mesh*> TargetMeshes;
 			std::vector<Material> TargetMaterials;
 			std::vector<Transform> TargetTransforms;
