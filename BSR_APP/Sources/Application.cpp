@@ -114,9 +114,9 @@ void BSR_APP::RunTime::Application::UpdateFullScreen()
 
 BSR_APP::RunTime::Application* BSR_APP::RunTime::Application::GetInstance()
 {
-	static Application _ApplicationObj;
+	static std::unique_ptr<Application> _ApplicationObj(new Application);
 
-	return &_ApplicationObj;
+	return _ApplicationObj.get();
 }
 
 bool BSR_APP::RunTime::Application::InitInstance()

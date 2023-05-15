@@ -236,8 +236,7 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 	const BSR::Renderer::Model& _Model = *(const BSR::Renderer::Model*)(_SceneAssets.GetAssetData(L"Model"));
 	const BSR::Rasterizer::Texture_Float_RGB& _Environment = *(const BSR::Rasterizer::Texture_Float_RGB*)(_SceneAssets.GetAssetData(L"Environment texture"));
 	const BSR::Rasterizer::Texture_Float_RGB& _Iradiance = *(const BSR::Rasterizer::Texture_Float_RGB*)(_SceneAssets.GetAssetData(L"Iradiance texture"));
-
-	const float _Exposure = 1.0f;
+	const BSR::Rasterizer::Texture_RG& _BRDFLookUp = *(const BSR::Rasterizer::Texture_RG*)(_SceneAssets.GetAssetData(L"BRDF lookup"));
 
 	BSR::Renderer::FrameBuffer _FrameBuffer;
 
@@ -256,7 +255,7 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 
 	BSR::Renderer::Instance _RendererInstance;
 
-	_RendererInstance.StartScene(_FrameBuffer, Camera, _Exposure, Camera.FarPlane, Camera.FarPlane + 1.0f, _Environment, _Iradiance);
+	_RendererInstance.StartScene(_FrameBuffer, Camera, 2.5f, Camera.FarPlane - 3.0f, Camera.FarPlane - 1.0f, BSR::Math::Vec3f(0.8f, 0.8f, 0.8f), false, _Environment, _Iradiance, _BRDFLookUp);
 
 	for (size_t _Index = 0; _Index < _Model.GetSize(); _Index++)
 	{

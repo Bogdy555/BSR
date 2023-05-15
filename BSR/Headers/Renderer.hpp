@@ -266,7 +266,7 @@ namespace BSR
 			Instance(Instance&& _Other) noexcept = delete;
 			~Instance();
 
-			bool StartScene(FrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera, const float _TargetExposure, const float _TargetFogStart, const float _TargetFogEnd, const Rasterizer::Texture_Float_RGB& _TargetEnvironment, const Rasterizer::Texture_Float_RGB& _TargetIradiance);
+			bool StartScene(FrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera, const float _TargetExposure, const float _TargetFogStart, const float _TargetFogEnd, const Math::Vec3f& _TargetFogColor, const bool _TargetFogDepthBased, const Rasterizer::Texture_Float_RGB& _TargetEnvironment, const Rasterizer::Texture_Float_RGB& _TargetIradiance, const Rasterizer::Texture_RG& _TargetBRDFLookUp);
 			bool FlushScene();
 
 			void SubmitModel(const Mesh& _TargetMesh, const Material& _TargetMaterial, const Transform& _TargetTransform);
@@ -282,8 +282,11 @@ namespace BSR
 			float TargetExposure;
 			float TargetFogStart;
 			float TargetFogEnd;
+			Math::Vec3f TargetFogColor;
+			bool TargetFogDepthBased;
 			const Rasterizer::Texture_Float_RGB* TargetEnvironment;
 			const Rasterizer::Texture_Float_RGB* TargetIradiance;
+			const Rasterizer::Texture_RG* TargetBRDFLookUp;
 			std::vector<const Mesh*> TargetMeshes;
 			std::vector<Material> TargetMaterials;
 			std::vector<Transform> TargetTransforms;

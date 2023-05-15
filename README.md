@@ -54,9 +54,51 @@ The actual software is free for anyone as long as it is not used commercially, b
 
 ![Render example](./ReadMe%20Resources/Render.bmp)
 
+* Deferred renderer with PBR pipeline
+
+![Deferred example](./ReadMe%20Resources/Deferred.bmp)
+
+* Real time Phong
+
+![Phong example](./ReadMe%20Resources/Phong.bmp)
+
 * Texture sampling with wrapping (repeat, mirror, clamp and black) and filtering (nearest and bi-linear)
 
 ![Texture sampling example](./ReadMe%20Resources/TextureSampling.bmp)
+
+
+
+## What I would like to add (if I have enough patience)
+
+* Depth of field
+
+* Orbit camera
+
+* Focal length
+
+* Fish eye lens
+
+* MSAA
+
+* Scene Hierarchy
+
+* Improve Model loader (optimize vertex pool)
+
+* Load mtllib as well
+
+* Save compressed Model
+
+* Add Transform and Material on Mesh
+
+* Add Transform on Model
+
+* Generate iradiance map on startup
+
+* Generate BRDF LUT on startup
+
+* Generate prefiltered convoluted maps on startup
+
+* Check for bugs in the composit fragment shader, PBR related math functions and light calculations
 
 
 
