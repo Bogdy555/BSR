@@ -146,7 +146,7 @@ void BSR_APP::RunTime::MainMenu::Engine()
 			Camera.FieldOfView += _CameraFovSpeedPerspective * GetTimeStep();
 		}
 
-		Camera.FieldOfView = BSR::Math::Clamp(Camera.FieldOfView, 10.0f * BSR::Math::fDegreesToRadians, 160.0f * BSR::Math::fDegreesToRadians);
+		Camera.FieldOfView = BSR::Math::Clamp(Camera.FieldOfView, 60.0f * BSR::Math::fDegreesToRadians, 120.0f * BSR::Math::fDegreesToRadians);
 	}
 	else
 	{
