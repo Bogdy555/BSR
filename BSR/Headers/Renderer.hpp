@@ -61,7 +61,7 @@ namespace BSR
 		{
 			uint8_t Type = _PointLight;
 			Math::Vec3f Position = Math::Vec3f(0.0f, 0.0f, 0.0f);
-			Math::Vec3f Direction = Math::Vec3f(0.0f, -1.0f, 0.0f);
+			Math::Vec3f Direction = Math::Vec3f(0.0f, 0.0f, -1.0f);
 			float Theta = 0.0f;
 			float ThetaFade = 0.0f;
 			Math::Vec3f Color = Math::Vec3f(1.0f, 1.0f, 1.0f);

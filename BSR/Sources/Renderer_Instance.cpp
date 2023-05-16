@@ -520,28 +520,25 @@ bool BSR::Renderer::Instance::FlushScene()
 		_Uniforms.Projection = _Uniforms.Camera.GetProjectionMatrix((float)(TargetFrameBuffer.Width) / (float)(TargetFrameBuffer.Height));
 		_Uniforms.Mvp = _Uniforms.Projection * _Uniforms.View * _Uniforms.Model;
 
-		if (std::abs(_Uniforms.Mvp.Determinant()) >= 0.001f)
-		{
-			_Context.SetCullingType(_CurrentMaterial.GetCullingType());
+		_Context.SetCullingType(_CurrentMaterial.GetCullingType());
 
-			if (!_Context.RenderMesh(_CurrentMesh.VBO.GetData(), _CurrentMesh.VBO.GetSize(), sizeof(VertexData), _CurrentMesh.IBO.GetData(), 0, _CurrentMesh.IBO.GetSize() * 3, &_Uniforms, sizeof(DeferredLerpers), sizeof(DeferredLerpers), DeferredVertexShader, nullptr, DeferredFragmentShader, &TargetFrameBuffer))
-			{
-				TargetCamera = Camera();
-				TargetFrameBuffer = FrameBuffer();
-				TargetExposure = 1.0f;
-				TargetFogStart = TargetCamera.FarPlane;
-				TargetFogEnd = TargetCamera.FarPlane + 1.0f;
-				TargetFogColor = Math::Vec3f(0.8f, 0.8f, 0.8f);
-				TargetFogDepthBased = false;
-				TargetEnvironment = nullptr;
-				TargetIradiance = nullptr;
-				TargetBRDFLookUp = nullptr;
-				TargetMeshes.clear();
-				TargetMaterials.clear();
-				TargetTransforms.clear();
-				TargetLights.clear();
-				return false;
-			}
+		if (!_Context.RenderMesh(_CurrentMesh.VBO.GetData(), _CurrentMesh.VBO.GetSize(), sizeof(VertexData), _CurrentMesh.IBO.GetData(), 0, _CurrentMesh.IBO.GetSize() * 3, &_Uniforms, sizeof(DeferredLerpers), sizeof(DeferredLerpers), DeferredVertexShader, nullptr, DeferredFragmentShader, &TargetFrameBuffer))
+		{
+			TargetCamera = Camera();
+			TargetFrameBuffer = FrameBuffer();
+			TargetExposure = 1.0f;
+			TargetFogStart = TargetCamera.FarPlane;
+			TargetFogEnd = TargetCamera.FarPlane + 1.0f;
+			TargetFogColor = Math::Vec3f(0.8f, 0.8f, 0.8f);
+			TargetFogDepthBased = false;
+			TargetEnvironment = nullptr;
+			TargetIradiance = nullptr;
+			TargetBRDFLookUp = nullptr;
+			TargetMeshes.clear();
+			TargetMaterials.clear();
+			TargetTransforms.clear();
+			TargetLights.clear();
+			return false;
 		}
 	}
 
@@ -556,26 +553,23 @@ bool BSR::Renderer::Instance::FlushScene()
 		_Uniforms.Environment = TargetEnvironment;
 		_Uniforms.Mvp = TargetCamera.GetCubeMapMatrix((float)(TargetFrameBuffer.Width) / (float)(TargetFrameBuffer.Height));
 
-		if (std::abs(_Uniforms.Mvp.Determinant()) >= 0.001f)
+		if (!_Context.RenderMesh(_Cube.VBO.GetData(), _Cube.VBO.GetSize(), sizeof(VertexData), _Cube.IBO.GetData(), 0, _Cube.IBO.GetSize() * 3, &_Uniforms, sizeof(CubeMapLerpers) / sizeof(float), sizeof(CubeMapLerpers) / sizeof(float), CubeMapVertexShader, nullptr, CubeMapFragmentShader, &TargetFrameBuffer))
 		{
-			if (!_Context.RenderMesh(_Cube.VBO.GetData(), _Cube.VBO.GetSize(), sizeof(VertexData), _Cube.IBO.GetData(), 0, _Cube.IBO.GetSize() * 3, &_Uniforms, sizeof(CubeMapLerpers) / sizeof(float), sizeof(CubeMapLerpers) / sizeof(float), CubeMapVertexShader, nullptr, CubeMapFragmentShader, &TargetFrameBuffer))
-			{
-				TargetCamera = Camera();
-				TargetFrameBuffer = FrameBuffer();
-				TargetExposure = 1.0f;
-				TargetFogStart = TargetCamera.FarPlane;
-				TargetFogEnd = TargetCamera.FarPlane + 1.0f;
-				TargetFogColor = Math::Vec3f(0.8f, 0.8f, 0.8f);
-				TargetFogDepthBased = false;
-				TargetEnvironment = nullptr;
-				TargetIradiance = nullptr;
-				TargetBRDFLookUp = nullptr;
-				TargetMeshes.clear();
-				TargetMaterials.clear();
-				TargetTransforms.clear();
-				TargetLights.clear();
-				return false;
-			}
+			TargetCamera = Camera();
+			TargetFrameBuffer = FrameBuffer();
+			TargetExposure = 1.0f;
+			TargetFogStart = TargetCamera.FarPlane;
+			TargetFogEnd = TargetCamera.FarPlane + 1.0f;
+			TargetFogColor = Math::Vec3f(0.8f, 0.8f, 0.8f);
+			TargetFogDepthBased = false;
+			TargetEnvironment = nullptr;
+			TargetIradiance = nullptr;
+			TargetBRDFLookUp = nullptr;
+			TargetMeshes.clear();
+			TargetMaterials.clear();
+			TargetTransforms.clear();
+			TargetLights.clear();
+			return false;
 		}
 	}
 
@@ -664,6 +658,8 @@ bool BSR::Renderer::Instance::FlushScene()
 
 void BSR::Renderer::Instance::SubmitModel(const Mesh& _TargetMesh, const Material& _TargetMaterial, const Transform& _TargetTransform)
 {
+	BSR_ASSERT(TargetFrameBuffer.Valid());
+
 	TargetMeshes.push_back(&_TargetMesh);
 	TargetMaterials.push_back(_TargetMaterial);
 	TargetTransforms.push_back(_TargetTransform);
@@ -671,5 +667,7 @@ void BSR::Renderer::Instance::SubmitModel(const Mesh& _TargetMesh, const Materia
 
 void BSR::Renderer::Instance::SubmitLight(const Light& _TargetLight)
 {
+	BSR_ASSERT(TargetFrameBuffer.Valid());
+
 	TargetLights.push_back(_TargetLight);
 }

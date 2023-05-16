@@ -70,6 +70,16 @@ The actual software is free for anyone as long as it is not used commercially, b
 
 ## What I would like to add (if I have enough patience)
 
+* Cascaded shadow maps with PCSS and PCF
+
+* SSR
+
+* SSAO
+
+* Allow the fog to have the color of the env map
+
+* Allow texture wrapping and lerping on individual component
+
 * Depth of field
 
 * Orbit camera

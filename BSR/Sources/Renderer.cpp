@@ -77,7 +77,7 @@ const BSR::Math::Mat4f BSR::Renderer::Camera::GetCubeMapMatrix(const float _Aspe
 		_CubeMapCamera.FieldOfView = 90.0f * Math::fDegreesToRadians;
 	}
 	_CubeMapCamera.NearPlane = 0.1f;
-	_CubeMapCamera.FarPlane = 10.0f;
+	_CubeMapCamera.FarPlane = 1000.0f;
 
 	return _CubeMapCamera.GetProjectionMatrix(_AspectRatio) * _CubeMapCamera.GetViewMatrix();
 }
