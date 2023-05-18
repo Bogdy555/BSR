@@ -802,12 +802,12 @@ bool BSR_APP::RunTime::Application::InitSceneAssets()
 		return false;
 	}
 
-	if (!LoadTexture_Float_RGB(L".\\Environments\\ParkingLot\\Environment.hdr", L"Environment texture", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat))
+	if (!LoadTexture_Float_RGB(L".\\Environments\\ParkingLot\\Environment.hdr", L"Environment texture", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapClamp))
 	{
 		return false;
 	}
 
-	if (!LoadTexture_Float_RGB(L".\\Environments\\ParkingLot\\Iradiance.hdr", L"Iradiance texture", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapRepeat))
+	if (!LoadTexture_Float_RGB(L".\\Environments\\ParkingLot\\Iradiance.hdr", L"Iradiance texture", BSR::Rasterizer::_LerpLinear, BSR::Rasterizer::_WrapClamp))
 	{
 		return false;
 	}
