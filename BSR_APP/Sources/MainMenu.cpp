@@ -446,6 +446,8 @@ void BSR_APP::RunTime::MainMenu::Render()
 		BSR::Math::Mat4f View;
 		BSR::Math::Mat4f Projection;
 		BSR::Math::Mat4f Mvp;
+
+		BSR::Math::Vec3f CameraForwardVector = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
 	};
 
 	struct Lerpers
@@ -460,6 +462,7 @@ void BSR_APP::RunTime::MainMenu::Render()
 	_Uniforms.View = Camera.GetViewMatrix();
 	_Uniforms.Projection = Camera.GetProjectionMatrix((float)(_FrameBuffer.Width) / (float)(_FrameBuffer.Height));
 	_Uniforms.Mvp = _Uniforms.Projection * _Uniforms.View * _Uniforms.Model;
+	_Uniforms.CameraForwardVector = Camera.GetForwardVector();
 
 	BSR::Renderer::Model& _Model = *(BSR::Renderer::Model*)(((Application*)(GetApplicationObj()))->GetSceneAssets().GetAssetData(L"Model"));
 
@@ -513,7 +516,7 @@ void BSR_APP::RunTime::MainMenu::Render()
 
 				_TrueFrameBuffer.Depth[_X + _Y * _TrueFrameBuffer.Width] = _FragCoord.z;
 
-				float _Dot = BSR::Math::Clamp(BSR::Math::Vec3f::Dot(BSR::Math::Vec3f(0.0f, 0.0f, 1.0f), _TrueLerpers.Normal.Normalized()), 0.1f, 1.0f);
+				float _Dot = BSR::Math::Clamp(BSR::Math::Vec3f::Dot(-_TrueUniforms.CameraForwardVector, _TrueLerpers.Normal.Normalized()), 0.1f, 1.0f);
 
 				_TrueFrameBuffer.Data[(_X + (_TrueFrameBuffer.Height - 1 - _Y) * _TrueFrameBuffer.Width) * 4 + 0] = (uint8_t)(_Dot * 255.0f);
 				_TrueFrameBuffer.Data[(_X + (_TrueFrameBuffer.Height - 1 - _Y) * _TrueFrameBuffer.Width) * 4 + 1] = (uint8_t)(_Dot * 255.0f);
