@@ -1,4 +1,4 @@
-# Software Rasterizer
+# Bogdan Software Rasterizer (BSR)
 
 
 
