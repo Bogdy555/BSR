@@ -1,4 +1,4 @@
-#include "..\Headers\BSR.hpp"
+#include "../Headers/BSR.hpp"
 
 
 
@@ -712,7 +712,7 @@ uint8_t* BSR::Image::LoadBmp(const wchar_t* _Path, size_t& _Width, size_t& _Heig
 		return nullptr;
 	}
 
-	HBITMAP _hBmp = (HBITMAP)(LoadImage(NULL, _Path, IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE));
+	HBITMAP _hBmp = (HBITMAP)(LoadImageW(NULL, _Path, IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE));
 
 	if (!_hBmp)
 	{

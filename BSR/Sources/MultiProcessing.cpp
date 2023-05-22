@@ -1,4 +1,4 @@
-#include "..\Headers\BSR.hpp"
+#include "../Headers/BSR.hpp"
 
 
 
@@ -28,7 +28,7 @@ bool BSR::MultiProcessing::SharedMemory::Create(const wchar_t* _Name, const size
 		return false;
 	}
 
-	Handle = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, (uint32_t)(_Size), _Name);
+	Handle = CreateFileMappingW(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, (uint32_t)(_Size), _Name);
 
 	if (!Handle)
 	{
@@ -133,7 +133,7 @@ bool BSR::MultiProcessing::SharedMutex::Create(const wchar_t* _Name)
 {
 	Destroy();
 
-	Handle = CreateMutex(NULL, FALSE, _Name);
+	Handle = CreateMutexW(NULL, FALSE, _Name);
 
 	if (!Handle)
 	{
@@ -219,16 +219,16 @@ bool BSR::MultiProcessing::Process::Create(const wchar_t* _Path, const wchar_t* 
 		return false;
 	}
 
-	SHELLEXECUTEINFO _ShellExecInfo = { 0 };
+	SHELLEXECUTEINFOW _ShellExecInfo = { 0 };
 
-	_ShellExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	_ShellExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
 	_ShellExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 	_ShellExecInfo.lpFile = _Path;
 	_ShellExecInfo.lpParameters = _CmdLine;
 	_ShellExecInfo.lpDirectory = _WorkingDir;
 	_ShellExecInfo.nShow = _ShowCmd;
 
-	if (!ShellExecuteEx(&_ShellExecInfo))
+	if (!ShellExecuteExW(&_ShellExecInfo))
 	{
 		return false;
 	}
@@ -252,9 +252,9 @@ bool BSR::MultiProcessing::Process::CreateElevated(const wchar_t* _Path, const w
 		return false;
 	}
 
-	SHELLEXECUTEINFO _ShellExecInfo = { 0 };
+	SHELLEXECUTEINFOW _ShellExecInfo = { 0 };
 
-	_ShellExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	_ShellExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
 	_ShellExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 	_ShellExecInfo.lpVerb = L"runas";
 	_ShellExecInfo.lpFile = _Path;
@@ -262,7 +262,7 @@ bool BSR::MultiProcessing::Process::CreateElevated(const wchar_t* _Path, const w
 	_ShellExecInfo.lpDirectory = _WorkingDir;
 	_ShellExecInfo.nShow = _ShowCmd;
 
-	if (!ShellExecuteEx(&_ShellExecInfo))
+	if (!ShellExecuteExW(&_ShellExecInfo))
 	{
 		return false;
 	}

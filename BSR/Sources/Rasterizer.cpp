@@ -1,4 +1,4 @@
-#include "..\Headers\BSR.hpp"
+#include "../Headers/BSR.hpp"
 
 
 
@@ -826,11 +826,11 @@ const bool BSR::Rasterizer::Context::RenderMesh(const void* _VBO, const size_t _
 
 			bool _FrontFacing = BSR::Math::Vec3f::Cross(_ScreenB - _ScreenA, _ScreenC - _ScreenA).z > 0.0f;
 
-			size_t _StartX = (size_t)(BSR::Math::Clamp(std::floorf(BSR::Math::Min(BSR::Math::Min((_ScreenA.x + 1.0f) / 2.0f, (_ScreenB.x + 1.0f) / 2.0f), (_ScreenC.x + 1.0f) / 2.0f) * (float)(ViewPortWidth)), 0.0f, (float)(ViewPortWidth)));
-			size_t _StartY = (size_t)(BSR::Math::Clamp(std::floorf(BSR::Math::Min(BSR::Math::Min((_ScreenA.y + 1.0f) / 2.0f, (_ScreenB.y + 1.0f) / 2.0f), (_ScreenC.y + 1.0f) / 2.0f) * (float)(ViewPortHeight)), 0.0f, (float)(ViewPortHeight)));
+			size_t _StartX = (size_t)(BSR::Math::Clamp(floorf(BSR::Math::Min(BSR::Math::Min((_ScreenA.x + 1.0f) / 2.0f, (_ScreenB.x + 1.0f) / 2.0f), (_ScreenC.x + 1.0f) / 2.0f) * (float)(ViewPortWidth)), 0.0f, (float)(ViewPortWidth)));
+			size_t _StartY = (size_t)(BSR::Math::Clamp(floorf(BSR::Math::Min(BSR::Math::Min((_ScreenA.y + 1.0f) / 2.0f, (_ScreenB.y + 1.0f) / 2.0f), (_ScreenC.y + 1.0f) / 2.0f) * (float)(ViewPortHeight)), 0.0f, (float)(ViewPortHeight)));
 
-			size_t _EndX = (size_t)(BSR::Math::Clamp(std::ceilf(BSR::Math::Max(BSR::Math::Max((_ScreenA.x + 1.0f) / 2.0f, (_ScreenB.x + 1.0f) / 2.0f), (_ScreenC.x + 1.0f) / 2.0f) * (float)(ViewPortWidth)), 0.0f, (float)(ViewPortWidth)));
-			size_t _EndY = (size_t)(BSR::Math::Clamp(std::ceilf(BSR::Math::Max(BSR::Math::Max((_ScreenA.y + 1.0f) / 2.0f, (_ScreenB.y + 1.0f) / 2.0f), (_ScreenC.y + 1.0f) / 2.0f) * (float)(ViewPortHeight)), 0.0f, (float)(ViewPortHeight)));
+			size_t _EndX = (size_t)(BSR::Math::Clamp(ceilf(BSR::Math::Max(BSR::Math::Max((_ScreenA.x + 1.0f) / 2.0f, (_ScreenB.x + 1.0f) / 2.0f), (_ScreenC.x + 1.0f) / 2.0f) * (float)(ViewPortWidth)), 0.0f, (float)(ViewPortWidth)));
+			size_t _EndY = (size_t)(BSR::Math::Clamp(ceilf(BSR::Math::Max(BSR::Math::Max((_ScreenA.y + 1.0f) / 2.0f, (_ScreenB.y + 1.0f) / 2.0f), (_ScreenC.y + 1.0f) / 2.0f) * (float)(ViewPortHeight)), 0.0f, (float)(ViewPortHeight)));
 
 			for (size_t _Y = ViewPortY + _StartY; _Y < ViewPortY + _EndY; _Y++)
 			{

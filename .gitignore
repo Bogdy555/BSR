@@ -1,3 +1,4 @@
 Binaries/
 Objects/
 .vs/
+*.o

@@ -10,12 +10,12 @@
 
 #pragma pack(pop)
 
-
-
+#ifndef __MINGW32__
 #include "WinTargetVer.hpp"
 #include <Windows.h>
-
-
+#else
+#include <windows.h>
+#endif
 
 #include <iostream>
 #include <fstream>

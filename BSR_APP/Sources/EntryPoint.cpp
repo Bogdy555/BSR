@@ -1,4 +1,4 @@
-#include "..\Headers\BSR_APP.hpp"
+#include "../Headers/BSR_APP.hpp"
 
 
 
@@ -6,13 +6,13 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 {
 	if (CoInitializeEx(nullptr, COINIT::COINIT_MULTITHREADED) != S_OK)
 	{
-		MessageBox(NULL, BSR_STRING_TYPE("An unexpected error occurred."), BSR_STRING_TYPE("Error!"), MB_OK | MB_ICONERROR);
+		MessageBox(NULL, BSR_STRING_TYPE("Couldn't initialize multithreading!"), BSR_STRING_TYPE("Error!"), MB_OK | MB_ICONERROR);
 		return BSR::MultiProcessing::_ReturnError;
 	}
 
 	if (!BSR::Time::Init())
 	{
-		MessageBox(NULL, BSR_STRING_TYPE("An unexpected error occurred."), BSR_STRING_TYPE("Error!"), MB_OK | MB_ICONERROR);
+		MessageBox(NULL, BSR_STRING_TYPE("Couldn't initialize timer!"), BSR_STRING_TYPE("Error!"), MB_OK | MB_ICONERROR);
 		CoUninitialize();
 		return BSR::MultiProcessing::_ReturnError;
 	}
@@ -23,7 +23,7 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
 	if (_ReturnValue != BSR::MultiProcessing::_ReturnNoError)
 	{
-		MessageBox(NULL, BSR_STRING_TYPE("An unexpected error occurred."), BSR_STRING_TYPE("Error!"), MB_OK | MB_ICONERROR);
+		MessageBox(NULL, BSR_STRING_TYPE("BSR returned error!"), BSR_STRING_TYPE("Error!"), MB_OK | MB_ICONERROR);
 	}
 
 	BSR::Time::Stop();

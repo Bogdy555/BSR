@@ -1,4 +1,4 @@
-#include "..\Headers\BSR_APP.hpp"
+#include "../Headers/BSR_APP.hpp"
 
 
 
@@ -413,7 +413,7 @@ void BSR_APP::RunTime::MainMenu::RenderAndSave()
 	delete[] _FrameBuffer.Stencil;
 	delete[] _FrameBuffer.Result;
 
-	ShellExecute(_ApplicationObj->GetMainWindow(), nullptr, L".\\Result.bmp", nullptr, nullptr, SW_SHOW);
+	ShellExecuteW(_ApplicationObj->GetMainWindow(), nullptr, L".\\Result.bmp", nullptr, nullptr, SW_SHOW);
 }
 
 void BSR_APP::RunTime::MainMenu::Render()

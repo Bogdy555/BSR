@@ -1,4 +1,4 @@
-#include "..\Headers\BSR.hpp"
+#include "../Headers/BSR.hpp"
 
 
 
@@ -240,7 +240,7 @@ void BSR::Window::WndThreadFunc(bool* _Done, bool* _Fail, Window* _Wnd, const Wi
 
 	LastWnd = _Wnd;
 
-	_Wnd->Handle = CreateWindowEx(_Descriptor->dwExStyle, _Descriptor->lpClassName, _Descriptor->lpWindowName, _Descriptor->dwStyle, _Descriptor->X, _Descriptor->Y, _Descriptor->nWidth, _Descriptor->nHeight, _Descriptor->HandleParent, _Descriptor->hMenu, _Descriptor->hInstance, _Descriptor->lpParam);
+	_Wnd->Handle = CreateWindowExW(_Descriptor->dwExStyle, _Descriptor->lpClassName, _Descriptor->lpWindowName, _Descriptor->dwStyle, _Descriptor->X, _Descriptor->Y, _Descriptor->nWidth, _Descriptor->nHeight, _Descriptor->HandleParent, _Descriptor->hMenu, _Descriptor->hInstance, _Descriptor->lpParam);
 
 	LastWnd = nullptr;
 

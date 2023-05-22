@@ -1,4 +1,4 @@
-#include "..\Headers\BSR_APP.hpp"
+#include "../Headers/BSR_APP.hpp"
 
 
 
@@ -73,7 +73,7 @@ void BSR_APP::RunTime::Application::UpdateFullScreen()
 
 		_MonitorInfo.cbSize = sizeof(MONITORINFOEX);
 
-		GetMonitorInfo(_hMonitor, &_MonitorInfo);
+		GetMonitorInfo(_hMonitor, (LPMONITORINFO)&_MonitorInfo);
 
 		SetWindowLongPtr(MainWindow, GWL_STYLE, WS_POPUP);
 
@@ -129,7 +129,7 @@ bool BSR_APP::RunTime::Application::InitInstance()
 
 	if (_InstanceCount != 1)
 	{
-		HWND _hWnd = FindWindow(L"BSR_APP_MainWindow", L"BSR_APP");
+		HWND _hWnd = FindWindowW(L"BSR_APP_MainWindow", L"BSR_APP");
 
 		if (_hWnd)
 		{
@@ -144,7 +144,7 @@ bool BSR_APP::RunTime::Application::InitInstance()
 
 bool BSR_APP::RunTime::Application::InitMainWindow()
 {
-	WNDCLASSEX _WndClass = { 0 };
+	WNDCLASSEXW _WndClass = { 0 };
 
 	_WndClass.cbSize = sizeof(WNDCLASSEX);
 	_WndClass.style = CS_OWNDC | CS_VREDRAW | CS_HREDRAW;
@@ -159,7 +159,7 @@ bool BSR_APP::RunTime::Application::InitMainWindow()
 	_WndClass.lpszClassName = L"BSR_APP_MainWindow";
 	_WndClass.hIconSm = LoadIcon(GetInstanceHandle(), MAKEINTRESOURCE(BSR_APP_IDI_MAIN_ICON));
 
-	if (!RegisterClassEx(&_WndClass))
+	if (!RegisterClassExW(&_WndClass))
 	{
 		return false;
 	}
@@ -179,7 +179,7 @@ bool BSR_APP::RunTime::Application::InitMainWindow()
 	if (!MainWindowData.Image.Data)
 	{
 		MainWindowData = WindowData();
-		UnregisterClass(_WndClass.lpszClassName, _WndClass.hInstance);
+		UnregisterClassW(_WndClass.lpszClassName, _WndClass.hInstance);
 		return false;
 	}
 
@@ -189,7 +189,7 @@ bool BSR_APP::RunTime::Application::InitMainWindow()
 	{
 		delete[] MainWindowData.Image.Data;
 		MainWindowData = WindowData();
-		UnregisterClass(_WndClass.lpszClassName, _WndClass.hInstance);
+		UnregisterClassW(_WndClass.lpszClassName, _WndClass.hInstance);
 		return false;
 	}
 
@@ -225,7 +225,7 @@ bool BSR_APP::RunTime::Application::InitMainWindow()
 		delete[] MainWindowData.Depth;
 		delete[] MainWindowData.Image.Data;
 		MainWindowData = WindowData();
-		UnregisterClass(_WndClass.lpszClassName, _WndClass.hInstance);
+		UnregisterClassW(_WndClass.lpszClassName, _WndClass.hInstance);
 		return false;
 	}
 
@@ -245,7 +245,7 @@ void BSR_APP::RunTime::Application::CleanUpMainWindow()
 	delete[] MainWindowData.Depth;
 	delete[] MainWindowData.Image.Data;
 	MainWindowData = WindowData();
-	UnregisterClass(L"BSR_APP_MainWindow", GetInstanceHandle());
+	UnregisterClassW(L"BSR_APP_MainWindow", GetInstanceHandle());
 }
 
 bool BSR_APP::RunTime::Application::LoadModel(const wchar_t* _Path, const wchar_t* _AssetName)
