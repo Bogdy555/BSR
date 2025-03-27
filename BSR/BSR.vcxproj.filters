@@ -21,6 +21,11 @@
     <None Include="Cmd Batches\BSR_Clean.bat">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="Cmd Batches\BSR_Build_Debug_x64.sh" />
+    <None Include="Cmd Batches\BSR_Build_Debug_x86.sh" />
+    <None Include="Cmd Batches\BSR_Build_Release_x64.sh" />
+    <None Include="Cmd Batches\BSR_Build_Release_x86.sh" />
+    <None Include="Cmd Batches\BSR_Clean.sh" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\BSR.hpp">
