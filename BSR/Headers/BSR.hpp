@@ -8,29 +8,15 @@
 
 
 
-#include "Dependencies.hpp"
+#include "BSR_Dependencies.hpp"
 
-#include "Resources.hpp"
+#include "BSR_Math.hpp"
 
-#include "Time.hpp"
+#include "BSR_Image.hpp"
 
-#include "String.hpp"
+#include "BSR_Rasterizer.hpp"
 
-#include "Math.hpp"
-
-#include "AssetManager.hpp"
-
-#include "Image.hpp"
-
-#include "Window.hpp"
-
-#include "Rasterizer.hpp"
-
-#include "Renderer.hpp"
-
-#include "MultiProcessing.hpp"
-
-#include "RunTime.hpp"
+#include "BSR_Renderer.hpp"
 
 
 

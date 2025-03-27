@@ -15,99 +15,56 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Headers\AssetManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <None Include="Cmd Batches\BSR_Build.bat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Cmd Batches\BSR_Clean.bat">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="Headers\BSR.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Dependencies.hpp">
+    <ClInclude Include="Headers\BSR_Dependencies.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Image.hpp">
+    <ClInclude Include="Headers\BSR_Image.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Macros.hpp">
+    <ClInclude Include="Headers\BSR_Math.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Math.hpp">
+    <ClInclude Include="Headers\BSR_Rasterizer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\MultiProcessing.hpp">
+    <ClInclude Include="Headers\BSR_Renderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Rasterizer.hpp">
+    <ClInclude Include="Headers\BSR_Vector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\RunTime.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\String.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\Templates.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\Time.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\Vector.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\Window.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\WinTargetVer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\Resources.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\Renderer.hpp">
+    <ClInclude Include="Headers\BSR_Templates.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sources\AssetManager.cpp">
+    <ClCompile Include="Sources\BSR_Image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Image.cpp">
+    <ClCompile Include="Sources\BSR_Math.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Math.cpp">
+    <ClCompile Include="Sources\BSR_Math_Matrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Math_Matrix.cpp">
+    <ClCompile Include="Sources\BSR_Math_Vector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Math_Vector.cpp">
+    <ClCompile Include="Sources\BSR_Rasterizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\MultiProcessing.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Rasterizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Rasterizer_Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RunTime.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\String.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Time.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Renderer_Instance.cpp">
+    <ClCompile Include="Sources\BSR_Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
