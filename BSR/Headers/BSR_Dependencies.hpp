@@ -16,6 +16,18 @@
 
 
 
+#ifdef __linux__
+
+#include <cstdint>
+
+#include <cmath>
+
+#include <cstring>
+
+#endif
+
+
+
 #ifdef BSR_ARDUINO
 
 #include <stdint.h>

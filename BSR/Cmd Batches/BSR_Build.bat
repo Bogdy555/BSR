@@ -13,12 +13,13 @@ pushd "%SolutionDir%"
 
 echo on
 
-call ".BSR\Cmd Batches\BSR_Clean.bat"
+if exist ".\Binaries\BSR\Release\AVR\" rmdir ".\Binaries\BSR\Release\AVR\" /s /q
+if exist ".\Objects\BSR\Release\AVR\" rmdir ".\Objects\BSR\Release\AVR\" /s /q
 
 @echo off
 
-mkdir ".\Objects\BSR\Release\AVR\"
 mkdir ".\Binaries\BSR\Release\AVR\"
+mkdir ".\Objects\BSR\Release\AVR\"
 
 echo on
 
