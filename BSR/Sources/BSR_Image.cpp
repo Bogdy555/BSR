@@ -47,7 +47,7 @@ uint8_t* BSR::Image::LoadSdr(const char* _FileData, const size_t _FileSize, size
 		return nullptr;
 	}
 
-	if ((*(uint32_t*)(_FileData + 18)) * (*(uint32_t*)(_FileData + 22)) * 4 + 14 + 40 != _FileSize)
+	if ((*(uint32_t*)(_FileData + 18)) * (*(uint32_t*)(_FileData + 22)) * 4 + 14 + 40 != _FileSize || (*(uint32_t*)(_FileData + 18)) == 0 || (*(uint32_t*)(_FileData + 22)) == 0)
 	{
 		return nullptr;
 	}

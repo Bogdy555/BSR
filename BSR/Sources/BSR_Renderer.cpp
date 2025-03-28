@@ -267,17 +267,17 @@ static const BSR::Math::Vec3f SpotLightCalculation(const BSR::Renderer::Light& _
 	return BSR::Math::Vec3f::Mix(BSR::Math::Vec3f(0.0f, 0.0f, 0.0f), _Result, _MixT);
 }
 
-static const BSR::Math::Vec3f ImageBasedLightCalculation(const BSR::Rasterizer::TextureHDR& _EnvironmentTexture, const BSR::Rasterizer::TextureHDR& _IradianceTexture, const BSR::Rasterizer::TextureSDR& _BRDFLookUpTexture, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _Reflectivity, const BSR::Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Position)
+static const BSR::Math::Vec3f ImageBasedLightCalculation(const BSR::Rasterizer::TextureHDR& _EnvironmentTexture, const BSR::Rasterizer::TextureHDR& _IrradianceTexture, const BSR::Rasterizer::TextureSDR& _BRDFLookUpTexture, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _Reflectivity, const BSR::Math::Vec3f& _Albedo, const float _Metalness, const float _Roughness, const float _AmbientOcclusion, const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Position)
 {
 	BSR::Math::Vec3f _FresnelSchlickRoughness = FresnelSchlickRoughness(_Normal, _PositionToCamera, _Reflectivity, _Roughness);
 	BSR::Math::Vec3f _kDiffuse = (BSR::Math::Vec3f(1.0f, 1.0f, 1.0f) - _FresnelSchlickRoughness) * (1.0f - _Metalness);
 
-	BSR::Math::Vec3f _Iradiance = (BSR::Math::Vec3f)(_IradianceTexture.Sample(SampleEquirectangularMap(_Normal)));
+	BSR::Math::Vec3f _Irradiance = (BSR::Math::Vec3f)(_IrradianceTexture.Sample(SampleEquirectangularMap(_Normal)));
 	BSR::Math::Vec3f _Environment = (BSR::Math::Vec3f)(_EnvironmentTexture.Sample(SampleEquirectangularMap(BSR::Math::Vec3f::Reflect(-_PositionToCamera, _Normal))));
-	_Environment = BSR::Math::Vec3f::Mix(_Environment, _Iradiance, _Roughness);
+	_Environment = BSR::Math::Vec3f::Mix(_Environment, _Irradiance, _Roughness);
 	BSR::Math::Vec2f _BRDFLookUp = (BSR::Math::Vec2f)(_BRDFLookUpTexture.Sample(BSR::Math::Vec2f(BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToCamera), 0.0f), _Roughness)));
 
-	BSR::Math::Vec3f _Diffuse = _kDiffuse * _Iradiance * _Albedo;
+	BSR::Math::Vec3f _Diffuse = _kDiffuse * _Irradiance * _Albedo;
 	BSR::Math::Vec3f _Specular = _Environment * (_FresnelSchlickRoughness * _BRDFLookUp.x + _BRDFLookUp.y);
 
 	return (_Diffuse + _Specular) * _AmbientOcclusion;
@@ -319,7 +319,7 @@ struct CompositUniforms
 	BSR::Math::Vec3f FogColor = BSR::Math::Vec3f(0.8f, 0.8f, 0.8f);
 
 	const BSR::Rasterizer::TextureHDR* Environment = nullptr;
-	const BSR::Rasterizer::TextureHDR* Iradiance = nullptr;
+	const BSR::Rasterizer::TextureHDR* Irradiance = nullptr;
 	const BSR::Rasterizer::TextureSDR* BRDFLookUp = nullptr;
 	const BSR::Vector<BSR::Renderer::Light>* Lights = nullptr;
 };
@@ -362,7 +362,7 @@ static void CompositFragmentShader(const size_t _X, const size_t _Y, const size_
 		_Result += LightCalculation((*_TrueUniforms.Lights)[_Index], _PositionToCamera, _Reflectivity, _TrueFrameBuffer.Albedo[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.Metalness[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.Roughness[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.AmbientOcclusion[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.NormalMap[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.Position[_X + _Y * _TrueFrameBuffer.Width]);
 	}
 
-	_Result += ImageBasedLightCalculation(*_TrueUniforms.Environment, *_TrueUniforms.Iradiance, *_TrueUniforms.BRDFLookUp, _PositionToCamera, _Reflectivity, _TrueFrameBuffer.Albedo[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.Metalness[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.Roughness[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.AmbientOcclusion[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.NormalMap[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.Position[_X + _Y * _TrueFrameBuffer.Width]);
+	_Result += ImageBasedLightCalculation(*_TrueUniforms.Environment, *_TrueUniforms.Irradiance, *_TrueUniforms.BRDFLookUp, _PositionToCamera, _Reflectivity, _TrueFrameBuffer.Albedo[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.Metalness[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.Roughness[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.AmbientOcclusion[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.NormalMap[_X + _Y * _TrueFrameBuffer.Width], _TrueFrameBuffer.Position[_X + _Y * _TrueFrameBuffer.Width]);
 
 	switch (_TrueUniforms.FogType)
 	{
@@ -675,12 +675,12 @@ const bool BSR::Renderer::PBRFrameBuffer::Valid() const
 
 
 
-BSR::Renderer::PBRContext::PBRContext() : TargetFrameBuffer(), TargetCamera(), TargetExposure(1.0f), TargetFogType(_NoFog), TargetFogStart(0.0f), TargetFogEnd(0.0f), TargetFogColor(Math::Vec3f(0.8f, 0.8f, 0.8f)), TargetEnvironment(nullptr), TargetIradiance(nullptr), TargetBRDFLookUp(nullptr), TargetMeshes(), TargetMaterials(), TargetTransforms(), TargetLights()
+BSR::Renderer::PBRContext::PBRContext() : TargetFrameBuffer(), TargetCamera(), TargetExposure(1.0f), TargetFogType(_NoFog), TargetFogStart(0.0f), TargetFogEnd(0.0f), TargetFogColor(Math::Vec3f(0.8f, 0.8f, 0.8f)), TargetEnvironment(nullptr), TargetIrradiance(nullptr), TargetBRDFLookUp(nullptr), TargetMeshes(), TargetMaterials(), TargetTransforms(), TargetLights()
 {
 
 }
 
-BSR::Renderer::PBRContext::PBRContext(PBRContext&& _Other) noexcept : TargetFrameBuffer(_Other.TargetFrameBuffer), TargetCamera(_Other.TargetCamera), TargetExposure(_Other.TargetExposure), TargetFogType(_Other.TargetFogType), TargetFogStart(_Other.TargetFogStart), TargetFogEnd(_Other.TargetFogEnd), TargetFogColor((Math::Vec3f&&)(_Other.TargetFogColor)), TargetEnvironment(_Other.TargetEnvironment), TargetIradiance(_Other.TargetIradiance), TargetBRDFLookUp(_Other.TargetBRDFLookUp), TargetMeshes((Vector<const Mesh*>&&)(_Other.TargetMeshes)), TargetMaterials((Vector<PBRMaterial>&&)(_Other.TargetMaterials)), TargetTransforms((Vector<Transform>&&)(_Other.TargetTransforms)), TargetLights((Vector<Light>&&)(_Other.TargetLights))
+BSR::Renderer::PBRContext::PBRContext(PBRContext&& _Other) noexcept : TargetFrameBuffer(_Other.TargetFrameBuffer), TargetCamera(_Other.TargetCamera), TargetExposure(_Other.TargetExposure), TargetFogType(_Other.TargetFogType), TargetFogStart(_Other.TargetFogStart), TargetFogEnd(_Other.TargetFogEnd), TargetFogColor((Math::Vec3f&&)(_Other.TargetFogColor)), TargetEnvironment(_Other.TargetEnvironment), TargetIrradiance(_Other.TargetIrradiance), TargetBRDFLookUp(_Other.TargetBRDFLookUp), TargetMeshes((Vector<const Mesh*>&&)(_Other.TargetMeshes)), TargetMaterials((Vector<PBRMaterial>&&)(_Other.TargetMaterials)), TargetTransforms((Vector<Transform>&&)(_Other.TargetTransforms)), TargetLights((Vector<Light>&&)(_Other.TargetLights))
 {
 	_Other.TargetFrameBuffer = PBRFrameBuffer();
 	_Other.TargetCamera = Camera();
@@ -689,7 +689,7 @@ BSR::Renderer::PBRContext::PBRContext(PBRContext&& _Other) noexcept : TargetFram
 	_Other.TargetFogStart = 0.0f;
 	_Other.TargetFogEnd = 0.0f;
 	_Other.TargetEnvironment = nullptr;
-	_Other.TargetIradiance = nullptr;
+	_Other.TargetIrradiance = nullptr;
 	_Other.TargetBRDFLookUp = nullptr;
 }
 
@@ -698,7 +698,7 @@ BSR::Renderer::PBRContext::~PBRContext()
 
 }
 
-void BSR::Renderer::PBRContext::StartScene(PBRFrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera, const float _TargetExposure, const uint8_t _TargetFogType, const float _TargetFogStart, const float _TargetFogEnd, const Math::Vec3f& _TargetFogColor, const Rasterizer::TextureHDR& _TargetEnvironment, const Rasterizer::TextureHDR& _TargetIradiance, const Rasterizer::TextureSDR& _TargetBRDFLookUp)
+void BSR::Renderer::PBRContext::StartScene(PBRFrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera, const float _TargetExposure, const uint8_t _TargetFogType, const float _TargetFogStart, const float _TargetFogEnd, const Math::Vec3f& _TargetFogColor, const Rasterizer::TextureHDR& _TargetEnvironment, const Rasterizer::TextureHDR& _TargetIrradiance, const Rasterizer::TextureSDR& _TargetBRDFLookUp)
 {
 	TargetFrameBuffer = PBRFrameBuffer();
 	TargetCamera = Camera();
@@ -708,7 +708,7 @@ void BSR::Renderer::PBRContext::StartScene(PBRFrameBuffer& _TargetFrameBuffer, c
 	TargetFogEnd = 0.0f;
 	TargetFogColor = Math::Vec3f(8.0f, 8.0f, 8.0f);
 	TargetEnvironment = nullptr;
-	TargetIradiance = nullptr;
+	TargetIrradiance = nullptr;
 	TargetBRDFLookUp = nullptr;
 	TargetMeshes.Clear();
 	TargetMaterials.Clear();
@@ -728,7 +728,7 @@ void BSR::Renderer::PBRContext::StartScene(PBRFrameBuffer& _TargetFrameBuffer, c
 	TargetFogEnd = _TargetFogEnd;
 	TargetFogColor = _TargetFogColor;
 	TargetEnvironment = &_TargetEnvironment;
-	TargetIradiance = &_TargetIradiance;
+	TargetIrradiance = &_TargetIrradiance;
 	TargetBRDFLookUp = &_TargetBRDFLookUp;
 }
 
@@ -843,7 +843,7 @@ void BSR::Renderer::PBRContext::FlushScene()
 		_Uniforms.FogEnd = TargetFogEnd;
 		_Uniforms.FogColor = TargetFogColor;
 		_Uniforms.Environment = TargetEnvironment;
-		_Uniforms.Iradiance = TargetIradiance;
+		_Uniforms.Irradiance = TargetIrradiance;
 		_Uniforms.BRDFLookUp = TargetBRDFLookUp;
 		_Uniforms.Lights = &TargetLights;
 
@@ -895,7 +895,7 @@ void BSR::Renderer::PBRContext::FlushScene()
 	TargetFogEnd = 0.0f;
 	TargetFogColor = Math::Vec3f(8.0f, 8.0f, 8.0f);
 	TargetEnvironment = nullptr;
-	TargetIradiance = nullptr;
+	TargetIrradiance = nullptr;
 	TargetBRDFLookUp = nullptr;
 	TargetMeshes.Clear();
 	TargetMaterials.Clear();
@@ -925,7 +925,7 @@ BSR::Renderer::PBRContext& BSR::Renderer::PBRContext::operator= (PBRContext&& _O
 	TargetFogEnd = _Other.TargetFogEnd;
 	TargetFogColor = (Math::Vec3f&&)(_Other.TargetFogColor);
 	TargetEnvironment = _Other.TargetEnvironment;
-	TargetIradiance = _Other.TargetIradiance;
+	TargetIrradiance = _Other.TargetIrradiance;
 	TargetBRDFLookUp = _Other.TargetBRDFLookUp;
 	TargetMeshes = (Vector<const Mesh*>&&)(_Other.TargetMeshes);
 	TargetMaterials = (Vector<PBRMaterial>&&)(_Other.TargetMaterials);
@@ -939,7 +939,7 @@ BSR::Renderer::PBRContext& BSR::Renderer::PBRContext::operator= (PBRContext&& _O
 	_Other.TargetFogStart = 0.0f;
 	_Other.TargetFogEnd = 0.0f;
 	_Other.TargetEnvironment = nullptr;
-	_Other.TargetIradiance = nullptr;
+	_Other.TargetIrradiance = nullptr;
 	_Other.TargetBRDFLookUp = nullptr;
 
 	return *this;

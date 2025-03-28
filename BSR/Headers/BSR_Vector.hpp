@@ -21,8 +21,15 @@ namespace BSR
 
 		}
 
-		Vector(const Vector& _Other) : Capacity(_Other.Capacity), Size(_Other.Size), Data(new T[_Other.Capacity])
+		Vector(const Vector& _Other) : Capacity(_Other.Capacity), Size(_Other.Size), Data(nullptr)
 		{
+			if (!_Other.Capacity)
+			{
+				return;
+			}
+
+			Data = new T[_Other.Capacity];
+
 			for (size_t _Index = 0; _Index < Size; _Index++)
 			{
 				Data[_Index] = _Other.Data[_Index];
@@ -189,6 +196,13 @@ namespace BSR
 
 			Capacity = _Other.Capacity;
 			Size = _Other.Size;
+			Data = nullptr;
+
+			if (!_Other.Capacity)
+			{
+				return;
+			}
+
 			Data = new T[_Other.Capacity];
 
 			for (size_t _Index = 0; _Index < Size; _Index++)

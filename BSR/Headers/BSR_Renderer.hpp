@@ -188,7 +188,7 @@ namespace BSR
 			PBRContext(PBRContext&& _Other) noexcept;
 			~PBRContext();
 
-			void StartScene(PBRFrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera, const float _TargetExposure, const uint8_t _TargetFogType, const float _TargetFogStart, const float _TargetFogEnd, const Math::Vec3f& _TargetFogColor, const Rasterizer::TextureHDR& _TargetEnvironment, const Rasterizer::TextureHDR& _TargetIradiance, const Rasterizer::TextureSDR& _TargetBRDFLookUp);
+			void StartScene(PBRFrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera, const float _TargetExposure, const uint8_t _TargetFogType, const float _TargetFogStart, const float _TargetFogEnd, const Math::Vec3f& _TargetFogColor, const Rasterizer::TextureHDR& _TargetEnvironment, const Rasterizer::TextureHDR& _TargetIrradiance, const Rasterizer::TextureSDR& _TargetBRDFLookUp);
 			void FlushScene();
 
 			void SubmitModel(const Mesh& _TargetMesh, const PBRMaterial& _TargetMaterial, const Transform& _TargetTransform);
@@ -207,7 +207,7 @@ namespace BSR
 			float TargetFogEnd;
 			Math::Vec3f TargetFogColor;
 			const Rasterizer::TextureHDR* TargetEnvironment;
-			const Rasterizer::TextureHDR* TargetIradiance;
+			const Rasterizer::TextureHDR* TargetIrradiance;
 			const Rasterizer::TextureSDR* TargetBRDFLookUp;
 			Vector<const Mesh*> TargetMeshes;
 			Vector<PBRMaterial> TargetMaterials;
