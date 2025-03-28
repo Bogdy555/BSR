@@ -200,7 +200,7 @@ namespace BSR
 
 			if (!_Other.Capacity)
 			{
-				return;
+				return *this;
 			}
 
 			Data = new T[_Other.Capacity];
