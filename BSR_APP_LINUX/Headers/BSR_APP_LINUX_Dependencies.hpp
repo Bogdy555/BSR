@@ -1,6 +1,6 @@
-#ifndef BSR_APP_WIN_Dependencies_hpp
+#ifndef BSR_APP_LINUX_Dependencies_hpp
 
-#define BSR_APP_WIN_Dependencies_hpp
+#define BSR_APP_LINUX_Dependencies_hpp
 
 
 
@@ -14,10 +14,6 @@
 
 #include <BSR.hpp>
 
-#include "..\Headers\BSR_APP_WIN_WinTargetVer.hpp"
-
-#include <Windows.h>
-
 #include <fstream>
 
 
@@ -26,7 +22,7 @@
 
 
 
-namespace BSR_APP_WIN
+namespace BSR_APP_LINUX
 {
 
 

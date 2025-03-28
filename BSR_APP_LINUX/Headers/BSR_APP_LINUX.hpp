@@ -1,6 +1,6 @@
-#ifndef BSR_APP_WIN_hpp
+#ifndef BSR_APP_LINUX_hpp
 
-#define BSR_APP_WIN_hpp
+#define BSR_APP_LINUX_hpp
 
 
 
@@ -8,9 +8,7 @@
 
 
 
-#include "BSR_APP_WIN_Dependencies.hpp"
-
-#include "BSR_APP_WIN_Resources.hpp"
+#include "BSR_APP_LINUX_Dependencies.hpp"
 
 
 

@@ -230,7 +230,7 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
 	std::ofstream _FileOut;
 
-	_FileOut.open("Test.bmp", std::ios::binary);
+	_FileOut.open(".\\Test.bmp", std::ios::binary);
 
 	_FileOut.write(_FileData, _FileSize);
 
