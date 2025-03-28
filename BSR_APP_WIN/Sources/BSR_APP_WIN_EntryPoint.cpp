@@ -15,9 +15,9 @@ char* LoadFile(size_t& _FileSize, const char* _FilePath)
 		return nullptr;
 	}
 
-	_FileIn.seekg(std::ios::end);
+	_FileIn.seekg(0, std::ios::end);
 	_FileSize = _FileIn.tellg();
-	_FileIn.seekg(std::ios::beg);
+	_FileIn.seekg(0, std::ios::beg);
 
 	char* _Result = new char[_FileSize];
 
@@ -43,34 +43,40 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
 	BSR::Rasterizer::TextureSDR _Albedo;
 	_Albedo.TextureChain.EmplaceBack(BSR::Image::SDR());
-	_FileData = LoadFile(_FileSize, "D:\\Saves\\Resources\\PBR\\Iron\\Albedo.bmp");
+	_FileData = LoadFile(_FileSize, ".\\Materials\\Iron\\Albedo.bmp");
 	_Albedo.TextureChain[0].Data = BSR::Image::LoadSdr(_FileData, _FileSize, _Albedo.TextureChain[0].Width, _Albedo.TextureChain[0].Height);
 	delete[] _FileData;
+	_Albedo.ChannelsCount = 4;
 	BSR::Rasterizer::TextureSDR _Metalness;
 	_Metalness.TextureChain.EmplaceBack(BSR::Image::SDR());
-	_FileData = LoadFile(_FileSize, "D:\\Saves\\Resources\\PBR\\Iron\\Metalness.bmp");
+	_FileData = LoadFile(_FileSize, ".\\Materials\\Iron\\Metalness.bmp");
 	_Metalness.TextureChain[0].Data = BSR::Image::LoadSdr(_FileData, _FileSize, _Metalness.TextureChain[0].Width, _Metalness.TextureChain[0].Height);
 	delete[] _FileData;
+	_Metalness.ChannelsCount = 4;
 	BSR::Rasterizer::TextureSDR _Roughness;
 	_Roughness.TextureChain.EmplaceBack(BSR::Image::SDR());
-	_FileData = LoadFile(_FileSize, "D:\\Saves\\Resources\\PBR\\Iron\\Roughness.bmp");
+	_FileData = LoadFile(_FileSize, ".\\Materials\\Iron\\Roughness.bmp");
 	_Roughness.TextureChain[0].Data = BSR::Image::LoadSdr(_FileData, _FileSize, _Roughness.TextureChain[0].Width, _Roughness.TextureChain[0].Height);
 	delete[] _FileData;
+	_Roughness.ChannelsCount = 4;
 	BSR::Rasterizer::TextureSDR _AmbientOcclusion;
 	_AmbientOcclusion.TextureChain.EmplaceBack(BSR::Image::SDR());
-	_FileData = LoadFile(_FileSize, "C:\\Users\\Bogdan\\source\\repos\\White.bmp");
+	_FileData = LoadFile(_FileSize, ".\\Intern\\Textures\\White.bmp");
 	_AmbientOcclusion.TextureChain[0].Data = BSR::Image::LoadSdr(_FileData, _FileSize, _AmbientOcclusion.TextureChain[0].Width, _AmbientOcclusion.TextureChain[0].Height);
 	delete[] _FileData;
+	_AmbientOcclusion.ChannelsCount = 4;
 	BSR::Rasterizer::TextureSDR _NormalMap;
 	_NormalMap.TextureChain.EmplaceBack(BSR::Image::SDR());
-	_FileData = LoadFile(_FileSize, "D:\\Saves\\Resources\\PBR\\Iron\\Normal.bmp");
+	_FileData = LoadFile(_FileSize, ".\\Materials\\Iron\\Normal.bmp");
 	_NormalMap.TextureChain[0].Data = BSR::Image::LoadSdr(_FileData, _FileSize, _NormalMap.TextureChain[0].Width, _NormalMap.TextureChain[0].Height);
 	delete[] _FileData;
+	_NormalMap.ChannelsCount = 4;
 	BSR::Rasterizer::TextureSDR _Emission;
 	_Emission.TextureChain.EmplaceBack(BSR::Image::SDR());
-	_FileData = LoadFile(_FileSize, "C:\\Users\\Bogdan\\source\\repos\\Black.bmp");
+	_FileData = LoadFile(_FileSize, ".\\Intern\\Textures\\Black.bmp");
 	_Emission.TextureChain[0].Data = BSR::Image::LoadSdr(_FileData, _FileSize, _Emission.TextureChain[0].Width, _Emission.TextureChain[0].Height);
 	delete[] _FileData;
+	_Emission.ChannelsCount = 4;
 	BSR::Rasterizer::TextureHDR _Environment;
 	_Environment.TextureChain.EmplaceBack(BSR::Image::HDR());
 	_Environment.TextureChain[0].Width = 1;
@@ -79,6 +85,7 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 	_Environment.TextureChain[0].Data[0] = 1.0f;
 	_Environment.TextureChain[0].Data[1] = 0.85f;
 	_Environment.TextureChain[0].Data[2] = 0.6f;
+	_Environment.ChannelsCount = 3;
 	BSR::Rasterizer::TextureHDR _Irradiance;
 	_Irradiance.TextureChain.EmplaceBack(BSR::Image::HDR());
 	_Irradiance.TextureChain[0].Width = 1;
@@ -87,11 +94,13 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 	_Irradiance.TextureChain[0].Data[0] = 1.0f;
 	_Irradiance.TextureChain[0].Data[1] = 0.85f;
 	_Irradiance.TextureChain[0].Data[2] = 0.6f;
+	_Irradiance.ChannelsCount = 3;
 	BSR::Rasterizer::TextureSDR _BRDFLookUp;
 	_BRDFLookUp.TextureChain.EmplaceBack(BSR::Image::SDR());
-	_FileData = LoadFile(_FileSize, "C:\\Users\\Bogdan\\source\\repos\\BRDF.bmp");
+	_FileData = LoadFile(_FileSize, ".\\Intern\\Textures\\BRDF.bmp");
 	_BRDFLookUp.TextureChain[0].Data = BSR::Image::LoadSdr(_FileData, _FileSize, _BRDFLookUp.TextureChain[0].Width, _BRDFLookUp.TextureChain[0].Height);
 	delete[] _FileData;
+	_BRDFLookUp.ChannelsCount = 4;
 
 	BSR::Renderer::Model _Model;
 
@@ -113,9 +122,9 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
 	BSR::Renderer::Transform _Transform;
 
-	_Transform.Position = BSR::Math::Vec3f(0.0f, 0.0f, -10.0f);
-	_Transform.AngleFlat = 0.0f;
-	_Transform.AngleVertical = 0.0f;
+	_Transform.Position = BSR::Math::Vec3f(0.0f, 0.0f, -5.0f);
+	_Transform.AngleFlat = 45.0f * BSR::Math::DegreesToRadians;
+	_Transform.AngleVertical = 45.0f * BSR::Math::DegreesToRadians;
 	_Transform.AngleTilt = 0.0f;
 	_Transform.Scale = BSR::Math::Vec3f(1.0f, 1.0f, 1.0f) * 1.0f;
 	_Transform.ShearXByY = 0.0f;

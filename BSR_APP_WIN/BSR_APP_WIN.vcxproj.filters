@@ -32,6 +32,27 @@
     <Image Include="Resources\Icons\BSR_APP_WIN_MainIcon.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Files\Intern\Textures\Black.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Intern\Textures\BRDF.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Intern\Textures\White.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Iron\Albedo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Iron\Metalness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Iron\Normal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Files\Materials\Iron\Roughness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="Resources\Manifests\BSR_APP_WIN_MainManifest.manifest" />

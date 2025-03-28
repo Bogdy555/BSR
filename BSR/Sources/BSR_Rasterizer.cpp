@@ -8,7 +8,7 @@ static const bool OutOfBounds(const BSR::Math::Vec2f& _TextureCoords, const floa
 	{
 	case BSR::Rasterizer::_WrapBlack:
 	{
-		if (_TextureCoords.x < 0.0f || _TextureCoords.x >= 1.0f || _TextureCoords.y < 0.0f || _TextureCoords.y >= 1.0f)
+		if (_TextureCoords.x < 0.0f || _TextureCoords.x > 1.0f || _TextureCoords.y < 0.0f || _TextureCoords.y > 1.0f)
 		{
 			return true;
 		}

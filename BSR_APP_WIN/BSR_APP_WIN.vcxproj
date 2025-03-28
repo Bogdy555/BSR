@@ -213,6 +213,13 @@
     <ClInclude Include="Headers\BSR_APP_WIN_WinTargetVer.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Files\Intern\Textures\Black.bmp" />
+    <Image Include="Files\Intern\Textures\BRDF.bmp" />
+    <Image Include="Files\Intern\Textures\White.bmp" />
+    <Image Include="Files\Materials\Iron\Albedo.bmp" />
+    <Image Include="Files\Materials\Iron\Metalness.bmp" />
+    <Image Include="Files\Materials\Iron\Normal.bmp" />
+    <Image Include="Files\Materials\Iron\Roughness.bmp" />
     <Image Include="Resources\Icons\BSR_APP_WIN_MainIcon.ico" />
   </ItemGroup>
   <ItemGroup>

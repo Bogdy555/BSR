@@ -47,7 +47,7 @@ uint8_t* BSR::Image::LoadSdr(const char* _FileData, const size_t _FileSize, size
 		return nullptr;
 	}
 
-	if ((*(uint32_t*)(_FileData + 18)) * (*(uint32_t*)(_FileData + 22)) * 4 + 14 + 40 != _FileSize || (*(uint32_t*)(_FileData + 18)) == 0 || (*(uint32_t*)(_FileData + 22)) == 0)
+	if ((*(uint32_t*)(_FileData + 18)) * (*(uint32_t*)(_FileData + 22)) * 3 + 14 + 40 != _FileSize || (*(uint32_t*)(_FileData + 18)) == 0 || (*(uint32_t*)(_FileData + 22)) == 0)
 	{
 		return nullptr;
 	}
@@ -57,7 +57,7 @@ uint8_t* BSR::Image::LoadSdr(const char* _FileData, const size_t _FileSize, size
 		return nullptr;
 	}
 
-	if (*(uint16_t*)(_FileData + 28) != 32)
+	if (*(uint16_t*)(_FileData + 28) != 24)
 	{
 		return nullptr;
 	}
@@ -67,7 +67,7 @@ uint8_t* BSR::Image::LoadSdr(const char* _FileData, const size_t _FileSize, size
 		return nullptr;
 	}
 
-	if (*(uint32_t*)(_FileData + 34) != 0 && *(uint32_t*)(_FileData + 34) != _FileSize - 14 - 40)
+	if (*(uint32_t*)(_FileData + 34) != 0)
 	{
 		return nullptr;
 	}
@@ -96,9 +96,9 @@ uint8_t* BSR::Image::LoadSdr(const char* _FileData, const size_t _FileSize, size
 	{
 		for (size_t _X = 0; _X < _Width; _X++)
 		{
-			_Data[(_X + _Y * _Width) * 4 + 0] = (_FileData + 14 + 40)[(_X + _Y * _Width) * 4 + 2];
-			_Data[(_X + _Y * _Width) * 4 + 1] = (_FileData + 14 + 40)[(_X + _Y * _Width) * 4 + 1];
-			_Data[(_X + _Y * _Width) * 4 + 2] = (_FileData + 14 + 40)[(_X + _Y * _Width) * 4 + 0];
+			_Data[(_X + _Y * _Width) * 4 + 0] = (_FileData + 14 + 40)[(_X + _Y * _Width) * 3 + 2];
+			_Data[(_X + _Y * _Width) * 4 + 1] = (_FileData + 14 + 40)[(_X + _Y * _Width) * 3 + 1];
+			_Data[(_X + _Y * _Width) * 4 + 2] = (_FileData + 14 + 40)[(_X + _Y * _Width) * 3 + 0];
 			_Data[(_X + _Y * _Width) * 4 + 3] = 255;
 		}
 	}
@@ -128,18 +128,18 @@ char* BSR::Image::SaveSdr(size_t& _FileSize, const SDR& _Image)
 		return nullptr;
 	}
 
-	char* _Result = new char[14 + 40 + _Image.Width * _Image.Height * 4];
+	char* _Result = new char[14 + 40 + _Image.Width * _Image.Height * 3];
 
 	if (!_Result)
 	{
 		return nullptr;
 	}
 
-	_FileSize = 14 + 40 + _Image.Width * _Image.Height * 4;
+	_FileSize = 14 + 40 + _Image.Width * _Image.Height * 3;
 
 	*(char*)(_Result + 0) = 'B';
 	*(char*)(_Result + 1) = 'M';
-	*(uint32_t*)(_Result + 2) = 14 + 40 + (uint32_t)(_Image.Width) * (uint32_t)(_Image.Height) * 4;
+	*(uint32_t*)(_Result + 2) = 14 + 40 + (uint32_t)(_Image.Width) * (uint32_t)(_Image.Height) * 3;
 	*(uint16_t*)(_Result + 6) = 0;
 	*(uint16_t*)(_Result + 8) = 0;
 	*(uint32_t*)(_Result + 10) = 14 + 40;
@@ -148,7 +148,7 @@ char* BSR::Image::SaveSdr(size_t& _FileSize, const SDR& _Image)
 	*(uint32_t*)(_Result + 18) = (uint32_t)(_Image.Width);
 	*(uint32_t*)(_Result + 22) = (uint32_t)(_Image.Height);
 	*(uint16_t*)(_Result + 26) = 1;
-	*(uint16_t*)(_Result + 28) = 32;
+	*(uint16_t*)(_Result + 28) = 24;
 	*(uint32_t*)(_Result + 30) = 0;
 	*(uint32_t*)(_Result + 34) = 0;
 	*(uint32_t*)(_Result + 38) = 7200;
@@ -160,10 +160,9 @@ char* BSR::Image::SaveSdr(size_t& _FileSize, const SDR& _Image)
 	{
 		for (size_t _X = 0; _X < _Image.Width; _X++)
 		{
-			(_Result + 14 + 40)[(_X + _Y * _Image.Width) * 4 + 0] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 2];
-			(_Result + 14 + 40)[(_X + _Y * _Image.Width) * 4 + 1] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 1];
-			(_Result + 14 + 40)[(_X + _Y * _Image.Width) * 4 + 2] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 0];
-			(_Result + 14 + 40)[(_X + _Y * _Image.Width) * 4 + 3] = 0;
+			(_Result + 14 + 40)[(_X + _Y * _Image.Width) * 3 + 0] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 2];
+			(_Result + 14 + 40)[(_X + _Y * _Image.Width) * 3 + 1] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 1];
+			(_Result + 14 + 40)[(_X + _Y * _Image.Width) * 3 + 2] = _Image.Data[(_X + _Y * _Image.Width) * 4 + 0];
 		}
 	}
 
