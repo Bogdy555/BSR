@@ -2,8 +2,8 @@
 
 if [ -z "$SolutionDir" ]; then source "../../Solution Items/Cmd Batches/BSR_Path.sh"; fi
 
-export CPP_FLAGS="-c -std=gnu++17 -I\"./BSR/Headers/\""
-export LINK_FLAGS="-L\"./Binaries/BSR/Release/x64/\""
+export CPP_FLAGS="-c -std=gnu++17 \"-I./BSR/Headers/\""
+export LINK_FLAGS="\"-L./Binaries/BSR/Release/x64/\""
 
 pushd "$SolutionDir"
 
