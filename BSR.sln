@@ -22,6 +22,49 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BSR_APP_WIN", "BSR_APP_WIN\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BSR", "BSR\BSR.vcxproj", "{14DA9CCB-B830-44D1-9DD3-AB2E1E65EF64}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BSR_APP_LINUX", "BSR_APP_LINUX", "{370EA4FD-B5E9-4F1E-9FA3-8AF2337A4255}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cmd Batches", "Cmd Batches", "{6A7F3169-E318-439A-BD6C-9C5DD97E7C59}"
+	ProjectSection(SolutionItems) = preProject
+		BSR_APP_LINUX\Cmd Batches\BSR_APP_LINUX_Build_Debug_x64.sh = BSR_APP_LINUX\Cmd Batches\BSR_APP_LINUX_Build_Debug_x64.sh
+		BSR_APP_LINUX\Cmd Batches\BSR_APP_LINUX_Build_Debug_x86.sh = BSR_APP_LINUX\Cmd Batches\BSR_APP_LINUX_Build_Debug_x86.sh
+		BSR_APP_LINUX\Cmd Batches\BSR_APP_LINUX_Build_Release_x64.sh = BSR_APP_LINUX\Cmd Batches\BSR_APP_LINUX_Build_Release_x64.sh
+		BSR_APP_LINUX\Cmd Batches\BSR_APP_LINUX_Build_Release_x86.sh = BSR_APP_LINUX\Cmd Batches\BSR_APP_LINUX_Build_Release_x86.sh
+		BSR_APP_LINUX\Cmd Batches\BSR_APP_LINUX_Clean.sh = BSR_APP_LINUX\Cmd Batches\BSR_APP_LINUX_Clean.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{1B4A326F-C3B3-45E8-A90A-2DD30A280C6B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Headers", "Headers", "{68769FE0-4D6D-4A84-8BB6-CF6F2E18EDF9}"
+	ProjectSection(SolutionItems) = preProject
+		BSR_APP_LINUX\Headers\BSR_APP_LINUX.hpp = BSR_APP_LINUX\Headers\BSR_APP_LINUX.hpp
+		BSR_APP_LINUX\Headers\BSR_APP_LINUX_Dependencies.hpp = BSR_APP_LINUX\Headers\BSR_APP_LINUX_Dependencies.hpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sources", "Sources", "{1C2089D5-5FD6-4E6B-8C6F-ED7D87F1D830}"
+	ProjectSection(SolutionItems) = preProject
+		BSR_APP_LINUX\Sources\BSR_APP_LINUX_EntryPoint.cpp = BSR_APP_LINUX\Sources\BSR_APP_LINUX_EntryPoint.cpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Materials", "Materials", "{783B4B1D-8BA2-4D7C-9B8E-F88B70575957}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Intern", "Intern", "{ADDE076B-BA46-4F95-B3F7-6B43DA316B08}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Textures", "Textures", "{03F5ECDF-A49C-4692-B608-D47C8327C69D}"
+	ProjectSection(SolutionItems) = preProject
+		BSR_APP_LINUX\Files\Intern\Textures\Black.bmp = BSR_APP_LINUX\Files\Intern\Textures\Black.bmp
+		BSR_APP_LINUX\Files\Intern\Textures\BRDF.bmp = BSR_APP_LINUX\Files\Intern\Textures\BRDF.bmp
+		BSR_APP_LINUX\Files\Intern\Textures\White.bmp = BSR_APP_LINUX\Files\Intern\Textures\White.bmp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Iron", "Iron", "{621975E6-E3AE-4D2B-8EDC-9DA656CE2CC5}"
+	ProjectSection(SolutionItems) = preProject
+		BSR_APP_LINUX\Files\Materials\Iron\Albedo.bmp = BSR_APP_LINUX\Files\Materials\Iron\Albedo.bmp
+		BSR_APP_LINUX\Files\Materials\Iron\Metalness.bmp = BSR_APP_LINUX\Files\Materials\Iron\Metalness.bmp
+		BSR_APP_LINUX\Files\Materials\Iron\Normal.bmp = BSR_APP_LINUX\Files\Materials\Iron\Normal.bmp
+		BSR_APP_LINUX\Files\Materials\Iron\Roughness.bmp = BSR_APP_LINUX\Files\Materials\Iron\Roughness.bmp
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -52,6 +95,14 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B75F5740-2BB6-4203-850F-CE26B522B14D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{6A7F3169-E318-439A-BD6C-9C5DD97E7C59} = {370EA4FD-B5E9-4F1E-9FA3-8AF2337A4255}
+		{1B4A326F-C3B3-45E8-A90A-2DD30A280C6B} = {370EA4FD-B5E9-4F1E-9FA3-8AF2337A4255}
+		{68769FE0-4D6D-4A84-8BB6-CF6F2E18EDF9} = {370EA4FD-B5E9-4F1E-9FA3-8AF2337A4255}
+		{1C2089D5-5FD6-4E6B-8C6F-ED7D87F1D830} = {370EA4FD-B5E9-4F1E-9FA3-8AF2337A4255}
+		{783B4B1D-8BA2-4D7C-9B8E-F88B70575957} = {1B4A326F-C3B3-45E8-A90A-2DD30A280C6B}
+		{ADDE076B-BA46-4F95-B3F7-6B43DA316B08} = {1B4A326F-C3B3-45E8-A90A-2DD30A280C6B}
+		{03F5ECDF-A49C-4692-B608-D47C8327C69D} = {ADDE076B-BA46-4F95-B3F7-6B43DA316B08}
+		{621975E6-E3AE-4D2B-8EDC-9DA656CE2CC5} = {783B4B1D-8BA2-4D7C-9B8E-F88B70575957}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD8E9659-B536-4070-B3B0-73CD6645FBD2}
