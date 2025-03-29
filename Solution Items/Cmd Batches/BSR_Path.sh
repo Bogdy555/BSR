@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -z "$SolutionDir" ]; then export SolutionDir="/workspaces/BSR/"; fi
+if [ -z "$SolutionDir" ]; then export SolutionDir="/home/matei/Programming/C++/Others/BSR/"; fi
 
 pushd "$SolutionDir"
 
