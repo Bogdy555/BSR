@@ -4,10 +4,6 @@
 
 
 
-#pragma comment(lib, "BSR.lib")
-
-
-
 #pragma pack(pop)
 
 

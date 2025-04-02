@@ -106,7 +106,7 @@ int main()
 
 	_Model.EmplaceBack(BSR::Renderer::Mesh());
 	_Model[0].Name = new char[strlen("Cube") + 1];
-	strcpy_s(_Model[0].Name, strlen("Cube") + 1, "Cube");
+	strcpy(_Model[0].Name, "Cube");
 	BSR::Renderer::Mesh::GenerateCube(_Model[0]);
 
 	BSR::Renderer::Camera _Camera;
