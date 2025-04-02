@@ -2,6 +2,12 @@
 
 if [ -z "$SolutionDir" ]; then source "../../Solution Items/Cmd Batches/BSR_Path.sh"; fi
 
+pushd "$SolutionDir"
+
+if [ ! -f "./Binaries/BSR/Debug/x64/libBSR.a" ]; then source "./BSR/Cmd Batches/BSR_Build_Debug_x64.sh"; fi
+
+popd
+
 CPP_FLAGS="-c -std=gnu++17 -I./BSR/Headers/ -g"
 LINK_FLAGS="-L./Binaries/BSR/Debug/x64/ -lBSR"
 
