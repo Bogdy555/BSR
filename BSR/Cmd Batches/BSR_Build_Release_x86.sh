@@ -19,6 +19,11 @@ g++ $CPP_FLAGS -o "./Objects/BSR/Release/x86/BSR_Math_Vector.o" "./BSR/Sources/B
 g++ $CPP_FLAGS -o "./Objects/BSR/Release/x86/BSR_Rasterizer.o" "./BSR/Sources/BSR_Rasterizer.cpp"
 g++ $CPP_FLAGS -o "./Objects/BSR/Release/x86/BSR_Renderer.o" "./BSR/Sources/BSR_Renderer.cpp"
 
-ar rcs "./Binaries/BSR/Release/x86/libBSR.a" "./Objects/BSR/Release/x86/BSR_Image.o" "./Objects/BSR/Release/x86/BSR_Math.o" "./Objects/BSR/Release/x86/BSR_Math_Matrix.o" "./Objects/BSR/Release/x86/BSR_Math_Vector.o" "./Objects/BSR/Release/x86/BSR_Rasterizer.o" "./Objects/BSR/Release/x86/BSR_Renderer.o"
+ar rcs "./Binaries/BSR/Release/x86/libBSR.a" "./Objects/BSR/Release/x86/BSR_Image.o"
+ar rcs "./Binaries/BSR/Release/x86/libBSR.a" "./Objects/BSR/Release/x86/BSR_Math.o"
+ar rcs "./Binaries/BSR/Release/x86/libBSR.a" "./Objects/BSR/Release/x86/BSR_Math_Matrix.o"
+ar rcs "./Binaries/BSR/Release/x86/libBSR.a" "./Objects/BSR/Release/x86/BSR_Math_Vector.o"
+ar rcs "./Binaries/BSR/Release/x86/libBSR.a" "./Objects/BSR/Release/x86/BSR_Rasterizer.o"
+ar rcs "./Binaries/BSR/Release/x86/libBSR.a" "./Objects/BSR/Release/x86/BSR_Renderer.o"
 
 popd

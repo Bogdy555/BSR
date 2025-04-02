@@ -3,7 +3,7 @@
 if [ -z "$SolutionDir" ]; then source "../../Solution Items/Cmd Batches/BSR_Path.sh"; fi
 
 CPP_FLAGS="-c -std=gnu++17 -I./BSR/Headers/ -m32 -g"
-LINK_FLAGS="-L./Binaries/BSR/Debug/x86/ -lBSR"
+LINK_FLAGS="-m32 -L./Binaries/BSR/Debug/x86/ -lBSR"
 
 pushd "$SolutionDir"
 
