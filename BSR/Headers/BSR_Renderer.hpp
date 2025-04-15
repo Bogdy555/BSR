@@ -191,7 +191,7 @@ namespace BSR
 			void StartScene(PBRFrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera, const float _TargetExposure, const uint8_t _TargetFogType, const float _TargetFogStart, const float _TargetFogEnd, const Math::Vec3f& _TargetFogColor, const Rasterizer::TextureHDR& _TargetEnvironment, const Rasterizer::TextureHDR& _TargetIrradiance, const Rasterizer::TextureSDR& _TargetBRDFLookUp);
 			void FlushScene();
 
-			void SubmitModel(const Mesh& _TargetMesh, const PBRMaterial& _TargetMaterial, const Transform& _TargetTransform);
+			void SubmitMesh(const Mesh& _TargetMesh, const PBRMaterial& _TargetMaterial, const Transform& _TargetTransform);
 			void SubmitLight(const Light& _TargetLight);
 
 			PBRContext& operator= (const PBRContext& _Other) = delete;
@@ -216,71 +216,88 @@ namespace BSR
 
 		};
 
-		//struct BlinnPhongMaterial
-		//{
-		//	const Rasterizer::TextureSDR* Color = nullptr;
-		//	const Rasterizer::TextureSDR* ShineColor = nullptr;
-		//	const Rasterizer::TextureSDR* Roughness = nullptr;
-		//	const Rasterizer::TextureSDR* Shine = nullptr;
+		struct BlinnPhongMaterial
+		{
+			const Rasterizer::TextureSDR* Color = nullptr;
+			const Rasterizer::TextureSDR* ColorSpecular = nullptr;
+			const Rasterizer::TextureSDR* Shininess = nullptr;
+			const Rasterizer::TextureSDR* AmbientOcclusion = nullptr;
+			const Rasterizer::TextureSDR* NormalMap = nullptr;
+			const Rasterizer::TextureSDR* Emission = nullptr;
 
-		//	Math::Vec3f ColorMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
-		//	Math::Vec3f ShineColorMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
-		//	float RoughnessMultiplier = 1.0f;
-		//	float ShineMultiplier = 1.0f;
+			Math::Vec3f ColorMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+			Math::Vec3f ColorSpecularMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+			float ShininessMultiplier = 1.0f;
+			float AmbientOcclusionMultiplier = 1.0f;
+			Math::Vec3f NormalMapMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+			Math::Vec3f EmissionMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
 
-		//	const Rasterizer::TextureSDR* ColorBack = nullptr;
-		//	const Rasterizer::TextureSDR* ShineColorBack = nullptr;
-		//	const Rasterizer::TextureSDR* RoughnessBack = nullptr;
-		//	const Rasterizer::TextureSDR* ShineBack = nullptr;
+			const Rasterizer::TextureSDR* ColorBack = nullptr;
+			const Rasterizer::TextureSDR* ColorSpecularBack = nullptr;
+			const Rasterizer::TextureSDR* ShininessBack = nullptr;
+			const Rasterizer::TextureSDR* AmbientOcclusionBack = nullptr;
+			const Rasterizer::TextureSDR* NormalMapBack = nullptr;
+			const Rasterizer::TextureSDR* EmissionBack = nullptr;
 
-		//	Math::Vec3f ColorBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
-		//	Math::Vec3f ShineColorBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
-		//	float RoughnessBackMultiplier = 1.0f;
-		//	float ShineBackMultiplier = 1.0f;
+			Math::Vec3f ColorBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+			Math::Vec3f ColorSpecularBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+			float ShininessBackMultiplier = 1.0f;
+			float AmbientOcclusionBackMultiplier = 1.0f;
+			Math::Vec3f NormalMapBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
+			Math::Vec3f EmissionBackMultiplier = Math::Vec3f(1.0f, 1.0f, 1.0f);
 
-		//	const bool HasFrontFace() const;
-		//	const bool HasBackFace() const;
+			const bool HasFrontFace() const;
+			const bool HasBackFace() const;
 
-		//	const uint8_t GetCullingType() const;
-		//};
+			const uint8_t GetCullingType() const;
+		};
 
-		//struct BlinnPhongFrameBuffer
-		//{
-		//	size_t Width = 0;
-		//	size_t Height = 0;
+		struct BlinnPhongFrameBuffer
+		{
+			size_t Width = 0;
+			size_t Height = 0;
 
-		//	float* Depth = nullptr;
-		//	Math::Vec3f* Color = nullptr;
+			float* Depth = nullptr;
+			Math::Vec3f* Color = nullptr;
 
-		//	const bool Valid() const;
-		//};
+			const bool Valid() const;
+		};
 
-		//class BlinnPhongContext
-		//{
+		class BlinnPhongContext
+		{
 
-		//public:
+		public:
 
-		//	BlinnPhongContext();
-		//	BlinnPhongContext(const BlinnPhongContext& _Other) = delete;
-		//	BlinnPhongContext(BlinnPhongContext&& _Other) noexcept;
-		//	~BlinnPhongContext();
+			BlinnPhongContext();
+			BlinnPhongContext(const BlinnPhongContext& _Other) = delete;
+			BlinnPhongContext(BlinnPhongContext&& _Other) noexcept;
+			~BlinnPhongContext();
 
-		//	void StartScene(PBRFrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera);
-		//	void FlushScene();
+			void StartScene(BlinnPhongFrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera, const float _TargetExposure, const uint8_t _TargetFogType, const float _TargetFogStart, const float _TargetFogEnd, const Math::Vec3f& _TargetFogColor, const Rasterizer::TextureHDR* _TargetEnvironment);
+			void FlushScene();
 
-		//	void SubmitModel(const Mesh& _TargetMesh, const Transform& _TargetTransform);
+			void SubmitMesh(const Mesh& _TargetMesh, const BlinnPhongMaterial& _TargetMaterial, const Transform& _TargetTransform);
+			void SubmitLight(const Light& _TargetLight);
 
-		//	BlinnPhongContext& operator= (const BlinnPhongContext& _Other) = delete;
-		//	BlinnPhongContext& operator= (BlinnPhongContext&& _Other) noexcept;
+			BlinnPhongContext& operator= (const BlinnPhongContext& _Other) = delete;
+			BlinnPhongContext& operator= (BlinnPhongContext&& _Other) noexcept;
 
-		//private:
+		private:
 
-		//	PBRFrameBuffer TargetFrameBuffer;
-		//	Camera TargetCamera;
-		//	Vector<const Mesh*> TargetMeshes;
-		//	Vector<Transform> TargetTransforms;
+			BlinnPhongFrameBuffer TargetFrameBuffer;
+			Camera TargetCamera;
+			float TargetExposure;
+			uint8_t TargetFogType;
+			float TargetFogStart;
+			float TargetFogEnd;
+			Math::Vec3f TargetFogColor;
+			const Rasterizer::TextureHDR* TargetEnvironment;
+			Vector<const Mesh*> TargetMeshes;
+			Vector<BlinnPhongMaterial> TargetMaterials;
+			Vector<Transform> TargetTransforms;
+			Vector<Light> TargetLights;
 
-		//};
+		};
 
 	}
 
