@@ -995,7 +995,7 @@ const bool BSR::Rasterizer::Context::PointInside(const Math::Vec2f& _P, const Ma
 	_MatCAP[1][0] = _A.x; _MatCAP[1][1] = _A.y; _MatCAP[1][2] = 1.0f;
 	_MatCAP[2][0] = _P.x; _MatCAP[2][1] = _P.y; _MatCAP[2][2] = 1.0f;
 
-	return fabs(fabs(_OriginalMat.Determinant()) - fabs(_MatABP.Determinant()) - fabs(_MatBCP.Determinant()) - fabs(_MatCAP.Determinant())) <= 0.00001f;
+	return fabs(fabs(_OriginalMat.Determinant()) - fabs(_MatABP.Determinant()) - fabs(_MatBCP.Determinant()) - fabs(_MatCAP.Determinant())) <= 0.0001f;
 }
 
 const float BSR::Rasterizer::Context::GetT1(const Math::Vec2f& _A, const Math::Vec2f& _B, const Math::Vec2f& _C, const Math::Vec2f& _P)
