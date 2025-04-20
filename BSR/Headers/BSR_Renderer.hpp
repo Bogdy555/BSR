@@ -273,7 +273,7 @@ namespace BSR
 			BlinnPhongContext(BlinnPhongContext&& _Other) noexcept;
 			~BlinnPhongContext();
 
-			void StartScene(BlinnPhongFrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera, const float _TargetExposure, const uint8_t _TargetFogType, const float _TargetFogStart, const float _TargetFogEnd, const Math::Vec3f& _TargetFogColor, const Rasterizer::TextureHDR* _TargetEnvironment);
+			void StartScene(BlinnPhongFrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera, const float _TargetExposure, const uint8_t _TargetFogType, const float _TargetFogStart, const float _TargetFogEnd, const Math::Vec3f& _TargetFogColor, const Rasterizer::TextureHDR* _TargetEnvironment, const Math::Vec3f& _TargetAmbientLight);
 			void FlushScene();
 
 			void SubmitMesh(const Mesh& _TargetMesh, const BlinnPhongMaterial& _TargetMaterial, const Transform& _TargetTransform);
@@ -292,6 +292,7 @@ namespace BSR
 			float TargetFogEnd;
 			Math::Vec3f TargetFogColor;
 			const Rasterizer::TextureHDR* TargetEnvironment;
+			Math::Vec3f TargetAmbientLight;
 			Vector<const Mesh*> TargetMeshes;
 			Vector<BlinnPhongMaterial> TargetMaterials;
 			Vector<Transform> TargetTransforms;

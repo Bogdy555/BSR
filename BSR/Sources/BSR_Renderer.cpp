@@ -482,6 +482,94 @@ static void BlinnPhongCubeMapFragmentShader(const size_t _X, const size_t _Y, co
 	}
 }
 
+static const BSR::Math::Vec3f BlinnPhongDirectionalLightCalculation(const BSR::Renderer::Light& _Light, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _Color, const BSR::Math::Vec3f& _ColorSpecular, const float _Shininess, const float _AmbientOcclusion, const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Position)
+{
+	BSR::Math::Vec3f _PositionToLight = -_Light.Direction;
+	BSR::Math::Vec3f _HalfWayVec = (_PositionToCamera + _PositionToLight).Normalized();
+	BSR::Math::Vec3f _Radiance = _Light.Color * _Light.Intensity;
+
+	BSR::Math::Vec3f _Diffuse = _Color * BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f);
+	BSR::Math::Vec3f _Specular = _ColorSpecular * powf(BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _HalfWayVec), 0.0f), _Shininess);
+
+	return (_Diffuse + _Specular) * _Radiance;
+}
+
+static const BSR::Math::Vec3f BlinnPhongPointLightCalculation(const BSR::Renderer::Light& _Light, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _Color, const BSR::Math::Vec3f& _ColorSpecular, const float _Shininess, const float _AmbientOcclusion, const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Position)
+{
+	BSR::Math::Vec3f _PositionToLight = (_Light.Position - _Position).Normalized();
+	BSR::Math::Vec3f _HalfWayVec = (_PositionToCamera + _PositionToLight).Normalized();
+	float _Distance = (_Light.Position - _Position).Magnitude();
+	float _Attenuation = 1.0f / (_Distance * _Distance);
+	BSR::Math::Vec3f _Radiance = _Light.Color * _Light.Intensity * _Attenuation;
+
+	BSR::Math::Vec3f _Diffuse = _Color * BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f);
+	BSR::Math::Vec3f _Specular = _ColorSpecular * powf(BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _HalfWayVec), 0.0f), _Shininess);
+
+	return (_Diffuse + _Specular) * _Radiance;
+}
+
+static const BSR::Math::Vec3f BlinnPhongSpotLightCalculation(const BSR::Renderer::Light& _Light, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _Color, const BSR::Math::Vec3f& _ColorSpecular, const float _Shininess, const float _AmbientOcclusion, const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Position)
+{
+	BSR::Math::Vec3f _PositionToLight = (_Light.Position - _Position).Normalized();
+	BSR::Math::Vec3f _HalfWayVec = (_PositionToCamera + _PositionToLight).Normalized();
+	float _Distance = (_Light.Position - _Position).Magnitude();
+	float _Attenuation = 1.0f / (_Distance * _Distance);
+	BSR::Math::Vec3f _Radiance = _Light.Color * _Light.Intensity * _Attenuation;
+
+	BSR::Math::Vec3f _Diffuse = _Color * BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _PositionToLight), 0.0f);
+	BSR::Math::Vec3f _Specular = _ColorSpecular * powf(BSR::Math::Max(BSR::Math::Vec3f::Dot(_Normal, _HalfWayVec), 0.0f), _Shininess);
+
+	BSR::Math::Vec3f _Result = (_Diffuse + _Specular) * _Radiance;
+
+	float _CosTheta = cosf(_Light.Theta);
+	float _CosThetaPlusThetaFade = cosf(_Light.Theta + _Light.ThetaFade);
+	float _Cos = BSR::Math::Vec3f::Dot(_Light.Direction, -_PositionToLight);
+
+	if (_Cos >= _CosTheta)
+	{
+		return _Result;
+	}
+
+	if (_CosThetaPlusThetaFade >= _Cos)
+	{
+		return BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
+	}
+
+	float _MixT = BSR::Math::Clamp((_Cos - _CosThetaPlusThetaFade) / (_CosTheta - _CosThetaPlusThetaFade), 0.0f, 1.0f);
+
+	return BSR::Math::Vec3f::Mix(BSR::Math::Vec3f(0.0f, 0.0f, 0.0f), _Result, _MixT);
+}
+
+static const BSR::Math::Vec3f BlinnPhongAmbientLightCalculation(const BSR::Math::Vec3f _AmbientLight, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _Color, const BSR::Math::Vec3f _ColorSpecular, const float _Shininess, const float _AmbientOcclusion, const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Position)
+{
+	return (_Color + _ColorSpecular) * _AmbientLight * _AmbientOcclusion;
+}
+
+static const BSR::Math::Vec3f BlinnPhongLightCalculation(const BSR::Renderer::Light& _Light, const BSR::Math::Vec3f& _PositionToCamera, const BSR::Math::Vec3f& _Color, const BSR::Math::Vec3f& _ColorSpecular, const float _Shininess, const float _AmbientOcclusion, const BSR::Math::Vec3f& _Normal, const BSR::Math::Vec3f& _Position)
+{
+	switch (_Light.Type)
+	{
+	case BSR::Renderer::_DirectionalLight:
+	{
+		return BlinnPhongDirectionalLightCalculation(_Light, _PositionToCamera, _Color, _ColorSpecular, _Shininess, _AmbientOcclusion, _Normal, _Position);
+	}
+	case BSR::Renderer::_PointLight:
+	{
+		return BlinnPhongPointLightCalculation(_Light, _PositionToCamera, _Color, _ColorSpecular, _Shininess, _AmbientOcclusion, _Normal, _Position);
+	}
+	case BSR::Renderer::_SpotLight:
+	{
+		return BlinnPhongSpotLightCalculation(_Light, _PositionToCamera, _Color, _ColorSpecular, _Shininess, _AmbientOcclusion, _Normal, _Position);
+	}
+	default:
+	{
+		break;
+	}
+	}
+
+	return BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
+}
+
 struct BlinnPhongUniforms
 {
 	BSR::Renderer::Camera Camera;
@@ -501,6 +589,8 @@ struct BlinnPhongUniforms
 	BSR::Math::Vec3f FogColor = BSR::Math::Vec3f(0.8f, 0.8f, 0.8f);
 
 	const BSR::Vector<BSR::Renderer::Light>* Lights = nullptr;
+
+	BSR::Math::Vec3f AmbientLight = BSR::Math::Vec3f(0.1f, 0.1f, 0.1f);
 };
 
 struct BlinnPhongLerpers
@@ -581,10 +671,10 @@ static void BlinnPhongFragmentShader(const size_t _X, const size_t _Y, const siz
 
 	for (size_t _Index = 0; _Index < _TrueUniforms.Lights->GetSize(); _Index++)
 	{
-		//_Result += BlinnPhongLightCalculation((*_TrueUniforms.Lights)[_Index], _PositionToCamera, _Color, _ColorSpecular, _Shininess, _AmbientOcclusion, _Normal, _Position);
+		_Result += BlinnPhongLightCalculation((*_TrueUniforms.Lights)[_Index], _PositionToCamera, _Color, _ColorSpecular, _Shininess, _AmbientOcclusion, _Normal, _Position);
 	}
 
-	//_Result += BlinnPhongAmbientLightCalculation(_PositionToCamera, _Color, _ColorSpecular, _Shininess, _AmbientOcclusion, _Normal, _Position);
+	_Result += BlinnPhongAmbientLightCalculation(_TrueUniforms.AmbientLight, _PositionToCamera, _Color, _ColorSpecular, _Shininess, _AmbientOcclusion, _Normal, _Position);
 
 	switch (_TrueUniforms.FogType)
 	{
@@ -926,7 +1016,7 @@ void BSR::Renderer::PBRContext::StartScene(PBRFrameBuffer& _TargetFrameBuffer, c
 	TargetFogType = _NoFog;
 	TargetFogStart = 0.0f;
 	TargetFogEnd = 0.0f;
-	TargetFogColor = Math::Vec3f(8.0f, 8.0f, 8.0f);
+	TargetFogColor = Math::Vec3f(0.8f, 0.8f, 0.8f);
 	TargetEnvironment = nullptr;
 	TargetIrradiance = nullptr;
 	TargetBRDFLookUp = nullptr;
@@ -1113,7 +1203,7 @@ void BSR::Renderer::PBRContext::FlushScene()
 	TargetFogType = _NoFog;
 	TargetFogStart = 0.0f;
 	TargetFogEnd = 0.0f;
-	TargetFogColor = Math::Vec3f(8.0f, 8.0f, 8.0f);
+	TargetFogColor = Math::Vec3f(0.8f, 0.8f, 0.8f);
 	TargetEnvironment = nullptr;
 	TargetIrradiance = nullptr;
 	TargetBRDFLookUp = nullptr;
@@ -1222,12 +1312,12 @@ const bool BSR::Renderer::BlinnPhongFrameBuffer::Valid() const
 
 
 
-BSR::Renderer::BlinnPhongContext::BlinnPhongContext() : TargetFrameBuffer(), TargetCamera(), TargetExposure(1.0f), TargetFogType(_NoFog), TargetFogStart(0.0f), TargetFogEnd(0.0f), TargetFogColor(Math::Vec3f(0.8f, 0.8f, 0.8f)), TargetEnvironment(nullptr), TargetMeshes(), TargetMaterials(), TargetTransforms(), TargetLights()
+BSR::Renderer::BlinnPhongContext::BlinnPhongContext() : TargetFrameBuffer(), TargetCamera(), TargetExposure(1.0f), TargetFogType(_NoFog), TargetFogStart(0.0f), TargetFogEnd(0.0f), TargetFogColor(Math::Vec3f(0.8f, 0.8f, 0.8f)), TargetEnvironment(nullptr), TargetAmbientLight(Math::Vec3f(0.1f, 0.1f, 0.1f)), TargetMeshes(), TargetMaterials(), TargetTransforms(), TargetLights()
 {
 
 }
 
-BSR::Renderer::BlinnPhongContext::BlinnPhongContext(BlinnPhongContext&& _Other) noexcept : TargetFrameBuffer(_Other.TargetFrameBuffer), TargetCamera(_Other.TargetCamera), TargetExposure(_Other.TargetExposure), TargetFogType(_Other.TargetFogType), TargetFogStart(_Other.TargetFogStart), TargetFogEnd(_Other.TargetFogEnd), TargetFogColor((Math::Vec3f&&)(_Other.TargetFogColor)), TargetEnvironment(_Other.TargetEnvironment), TargetMeshes((Vector<const Mesh*>&&)(_Other.TargetMeshes)), TargetMaterials((Vector<BlinnPhongMaterial>&&)(_Other.TargetMaterials)), TargetTransforms((Vector<Transform>&&)(_Other.TargetTransforms)), TargetLights((Vector<Light>&&)(_Other.TargetLights))
+BSR::Renderer::BlinnPhongContext::BlinnPhongContext(BlinnPhongContext&& _Other) noexcept : TargetFrameBuffer(_Other.TargetFrameBuffer), TargetCamera(_Other.TargetCamera), TargetExposure(_Other.TargetExposure), TargetFogType(_Other.TargetFogType), TargetFogStart(_Other.TargetFogStart), TargetFogEnd(_Other.TargetFogEnd), TargetFogColor((Math::Vec3f&&)(_Other.TargetFogColor)), TargetEnvironment(_Other.TargetEnvironment), TargetAmbientLight(_Other.TargetAmbientLight), TargetMeshes((Vector<const Mesh*>&&)(_Other.TargetMeshes)), TargetMaterials((Vector<BlinnPhongMaterial>&&)(_Other.TargetMaterials)), TargetTransforms((Vector<Transform>&&)(_Other.TargetTransforms)), TargetLights((Vector<Light>&&)(_Other.TargetLights))
 {
 	_Other.TargetFrameBuffer = BlinnPhongFrameBuffer();
 	_Other.TargetCamera = Camera();
@@ -1236,6 +1326,7 @@ BSR::Renderer::BlinnPhongContext::BlinnPhongContext(BlinnPhongContext&& _Other) 
 	_Other.TargetFogStart = 0.0f;
 	_Other.TargetFogEnd = 0.0f;
 	_Other.TargetEnvironment = nullptr;
+	_Other.TargetAmbientLight = Math::Vec3f(0.1f, 0.1f, 0.1f);
 }
 
 BSR::Renderer::BlinnPhongContext::~BlinnPhongContext()
@@ -1243,7 +1334,7 @@ BSR::Renderer::BlinnPhongContext::~BlinnPhongContext()
 
 }
 
-void BSR::Renderer::BlinnPhongContext::StartScene(BlinnPhongFrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera, const float _TargetExposure, const uint8_t _TargetFogType, const float _TargetFogStart, const float _TargetFogEnd, const Math::Vec3f& _TargetFogColor, const Rasterizer::TextureHDR* _TargetEnvironment)
+void BSR::Renderer::BlinnPhongContext::StartScene(BlinnPhongFrameBuffer& _TargetFrameBuffer, const Camera& _TargetCamera, const float _TargetExposure, const uint8_t _TargetFogType, const float _TargetFogStart, const float _TargetFogEnd, const Math::Vec3f& _TargetFogColor, const Rasterizer::TextureHDR* _TargetEnvironment, const Math::Vec3f& _TargetAmbientLight)
 {
 	TargetFrameBuffer = BlinnPhongFrameBuffer();
 	TargetCamera = Camera();
@@ -1251,8 +1342,9 @@ void BSR::Renderer::BlinnPhongContext::StartScene(BlinnPhongFrameBuffer& _Target
 	TargetFogType = _NoFog;
 	TargetFogStart = 0.0f;
 	TargetFogEnd = 0.0f;
-	TargetFogColor = Math::Vec3f(8.0f, 8.0f, 8.0f);
+	TargetFogColor = Math::Vec3f(0.8f, 0.8f, 0.8f);
 	TargetEnvironment = nullptr;
+	TargetAmbientLight = Math::Vec3f(0.1f, 0.1f, 0.1f);
 	TargetMeshes.Clear();
 	TargetMaterials.Clear();
 	TargetTransforms.Clear();
@@ -1271,6 +1363,7 @@ void BSR::Renderer::BlinnPhongContext::StartScene(BlinnPhongFrameBuffer& _Target
 	TargetFogEnd = _TargetFogEnd;
 	TargetFogColor = _TargetFogColor;
 	TargetEnvironment = _TargetEnvironment;
+	TargetAmbientLight = _TargetAmbientLight;
 }
 
 void BSR::Renderer::BlinnPhongContext::FlushScene()
@@ -1349,6 +1442,7 @@ void BSR::Renderer::BlinnPhongContext::FlushScene()
 		_Uniforms.FogEnd = TargetFogEnd;
 		_Uniforms.FogColor = TargetFogColor;
 		_Uniforms.Lights = &TargetLights;
+		_Uniforms.AmbientLight = TargetAmbientLight;
 
 		_Context.CullingType = TargetMaterials[_Index].GetCullingType();
 
@@ -1398,8 +1492,9 @@ void BSR::Renderer::BlinnPhongContext::FlushScene()
 	TargetFogType = _NoFog;
 	TargetFogStart = 0.0f;
 	TargetFogEnd = 0.0f;
-	TargetFogColor = Math::Vec3f(8.0f, 8.0f, 8.0f);
+	TargetFogColor = Math::Vec3f(0.8f, 0.8f, 0.8f);
 	TargetEnvironment = nullptr;
+	TargetAmbientLight = Math::Vec3f(0.1f, 0.1f, 0.1f);
 	TargetMeshes.Clear();
 	TargetMaterials.Clear();
 	TargetTransforms.Clear();
@@ -1428,6 +1523,7 @@ BSR::Renderer::BlinnPhongContext& BSR::Renderer::BlinnPhongContext::operator= (B
 	TargetFogEnd = _Other.TargetFogEnd;
 	TargetFogColor = (Math::Vec3f&&)(_Other.TargetFogColor);
 	TargetEnvironment = _Other.TargetEnvironment;
+	TargetAmbientLight = _Other.TargetAmbientLight;
 	TargetMeshes = (Vector<const Mesh*>&&)(_Other.TargetMeshes);
 	TargetMaterials = (Vector<BlinnPhongMaterial>&&)(_Other.TargetMaterials);
 	TargetTransforms = (Vector<Transform>&&)(_Other.TargetTransforms);
@@ -1440,6 +1536,7 @@ BSR::Renderer::BlinnPhongContext& BSR::Renderer::BlinnPhongContext::operator= (B
 	_Other.TargetFogStart = 0.0f;
 	_Other.TargetFogEnd = 0.0f;
 	_Other.TargetEnvironment = nullptr;
+	_Other.TargetAmbientLight = Math::Vec3f(0.1f, 0.1f, 0.1f);
 
 	return *this;
 }
