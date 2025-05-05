@@ -61,19 +61,21 @@ namespace BSR
 
 			if (Size + 1 > Capacity)
 			{
-				T* _NewData = new T[Capacity * 2];
+				Capacity *= 2;
+				Size += 1;
 
-				for (size_t _Index = 0; _Index < Size; _Index++)
+				T* _NewData = new T[Capacity];
+
+				for (size_t _Index = 0; _Index < Size - 1; _Index++)
 				{
 					_NewData[_Index] = (T&&)(Data[_Index]);
 				}
 
-				_NewData[Size] = _Obj;
+				_NewData[Size - 1] = _Obj;
 
-				Capacity *= 2;
-				Size += 1;
 				delete[] Data;
 				Data = _NewData;
+
 				return;
 			}
 
@@ -94,19 +96,21 @@ namespace BSR
 
 			if (Size + 1 > Capacity)
 			{
-				T* _NewData = new T[Capacity * 2];
+				Capacity *= 2;
+				Size += 1;
 
-				for (size_t _Index = 0; _Index < Size; _Index++)
+				T* _NewData = new T[Capacity];
+
+				for (size_t _Index = 0; _Index < Size - 1; _Index++)
 				{
 					_NewData[_Index] = (T&&)(Data[_Index]);
 				}
 
-				_NewData[Size] = (T&&)(_Obj);
+				_NewData[Size - 1] = (T&&)(_Obj);
 
-				Capacity *= 2;
-				Size += 1;
 				delete[] Data;
 				Data = _NewData;
+
 				return;
 			}
 
@@ -116,6 +120,11 @@ namespace BSR
 
 		void Erase(const size_t _EraseIndex)
 		{
+			if (_EraseIndex >= Size)
+			{
+				return;
+			}
+
 			if (Size == 0)
 			{
 				return;
@@ -129,20 +138,16 @@ namespace BSR
 
 			if (Size - 1 == Capacity / 2)
 			{
-				T* _NewData = new T[Capacity / 2];
-
-				for (size_t _Index = 0; _Index < _EraseIndex; _Index++)
-				{
-					_NewData[_Index] = (T&&)(Data[_Index]);
-				}
-
-				for (size_t _Index = _EraseIndex; _Index < Size - 1; _Index++)
-				{
-					_NewData[_Index] = (T&&)(Data[_Index + 1]);
-				}
-
 				Capacity /= 2;
 				Size--;
+
+				T* _NewData = new T[Capacity];
+
+				for (size_t _Index = 0; _Index < Capacity; _Index++)
+				{
+					_NewData[_Index] = (T&&)(Data[_Index + (size_t)(_Index >= _EraseIndex)]);
+				}
+
 				delete[] Data;
 				Data = _NewData;
 

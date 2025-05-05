@@ -2,7 +2,7 @@
 
 echo on
 
-if "%SolutionDir%" == "" set Path=D:\Aplicatii\avr8-gnu-toolchain-win32_x86_64\bin;%Path%
+if "%SolutionDir%" == "" set Path=D:\Aplicatii\avr8-gnu-toolchain-win32_x86_64\bin;D:\Aplicatii\avrdude;%Path%
 
 @echo off
 

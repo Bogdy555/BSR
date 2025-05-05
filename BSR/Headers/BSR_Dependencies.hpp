@@ -32,7 +32,7 @@
 
 #include <stdint.h>
 
-typedef unsigned int size_t;
+typedef uint32_t size_t;
 
 #include <math.h>
 
