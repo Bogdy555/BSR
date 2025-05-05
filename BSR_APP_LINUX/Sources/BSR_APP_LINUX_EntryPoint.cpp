@@ -180,7 +180,7 @@ int main()
 
 	_RendererContext.StartScene(_FrameBuffer, _Camera, 1.0f, BSR::Renderer::_NoFog, 0.0f, 0.0f, BSR::Math::Vec3f(0.0f, 0.0f, 0.0f), _Environment, _Irradiance, _BRDFLookUp);
 
-	_RendererContext.SubmitModel(_Model[0], _Material, _Transform);
+	_RendererContext.SubmitMesh(_Model[0], _Material, _Transform);
 
 	_RendererContext.FlushScene();
 
