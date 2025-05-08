@@ -8,11 +8,11 @@ const float BSR::Math::RadiansToDegrees = 180.0f / 3.14159265f;
 
 
 
-void BSR::Math::Swap(float& _A, float& _B)
+void BSR::Math::Swap(float& _V1, float& _V2)
 {
-	float _Aux = _A;
-	_A = _B;
-	_B = _Aux;
+	float _Aux = _V1;
+	_V1 = _V2;
+	_V2 = _Aux;
 }
 
 const float BSR::Math::Clamp(const float _Value, const float _Min, const float _Max)
@@ -20,17 +20,17 @@ const float BSR::Math::Clamp(const float _Value, const float _Min, const float _
 	return _Value * (_Min <= _Value && _Value <= _Max) + _Min * (_Value < _Min) + _Max * (_Value > _Max);
 }
 
-const float BSR::Math::Mix(const float _A, const float _B, const float _Percentage)
+const float BSR::Math::Mix(const float _V1, const float _V2, const float _Percentage)
 {
-	return _A + (_B - _A) * _Percentage;
+	return _V1 + (_V2 - _V1) * _Percentage;
 }
 
-const float BSR::Math::Min(const float _A, const float _B)
+const float BSR::Math::Min(const float _V1, const float _V2)
 {
-	return _A * (_A <= _B) + _B * (_A > _B);
+	return _V1 * (_V1 <= _V2) + _V2 * (_V1 > _V2);
 }
 
-const float BSR::Math::Max(const float _A, const float _B)
+const float BSR::Math::Max(const float _V1, const float _V2)
 {
-	return _A * (_A >= _B) + _B * (_A < _B);
+	return _V1 * (_V1 >= _V2) + _V2 * (_V1 < _V2);
 }

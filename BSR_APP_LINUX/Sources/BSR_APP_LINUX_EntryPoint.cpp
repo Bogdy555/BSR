@@ -190,14 +190,14 @@ int main()
 	_Result.Height = _FrameBuffer.Height;
 	_Result.Data = new uint8_t[_Result.Width * _Result.Height * 4];
 
-	for (size_t _Y = 0; _Y < _Result.Height; _Y++)
+	for (size_t _YPos = 0; _YPos < _Result.Height; _YPos++)
 	{
-		for (size_t _X = 0; _X < _Result.Width; _X++)
+		for (size_t _XPos = 0; _XPos < _Result.Width; _XPos++)
 		{
-			_Result.Data[(_X + _Y * _Result.Width) * 4 + 0] = (uint8_t)(_FrameBuffer.Result[_X + _Y * _FrameBuffer.Width].x * 255.0f);
-			_Result.Data[(_X + _Y * _Result.Width) * 4 + 1] = (uint8_t)(_FrameBuffer.Result[_X + _Y * _FrameBuffer.Width].y * 255.0f);
-			_Result.Data[(_X + _Y * _Result.Width) * 4 + 2] = (uint8_t)(_FrameBuffer.Result[_X + _Y * _FrameBuffer.Width].z * 255.0f);
-			_Result.Data[(_X + _Y * _Result.Width) * 4 + 3] = 255;
+			_Result.Data[(_XPos + _YPos * _Result.Width) * 4 + 0] = (uint8_t)(_FrameBuffer.Result[_XPos + _YPos * _FrameBuffer.Width].x * 255.0f);
+			_Result.Data[(_XPos + _YPos * _Result.Width) * 4 + 1] = (uint8_t)(_FrameBuffer.Result[_XPos + _YPos * _FrameBuffer.Width].y * 255.0f);
+			_Result.Data[(_XPos + _YPos * _Result.Width) * 4 + 2] = (uint8_t)(_FrameBuffer.Result[_XPos + _YPos * _FrameBuffer.Width].z * 255.0f);
+			_Result.Data[(_XPos + _YPos * _Result.Width) * 4 + 3] = 255;
 		}
 	}
 

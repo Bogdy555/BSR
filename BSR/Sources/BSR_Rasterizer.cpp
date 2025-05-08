@@ -784,11 +784,11 @@ void BSR::Rasterizer::Context::CullingPass(Vector<Shape>& _Shapes)
 				continue;
 			}
 
-			Math::Vec3f _A = Math::Vec3f(_Shapes[_Index].A.Position) / _Shapes[_Index].A.Position.w;
-			Math::Vec3f _B = Math::Vec3f(_Shapes[_Index].B.Position) / _Shapes[_Index].B.Position.w;
-			Math::Vec3f _C = Math::Vec3f(_Shapes[_Index].C.Position) / _Shapes[_Index].C.Position.w;
+			Math::Vec3f _APoint = Math::Vec3f(_Shapes[_Index].A.Position) / _Shapes[_Index].A.Position.w;
+			Math::Vec3f _BPoint = Math::Vec3f(_Shapes[_Index].B.Position) / _Shapes[_Index].B.Position.w;
+			Math::Vec3f _CPoint = Math::Vec3f(_Shapes[_Index].C.Position) / _Shapes[_Index].C.Position.w;
 
-			if (Math::Vec3f::Cross(_B - _A, _C - _A).z == 0.0f)
+			if (Math::Vec3f::Cross(_BPoint - _APoint, _CPoint - _APoint).z == 0.0f)
 			{
 				delete[] _Shapes[_Index].A.Lerpers;
 				delete[] _Shapes[_Index].B.Lerpers;
@@ -811,11 +811,11 @@ void BSR::Rasterizer::Context::CullingPass(Vector<Shape>& _Shapes)
 				continue;
 			}
 
-			Math::Vec3f _A = Math::Vec3f(_Shapes[_Index].A.Position) / _Shapes[_Index].A.Position.w;
-			Math::Vec3f _B = Math::Vec3f(_Shapes[_Index].B.Position) / _Shapes[_Index].B.Position.w;
-			Math::Vec3f _C = Math::Vec3f(_Shapes[_Index].C.Position) / _Shapes[_Index].C.Position.w;
+			Math::Vec3f _APoint = Math::Vec3f(_Shapes[_Index].A.Position) / _Shapes[_Index].A.Position.w;
+			Math::Vec3f _BPoint = Math::Vec3f(_Shapes[_Index].B.Position) / _Shapes[_Index].B.Position.w;
+			Math::Vec3f _CPoint = Math::Vec3f(_Shapes[_Index].C.Position) / _Shapes[_Index].C.Position.w;
 
-			if (Math::Vec3f::Cross(_B - _A, _C - _A).z <= 0.0f)
+			if (Math::Vec3f::Cross(_BPoint - _APoint, _CPoint - _APoint).z <= 0.0f)
 			{
 				delete[] _Shapes[_Index].A.Lerpers;
 				delete[] _Shapes[_Index].B.Lerpers;
@@ -838,11 +838,11 @@ void BSR::Rasterizer::Context::CullingPass(Vector<Shape>& _Shapes)
 				continue;
 			}
 
-			Math::Vec3f _A = Math::Vec3f(_Shapes[_Index].A.Position) / _Shapes[_Index].A.Position.w;
-			Math::Vec3f _B = Math::Vec3f(_Shapes[_Index].B.Position) / _Shapes[_Index].B.Position.w;
-			Math::Vec3f _C = Math::Vec3f(_Shapes[_Index].C.Position) / _Shapes[_Index].C.Position.w;
+			Math::Vec3f _APoint = Math::Vec3f(_Shapes[_Index].A.Position) / _Shapes[_Index].A.Position.w;
+			Math::Vec3f _BPoint = Math::Vec3f(_Shapes[_Index].B.Position) / _Shapes[_Index].B.Position.w;
+			Math::Vec3f _CPoint = Math::Vec3f(_Shapes[_Index].C.Position) / _Shapes[_Index].C.Position.w;
 
-			if (Math::Vec3f::Cross(_B - _A, _C - _A).z >= 0.0f)
+			if (Math::Vec3f::Cross(_BPoint - _APoint, _CPoint - _APoint).z >= 0.0f)
 			{
 				delete[] _Shapes[_Index].A.Lerpers;
 				delete[] _Shapes[_Index].B.Lerpers;
@@ -891,19 +891,19 @@ void BSR::Rasterizer::Context::RasterizingPass(Vector<Shape>& _Shapes)
 		size_t _EndX = (size_t)(Math::Clamp(ceilf(Math::Max(Math::Max((_ScreenA.x + 1.0f) / 2.0f, (_ScreenB.x + 1.0f) / 2.0f), (_ScreenC.x + 1.0f) / 2.0f) * (float)(ViewPortWidth)), 0.0f, (float)(ViewPortWidth)));
 		size_t _EndY = (size_t)(Math::Clamp(ceilf(Math::Max(Math::Max((_ScreenA.y + 1.0f) / 2.0f, (_ScreenB.y + 1.0f) / 2.0f), (_ScreenC.y + 1.0f) / 2.0f) * (float)(ViewPortHeight)), 0.0f, (float)(ViewPortHeight)));
 
-		for (size_t _Y = ViewPortY + _StartY; _Y < ViewPortY + _EndY; _Y++)
+		for (size_t _YPos = ViewPortY + _StartY; _YPos < ViewPortY + _EndY; _YPos++)
 		{
-			for (size_t _X = ViewPortX + _StartX; _X < ViewPortX + _EndX; _X++)
+			for (size_t _XPos = ViewPortX + _StartX; _XPos < ViewPortX + _EndX; _XPos++)
 			{
-				Math::Vec2f _ScreenP = Math::Vec2f(((float)(_X - ViewPortX) / (float)(ViewPortWidth) + 0.5f / (float)(ViewPortWidth)) * 2.0f - 1.0f, ((float)(_Y - ViewPortY) / (float)(ViewPortHeight) + 0.5f / (float)(ViewPortHeight)) * 2.0f - 1.0f);
+				Math::Vec2f _ScreenP = Math::Vec2f(((float)(_XPos - ViewPortX) / (float)(ViewPortWidth) + 0.5f / (float)(ViewPortWidth)) * 2.0f - 1.0f, ((float)(_YPos - ViewPortY) / (float)(ViewPortHeight) + 0.5f / (float)(ViewPortHeight)) * 2.0f - 1.0f);
 
 				if (!PointInside(_ScreenP, Math::Vec2f(_ScreenA), Math::Vec2f(_ScreenB), Math::Vec2f(_ScreenC)))
 				{
 					continue;
 				}
 
-				float _T1 = GetT1((Math::Vec2f)(_ScreenA), (Math::Vec2f)(_ScreenB), (Math::Vec2f)(_ScreenC), _ScreenP);
-				float _T2 = GetT2((Math::Vec2f)(_ScreenA), (Math::Vec2f)(_ScreenB), (Math::Vec2f)(_ScreenC), _ScreenP, _T1);
+				float _T1 = GetT1(_ScreenP, (Math::Vec2f)(_ScreenA), (Math::Vec2f)(_ScreenB), (Math::Vec2f)(_ScreenC));
+				float _T2 = GetT2(_ScreenP, (Math::Vec2f)(_ScreenA), (Math::Vec2f)(_ScreenB), (Math::Vec2f)(_ScreenC), _T1);
 
 				float _PerspectiveCorrection = Math::Mix(Math::Mix(1.0f / _Shapes[_IndexTriangle].A.Position.w, 1.0f / _Shapes[_IndexTriangle].B.Position.w, _T1), 1.0f / _Shapes[_IndexTriangle].C.Position.w, _T2);
 
@@ -914,7 +914,7 @@ void BSR::Rasterizer::Context::RasterizingPass(Vector<Shape>& _Shapes)
 				Math::Vec4f _FragCoord = Math::Vec4f(_ScreenP.x, _ScreenP.y, Math::Mix(Math::Mix(_ScreenA.z, _ScreenB.z, _T1), _ScreenC.z, _T2), _PerspectiveCorrection);
 				_FragCoord.z = (_FragCoord.z + 1.0f) / 2.0f;
 
-				FragmentShader(_X, _Y, _X - ViewPortX, _Y - ViewPortY, _FragmentLerpers, Uniforms, FrameBuffer, _FragCoord, _FrontFacing, DepthTestingType, BlendingType);
+				FragmentShader(_XPos, _YPos, _XPos - ViewPortX, _YPos - ViewPortY, _FragmentLerpers, Uniforms, FrameBuffer, _FragCoord, _FrontFacing, DepthTestingType, BlendingType);
 			}
 		}
 	}
@@ -947,11 +947,11 @@ const float BSR::Rasterizer::Context::GetTFarPlane(const float _ZOut, const floa
 	return (_ZOut - _WOut) / (_ZOut - _ZIn - _WOut + _WIn);
 }
 
-void BSR::Rasterizer::Context::LerpAll(const float* _A, const float* _B, const size_t _LerpersCount, const float _Percentage, float* _Out)
+void BSR::Rasterizer::Context::LerpAll(const float* _V1, const float* _V2, const size_t _LerpersCount, const float _Percentage, float* _Out)
 {
 	for (size_t _Index = 0; _Index < _LerpersCount; _Index++)
 	{
-		_Out[_Index] = Math::Mix(_A[_Index], _B[_Index], _Percentage);
+		_Out[_Index] = Math::Mix(_V1[_Index], _V2[_Index], _Percentage);
 	}
 }
 
@@ -971,68 +971,68 @@ void BSR::Rasterizer::Context::MultiplyAll(float* _Out, const size_t _LerpersCou
 	}
 }
 
-const bool BSR::Rasterizer::Context::PointInside(const Math::Vec2f& _P, const Math::Vec2f& _A, const Math::Vec2f& _B, const Math::Vec2f& _C)
+const bool BSR::Rasterizer::Context::PointInside(const Math::Vec2f& _P0, const Math::Vec2f& _P1, const Math::Vec2f& _P2, const Math::Vec2f& _P3)
 {
 	Math::Mat3f _OriginalMat;
 
-	_OriginalMat[0][0] = _A.x; _OriginalMat[0][1] = _A.y; _OriginalMat[0][2] = 1.0f;
-	_OriginalMat[1][0] = _B.x; _OriginalMat[1][1] = _B.y; _OriginalMat[1][2] = 1.0f;
-	_OriginalMat[2][0] = _C.x; _OriginalMat[2][1] = _C.y; _OriginalMat[2][2] = 1.0f;
+	_OriginalMat[0][0] = _P1.x; _OriginalMat[0][1] = _P1.y; _OriginalMat[0][2] = 1.0f;
+	_OriginalMat[1][0] = _P2.x; _OriginalMat[1][1] = _P2.y; _OriginalMat[1][2] = 1.0f;
+	_OriginalMat[2][0] = _P3.x; _OriginalMat[2][1] = _P3.y; _OriginalMat[2][2] = 1.0f;
 
 	Math::Mat3f _MatABP;
 	Math::Mat3f _MatBCP;
 	Math::Mat3f _MatCAP;
 
-	_MatABP[0][0] = _A.x; _MatABP[0][1] = _A.y; _MatABP[0][2] = 1.0f;
-	_MatABP[1][0] = _B.x; _MatABP[1][1] = _B.y; _MatABP[1][2] = 1.0f;
-	_MatABP[2][0] = _P.x; _MatABP[2][1] = _P.y; _MatABP[2][2] = 1.0f;
+	_MatABP[0][0] = _P1.x; _MatABP[0][1] = _P1.y; _MatABP[0][2] = 1.0f;
+	_MatABP[1][0] = _P2.x; _MatABP[1][1] = _P2.y; _MatABP[1][2] = 1.0f;
+	_MatABP[2][0] = _P0.x; _MatABP[2][1] = _P0.y; _MatABP[2][2] = 1.0f;
 
-	_MatBCP[0][0] = _B.x; _MatBCP[0][1] = _B.y; _MatBCP[0][2] = 1.0f;
-	_MatBCP[1][0] = _C.x; _MatBCP[1][1] = _C.y; _MatBCP[1][2] = 1.0f;
-	_MatBCP[2][0] = _P.x; _MatBCP[2][1] = _P.y; _MatBCP[2][2] = 1.0f;
+	_MatBCP[0][0] = _P2.x; _MatBCP[0][1] = _P2.y; _MatBCP[0][2] = 1.0f;
+	_MatBCP[1][0] = _P3.x; _MatBCP[1][1] = _P3.y; _MatBCP[1][2] = 1.0f;
+	_MatBCP[2][0] = _P0.x; _MatBCP[2][1] = _P0.y; _MatBCP[2][2] = 1.0f;
 
-	_MatCAP[0][0] = _C.x; _MatCAP[0][1] = _C.y; _MatCAP[0][2] = 1.0f;
-	_MatCAP[1][0] = _A.x; _MatCAP[1][1] = _A.y; _MatCAP[1][2] = 1.0f;
-	_MatCAP[2][0] = _P.x; _MatCAP[2][1] = _P.y; _MatCAP[2][2] = 1.0f;
+	_MatCAP[0][0] = _P3.x; _MatCAP[0][1] = _P3.y; _MatCAP[0][2] = 1.0f;
+	_MatCAP[1][0] = _P1.x; _MatCAP[1][1] = _P1.y; _MatCAP[1][2] = 1.0f;
+	_MatCAP[2][0] = _P0.x; _MatCAP[2][1] = _P0.y; _MatCAP[2][2] = 1.0f;
 
 	return fabs(fabs(_OriginalMat.Determinant()) - fabs(_MatABP.Determinant()) - fabs(_MatBCP.Determinant()) - fabs(_MatCAP.Determinant())) <= 0.0001f;
 }
 
-const float BSR::Rasterizer::Context::GetT1(const Math::Vec2f& _A, const Math::Vec2f& _B, const Math::Vec2f& _C, const Math::Vec2f& _P)
+const float BSR::Rasterizer::Context::GetT1(const Math::Vec2f& _P0, const Math::Vec2f& _P1, const Math::Vec2f& _P2, const Math::Vec2f& _P3)
 {
-	if (_A.x == _B.x)
+	if (_P1.x == _P2.x)
 	{
-		Math::Vec3f _CP((_P.y - _C.y) / (_P.x - _C.x), -1.0f, _C.y - _C.x * (_P.y - _C.y) / (_P.x - _C.x));
+		Math::Vec3f _P3P0((_P0.y - _P3.y) / (_P0.x - _P3.x), -1.0f, _P3.y - _P3.x * (_P0.y - _P3.y) / (_P0.x - _P3.x));
 
-		float _YIntersect = _A.x * _CP.x + _CP.z;
+		float _YIntersect = _P1.x * _P3P0.x + _P3P0.z;
 
-		return Math::Clamp((_YIntersect - _A.y) / (_B.y - _A.y), 0.0f, 1.0f);
+		return Math::Clamp((_YIntersect - _P1.y) / (_P2.y - _P1.y), 0.0f, 1.0f);
 	}
 	else
 	{
-		if (_C.x == _P.x)
+		if (_P3.x == _P0.x)
 		{
-			float _XIntersect = _C.x;
+			float _XIntersect = _P3.x;
 
-			return Math::Clamp((_XIntersect - _A.x) / (_B.x - _A.x), 0.0f, 1.0f);
+			return Math::Clamp((_XIntersect - _P1.x) / (_P2.x - _P1.x), 0.0f, 1.0f);
 		}
 		else
 		{
-			Math::Vec3f _AB((_B.y - _A.y) / (_B.x - _A.x), -1.0f, _A.y - _A.x * (_B.y - _A.y) / (_B.x - _A.x));
-			Math::Vec3f _CP((_P.y - _C.y) / (_P.x - _C.x), -1.0f, _C.y - _C.x * (_P.y - _C.y) / (_P.x - _C.x));
+			Math::Vec3f _P1P2((_P2.y - _P1.y) / (_P2.x - _P1.x), -1.0f, _P1.y - _P1.x * (_P2.y - _P1.y) / (_P2.x - _P1.x));
+			Math::Vec3f _P3P0((_P0.y - _P3.y) / (_P0.x - _P3.x), -1.0f, _P3.y - _P3.x * (_P0.y - _P3.y) / (_P0.x - _P3.x));
 
-			float _XIntersect = (_CP.z - _AB.z) / (_AB.x - _CP.x);
+			float _XIntersect = (_P3P0.z - _P1P2.z) / (_P1P2.x - _P3P0.x);
 
-			return Math::Clamp((_XIntersect - _A.x) / (_B.x - _A.x), 0.0f, 1.0f);
+			return Math::Clamp((_XIntersect - _P1.x) / (_P2.x - _P1.x), 0.0f, 1.0f);
 		}
 	}
 
 	return 0.0f;
 }
 
-const float BSR::Rasterizer::Context::GetT2(const Math::Vec2f& _A, const Math::Vec2f& _B, const Math::Vec2f& _C, const Math::Vec2f& _P, const float _T1)
+const float BSR::Rasterizer::Context::GetT2(const Math::Vec2f& _P0, const Math::Vec2f& _P1, const Math::Vec2f& _P2, const Math::Vec2f& _P3, const float _T1)
 {
-	Math::Vec2f _IntersectPoint = Math::Vec2f::Mix(_A, _B, _T1);
+	Math::Vec2f _IntersectPoint = Math::Vec2f::Mix(_P1, _P2, _T1);
 
-	return Math::Clamp((_IntersectPoint - _P).Magnitude() / (_C - _IntersectPoint).Magnitude(), 0.0f, 1.0f);
+	return Math::Clamp((_IntersectPoint - _P0).Magnitude() / (_P3 - _IntersectPoint).Magnitude(), 0.0f, 1.0f);
 }

@@ -204,19 +204,19 @@ BSR::Math::Vec2f& BSR::Math::Vec2f::operator= (Vec2f&& _Other) noexcept
 	return *this;
 }
 
-const float BSR::Math::Vec2f::GetAngle(const Vec2f& _A, const Vec2f& _B)
+const float BSR::Math::Vec2f::GetAngle(const Vec2f& _P1, const Vec2f& _P2)
 {
-	return acosf(Dot(_A.Normalized(), _B.Normalized()));
+	return acosf(Dot(_P1.Normalized(), _P2.Normalized()));
 }
 
-const float BSR::Math::Vec2f::Distance(const Vec2f& _A, const Vec2f& _B)
+const float BSR::Math::Vec2f::Distance(const Vec2f& _P1, const Vec2f& _P2)
 {
-	return (_B - _A).Magnitude();
+	return (_P2 - _P1).Magnitude();
 }
 
-const float BSR::Math::Vec2f::Dot(const Vec2f& _A, const Vec2f& _B)
+const float BSR::Math::Vec2f::Dot(const Vec2f& _P1, const Vec2f& _P2)
 {
-	return _A.x * _B.x + _A.y * _B.y;
+	return _P1.x * _P2.x + _P1.y * _P2.y;
 }
 
 const BSR::Math::Vec2f BSR::Math::Vec2f::Clamp(const Vec2f& _Value, const Vec2f& _Min, const Vec2f& _Max)
@@ -224,9 +224,9 @@ const BSR::Math::Vec2f BSR::Math::Vec2f::Clamp(const Vec2f& _Value, const Vec2f&
 	return Vec2f(BSR::Math::Clamp(_Value.x, _Min.x, _Max.x), BSR::Math::Clamp(_Value.y, _Min.y, _Max.y));
 }
 
-const BSR::Math::Vec2f BSR::Math::Vec2f::Mix(const Vec2f& _A, const Vec2f& _B, const float _Percentage)
+const BSR::Math::Vec2f BSR::Math::Vec2f::Mix(const Vec2f& _P1, const Vec2f& _P2, const float _Percentage)
 {
-	return Vec2f(BSR::Math::Mix(_A.x, _B.x, _Percentage), BSR::Math::Mix(_A.y, _B.y, _Percentage));
+	return Vec2f(BSR::Math::Mix(_P1.x, _P2.x, _Percentage), BSR::Math::Mix(_P1.y, _P2.y, _Percentage));
 }
 
 const BSR::Math::Vec2f BSR::Math::Vec2f::Pow(const Vec2f& _Base, const Vec2f& _Pow)
@@ -239,14 +239,14 @@ const BSR::Math::Vec2f BSR::Math::Vec2f::Exp(const Vec2f& _Pow)
 	return Vec2f(expf(_Pow.x), expf(_Pow.y));
 }
 
-const BSR::Math::Vec2f BSR::Math::Vec2f::Min(const Vec2f& _A, const Vec2f& _B)
+const BSR::Math::Vec2f BSR::Math::Vec2f::Min(const Vec2f& _P1, const Vec2f& _P2)
 {
-	return Vec2f(BSR::Math::Min(_A.x, _B.x), BSR::Math::Min(_A.y, _B.y));
+	return Vec2f(BSR::Math::Min(_P1.x, _P2.x), BSR::Math::Min(_P1.y, _P2.y));
 }
 
-const BSR::Math::Vec2f BSR::Math::Vec2f::Max(const Vec2f& _A, const Vec2f& _B)
+const BSR::Math::Vec2f BSR::Math::Vec2f::Max(const Vec2f& _P1, const Vec2f& _P2)
 {
-	return Vec2f(BSR::Math::Max(_A.x, _B.x), BSR::Math::Max(_A.y, _B.y));
+	return Vec2f(BSR::Math::Max(_P1.x, _P2.x), BSR::Math::Max(_P1.y, _P2.y));
 }
 
 const BSR::Math::Vec2f BSR::Math::Vec2f::Reflect(const Vec2f& _Vec, const Vec2f& _Normal)
@@ -478,24 +478,24 @@ BSR::Math::Vec3f& BSR::Math::Vec3f::operator= (Vec3f&& _Other) noexcept
 	return *this;
 }
 
-const float BSR::Math::Vec3f::GetAngle(const Vec3f& _A, const Vec3f& _B)
+const float BSR::Math::Vec3f::GetAngle(const Vec3f& _P1, const Vec3f& _P2)
 {
-	return acosf(Dot(_A.Normalized(), _B.Normalized()));
+	return acosf(Dot(_P1.Normalized(), _P2.Normalized()));
 }
 
-const float BSR::Math::Vec3f::Distance(const Vec3f& _A, const Vec3f& _B)
+const float BSR::Math::Vec3f::Distance(const Vec3f& _P1, const Vec3f& _P2)
 {
-	return (_B - _A).Magnitude();
+	return (_P2 - _P1).Magnitude();
 }
 
-const float BSR::Math::Vec3f::Dot(const Vec3f& _A, const Vec3f& _B)
+const float BSR::Math::Vec3f::Dot(const Vec3f& _P1, const Vec3f& _P2)
 {
-	return _A.x * _B.x + _A.y * _B.y + _A.z * _B.z;
+	return _P1.x * _P2.x + _P1.y * _P2.y + _P1.z * _P2.z;
 }
 
-const BSR::Math::Vec3f BSR::Math::Vec3f::Cross(const Vec3f& _A, const Vec3f& _B)
+const BSR::Math::Vec3f BSR::Math::Vec3f::Cross(const Vec3f& _P1, const Vec3f& _P2)
 {
-	return Vec3f(_A.y * _B.z - _A.z * _B.y, _A.z * _B.x - _A.x * _B.z, _A.x * _B.y - _A.y * _B.x);
+	return Vec3f(_P1.y * _P2.z - _P1.z * _P2.y, _P1.z * _P2.x - _P1.x * _P2.z, _P1.x * _P2.y - _P1.y * _P2.x);
 }
 
 const BSR::Math::Vec3f BSR::Math::Vec3f::Clamp(const Vec3f& _Value, const Vec3f& _Min, const Vec3f& _Max)
@@ -503,9 +503,9 @@ const BSR::Math::Vec3f BSR::Math::Vec3f::Clamp(const Vec3f& _Value, const Vec3f&
 	return Vec3f(BSR::Math::Clamp(_Value.x, _Min.x, _Max.x), BSR::Math::Clamp(_Value.y, _Min.y, _Max.y), BSR::Math::Clamp(_Value.z, _Min.z, _Max.z));
 }
 
-const BSR::Math::Vec3f BSR::Math::Vec3f::Mix(const Vec3f& _A, const Vec3f& _B, const float _Percentage)
+const BSR::Math::Vec3f BSR::Math::Vec3f::Mix(const Vec3f& _P1, const Vec3f& _P2, const float _Percentage)
 {
-	return Vec3f(BSR::Math::Mix(_A.x, _B.x, _Percentage), BSR::Math::Mix(_A.y, _B.y, _Percentage), BSR::Math::Mix(_A.z, _B.z, _Percentage));
+	return Vec3f(BSR::Math::Mix(_P1.x, _P2.x, _Percentage), BSR::Math::Mix(_P1.y, _P2.y, _Percentage), BSR::Math::Mix(_P1.z, _P2.z, _Percentage));
 }
 
 const BSR::Math::Vec3f BSR::Math::Vec3f::Pow(const Vec3f& _Base, const Vec3f& _Pow)
@@ -518,14 +518,14 @@ const BSR::Math::Vec3f BSR::Math::Vec3f::Exp(const Vec3f& _Pow)
 	return Vec3f(expf(_Pow.x), expf(_Pow.y), expf(_Pow.z));
 }
 
-const BSR::Math::Vec3f BSR::Math::Vec3f::Min(const Vec3f& _A, const Vec3f& _B)
+const BSR::Math::Vec3f BSR::Math::Vec3f::Min(const Vec3f& _P1, const Vec3f& _P2)
 {
-	return Vec3f(BSR::Math::Min(_A.x, _B.x), BSR::Math::Min(_A.y, _B.y), BSR::Math::Min(_A.z, _B.z));
+	return Vec3f(BSR::Math::Min(_P1.x, _P2.x), BSR::Math::Min(_P1.y, _P2.y), BSR::Math::Min(_P1.z, _P2.z));
 }
 
-const BSR::Math::Vec3f BSR::Math::Vec3f::Max(const Vec3f& _A, const Vec3f& _B)
+const BSR::Math::Vec3f BSR::Math::Vec3f::Max(const Vec3f& _P1, const Vec3f& _P2)
 {
-	return Vec3f(BSR::Math::Max(_A.x, _B.x), BSR::Math::Max(_A.y, _B.y), BSR::Math::Max(_A.z, _B.z));
+	return Vec3f(BSR::Math::Max(_P1.x, _P2.x), BSR::Math::Max(_P1.y, _P2.y), BSR::Math::Max(_P1.z, _P2.z));
 }
 
 const BSR::Math::Vec3f BSR::Math::Vec3f::Reflect(const Vec3f& _Vec, const Vec3f& _Normal)
@@ -777,24 +777,24 @@ BSR::Math::Vec4f& BSR::Math::Vec4f::operator= (Vec4f&& _Other) noexcept
 	return *this;
 }
 
-const float BSR::Math::Vec4f::GetAngle(const Vec4f& _A, const Vec4f& _B)
+const float BSR::Math::Vec4f::GetAngle(const Vec4f& _P1, const Vec4f& _P2)
 {
-	return acosf(Vec3f::Dot(((Vec3f)(_A)).Normalized(), ((Vec3f)(_B)).Normalized()));
+	return acosf(Vec3f::Dot(((Vec3f)(_P1)).Normalized(), ((Vec3f)(_P2)).Normalized()));
 }
 
-const float BSR::Math::Vec4f::Distance(const Vec4f& _A, const Vec4f& _B)
+const float BSR::Math::Vec4f::Distance(const Vec4f& _P1, const Vec4f& _P2)
 {
-	return (_B - _A).Magnitude();
+	return (_P2 - _P1).Magnitude();
 }
 
-const float BSR::Math::Vec4f::Dot(const Vec4f& _A, const Vec4f& _B)
+const float BSR::Math::Vec4f::Dot(const Vec4f& _P1, const Vec4f& _P2)
 {
-	return _A.x * _B.x + _A.y * _B.y + _A.z * _B.z + _A.w * _B.w;
+	return _P1.x * _P2.x + _P1.y * _P2.y + _P1.z * _P2.z + _P1.w * _P2.w;
 }
 
-const BSR::Math::Vec4f BSR::Math::Vec4f::Cross(const Vec4f& _A, const Vec4f& _B)
+const BSR::Math::Vec4f BSR::Math::Vec4f::Cross(const Vec4f& _P1, const Vec4f& _P2)
 {
-	return Vec4f(_A.y * _B.z - _A.z * _B.y, _A.z * _B.x - _A.x * _B.z, _A.x * _B.y - _A.y * _B.x, 1.0f);
+	return Vec4f(_P1.y * _P2.z - _P1.z * _P2.y, _P1.z * _P2.x - _P1.x * _P2.z, _P1.x * _P2.y - _P1.y * _P2.x, 1.0f);
 }
 
 const BSR::Math::Vec4f BSR::Math::Vec4f::Clamp(const Vec4f& _Value, const Vec4f& _Min, const Vec4f& _Max)
@@ -802,9 +802,9 @@ const BSR::Math::Vec4f BSR::Math::Vec4f::Clamp(const Vec4f& _Value, const Vec4f&
 	return Vec4f(BSR::Math::Clamp(_Value.x, _Min.x, _Max.x), BSR::Math::Clamp(_Value.y, _Min.y, _Max.y), BSR::Math::Clamp(_Value.z, _Min.z, _Max.z), BSR::Math::Clamp(_Value.w, _Min.w, _Max.w));
 }
 
-const BSR::Math::Vec4f BSR::Math::Vec4f::Mix(const Vec4f& _A, const Vec4f& _B, const float _Percentage)
+const BSR::Math::Vec4f BSR::Math::Vec4f::Mix(const Vec4f& _P1, const Vec4f& _P2, const float _Percentage)
 {
-	return Vec4f(BSR::Math::Mix(_A.x, _B.x, _Percentage), BSR::Math::Mix(_A.y, _B.y, _Percentage), BSR::Math::Mix(_A.z, _B.z, _Percentage), BSR::Math::Mix(_A.w, _B.w, _Percentage));
+	return Vec4f(BSR::Math::Mix(_P1.x, _P2.x, _Percentage), BSR::Math::Mix(_P1.y, _P2.y, _Percentage), BSR::Math::Mix(_P1.z, _P2.z, _Percentage), BSR::Math::Mix(_P1.w, _P2.w, _Percentage));
 }
 
 const BSR::Math::Vec4f BSR::Math::Vec4f::Pow(const Vec4f& _Base, const Vec4f& _Pow)
@@ -817,14 +817,14 @@ const BSR::Math::Vec4f BSR::Math::Vec4f::Exp(const Vec4f& _Pow)
 	return Vec4f(expf(_Pow.x), expf(_Pow.y), expf(_Pow.z), expf(_Pow.w));
 }
 
-const BSR::Math::Vec4f BSR::Math::Vec4f::Min(const Vec4f& _A, const Vec4f& _B)
+const BSR::Math::Vec4f BSR::Math::Vec4f::Min(const Vec4f& _P1, const Vec4f& _P2)
 {
-	return Vec4f(BSR::Math::Min(_A.x, _B.x), BSR::Math::Min(_A.y, _B.y), BSR::Math::Min(_A.z, _B.z), BSR::Math::Min(_A.w, _B.w));
+	return Vec4f(BSR::Math::Min(_P1.x, _P2.x), BSR::Math::Min(_P1.y, _P2.y), BSR::Math::Min(_P1.z, _P2.z), BSR::Math::Min(_P1.w, _P2.w));
 }
 
-const BSR::Math::Vec4f BSR::Math::Vec4f::Max(const Vec4f& _A, const Vec4f& _B)
+const BSR::Math::Vec4f BSR::Math::Vec4f::Max(const Vec4f& _P1, const Vec4f& _P2)
 {
-	return Vec4f(BSR::Math::Max(_A.x, _B.x), BSR::Math::Max(_A.y, _B.y), BSR::Math::Max(_A.z, _B.z), BSR::Math::Max(_A.w, _B.w));
+	return Vec4f(BSR::Math::Max(_P1.x, _P2.x), BSR::Math::Max(_P1.y, _P2.y), BSR::Math::Max(_P1.z, _P2.z), BSR::Math::Max(_P1.w, _P2.w));
 }
 
 const BSR::Math::Vec4f BSR::Math::Vec4f::Reflect(const Vec4f& _Vec, const Vec4f& _Normal)

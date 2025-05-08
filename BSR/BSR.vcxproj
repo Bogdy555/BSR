@@ -159,13 +159,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="Cmd Batches\BSR_Build.bat" />
-    <None Include="Cmd Batches\BSR_Build_Debug_x64.sh" />
-    <None Include="Cmd Batches\BSR_Build_Debug_x86.sh" />
-    <None Include="Cmd Batches\BSR_Build_Release_x64.sh" />
-    <None Include="Cmd Batches\BSR_Build_Release_x86.sh" />
-    <None Include="Cmd Batches\BSR_Clean.bat" />
-    <None Include="Cmd Batches\BSR_Clean.sh" />
+    <None Include="Cmd Batches\BSR_Linux_Build_Debug_x64.sh" />
+    <None Include="Cmd Batches\BSR_Linux_Build_Debug_x86.sh" />
+    <None Include="Cmd Batches\BSR_Linux_Build_Release_x64.sh" />
+    <None Include="Cmd Batches\BSR_Linux_Build_Release_x86.sh" />
+    <None Include="Cmd Batches\BSR_Linux_Clean.sh" />
+    <None Include="Cmd Batches\BSR_Windows_Build_Debug_AVR.bat" />
+    <None Include="Cmd Batches\BSR_Windows_Build_Release_AVR.bat" />
+    <None Include="Cmd Batches\BSR_Windows_Clean.bat" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\BSR.hpp" />

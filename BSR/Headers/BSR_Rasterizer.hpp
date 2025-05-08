@@ -91,7 +91,7 @@ namespace BSR
 
 		typedef void (*GeometryShaderFnc)(const Math::Vec4f& _APosition, const Math::Vec4f& _BPosition, const Math::Vec4f& _CPosition, const float* _ALerpers, const float* _BLerpers, const float* _CLerpers, const void* _Uniforms, Vector<Math::Vec4f>& _PositionsOut, Vector<float*>& _LerpersOut);
 
-		typedef void (*FragmentShaderFnc)(const size_t _X, const size_t _Y, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType);
+		typedef void (*FragmentShaderFnc)(const size_t _XPos, const size_t _YPos, const size_t _ViewPortX, const size_t _ViewPortY, const float* _Lerpers, const void* _Uniforms, void* _FrameBuffer, const Math::Vec4f& _FragCoord, const bool _FrontFacing, const uint8_t _DepthTestingType, const uint8_t _BlendingType);
 
 		class Context
 		{
@@ -154,12 +154,12 @@ namespace BSR
 			static const float GetTNearPlane(const float _ZOut, const float _WOut, const float _ZIn, const float _WIn);
 			static const bool InsideFarPlane(const float _Z, const float _W);
 			static const float GetTFarPlane(const float _ZOut, const float _WOut, const float _ZIn, const float _WIn);
-			static void LerpAll(const float* _A, const float* _B, const size_t _LerpersCount, const float _Percentage, float* _Out);
+			static void LerpAll(const float* _V1, const float* _V2, const size_t _LerpersCount, const float _Percentage, float* _Out);
 			static void CopyAll(const float* _Src, float* _Dest, const size_t _LerpersCount);
 			static void MultiplyAll(float* _Out, const size_t _LerpersCount, const float _Value);
-			static const bool PointInside(const Math::Vec2f& _P, const Math::Vec2f& _A, const Math::Vec2f& _B, const Math::Vec2f& _C);
-			static const float GetT1(const Math::Vec2f& _A, const Math::Vec2f& _B, const Math::Vec2f& _C, const Math::Vec2f& _P);
-			static const float GetT2(const Math::Vec2f& _A, const Math::Vec2f& _B, const Math::Vec2f& _C, const Math::Vec2f& _P, const float _T1);
+			static const bool PointInside(const Math::Vec2f& _P0, const Math::Vec2f& _P1, const Math::Vec2f& _P2, const Math::Vec2f& _P3);
+			static const float GetT1(const Math::Vec2f& _P0, const Math::Vec2f& _P1, const Math::Vec2f& _P2, const Math::Vec2f& _P3);
+			static const float GetT2(const Math::Vec2f& _P0, const Math::Vec2f& _P1, const Math::Vec2f& _P2, const Math::Vec2f& _P3, const float _T1);
 
 		};
 

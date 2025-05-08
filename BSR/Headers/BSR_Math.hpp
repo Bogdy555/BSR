@@ -67,15 +67,15 @@ namespace BSR
 			Vec2f& operator= (const Vec2f& _Other);
 			Vec2f& operator= (Vec2f&& _Other) noexcept;
 
-			static const float GetAngle(const Vec2f& _A, const Vec2f& _B);
-			static const float Distance(const Vec2f& _A, const Vec2f& _B);
-			static const float Dot(const Vec2f& _A, const Vec2f& _B);
+			static const float GetAngle(const Vec2f& _P1, const Vec2f& _P2);
+			static const float Distance(const Vec2f& _P1, const Vec2f& _P2);
+			static const float Dot(const Vec2f& _P1, const Vec2f& _P2);
 			static const Vec2f Clamp(const Vec2f& _Value, const Vec2f& _Min, const Vec2f& _Max);
-			static const Vec2f Mix(const Vec2f& _A, const Vec2f& _B, const float _Percentage);
+			static const Vec2f Mix(const Vec2f& _P1, const Vec2f& _P2, const float _Percentage);
 			static const Vec2f Pow(const Vec2f& _Base, const Vec2f& _Pow);
 			static const Vec2f Exp(const Vec2f& _Pow);
-			static const Vec2f Min(const Vec2f& _A, const Vec2f& _B);
-			static const Vec2f Max(const Vec2f& _A, const Vec2f& _B);
+			static const Vec2f Min(const Vec2f& _P1, const Vec2f& _P2);
+			static const Vec2f Max(const Vec2f& _P1, const Vec2f& _P2);
 			static const Vec2f Reflect(const Vec2f& _Vec, const Vec2f& _Normal);
 
 		};
@@ -136,16 +136,16 @@ namespace BSR
 			Vec3f& operator= (const Vec3f& _Other);
 			Vec3f& operator= (Vec3f&& _Other) noexcept;
 
-			static const float GetAngle(const Vec3f& _A, const Vec3f& _B);
-			static const float Distance(const Vec3f& _A, const Vec3f& _B);
-			static const float Dot(const Vec3f& _A, const Vec3f& _B);
-			static const Vec3f Cross(const Vec3f& _A, const Vec3f& _B);
+			static const float GetAngle(const Vec3f& _P1, const Vec3f& _P2);
+			static const float Distance(const Vec3f& _P1, const Vec3f& _P2);
+			static const float Dot(const Vec3f& _P1, const Vec3f& _P2);
+			static const Vec3f Cross(const Vec3f& _P1, const Vec3f& _P2);
 			static const Vec3f Clamp(const Vec3f& _Value, const Vec3f& _Min, const Vec3f& _Max);
-			static const Vec3f Mix(const Vec3f& _A, const Vec3f& _B, const float _Percentage);
+			static const Vec3f Mix(const Vec3f& _P1, const Vec3f& _P2, const float _Percentage);
 			static const Vec3f Pow(const Vec3f& _Base, const Vec3f& _Pow);
 			static const Vec3f Exp(const Vec3f& _Pow);
-			static const Vec3f Min(const Vec3f& _A, const Vec3f& _B);
-			static const Vec3f Max(const Vec3f& _A, const Vec3f& _B);
+			static const Vec3f Min(const Vec3f& _P1, const Vec3f& _P2);
+			static const Vec3f Max(const Vec3f& _P1, const Vec3f& _P2);
 			static const Vec3f Reflect(const Vec3f& _Vec, const Vec3f& _Normal);
 
 		};
@@ -208,16 +208,16 @@ namespace BSR
 			Vec4f& operator= (const Vec4f& _Other);
 			Vec4f& operator= (Vec4f&& _Other) noexcept;
 
-			static const float GetAngle(const Vec4f& _A, const Vec4f& _B);
-			static const float Distance(const Vec4f& _A, const Vec4f& _B);
-			static const float Dot(const Vec4f& _A, const Vec4f& _B);
-			static const Vec4f Cross(const Vec4f& _A, const Vec4f& _B);
+			static const float GetAngle(const Vec4f& _P1, const Vec4f& _P2);
+			static const float Distance(const Vec4f& _P1, const Vec4f& _P2);
+			static const float Dot(const Vec4f& _P1, const Vec4f& _P2);
+			static const Vec4f Cross(const Vec4f& _P1, const Vec4f& _P2);
 			static const Vec4f Clamp(const Vec4f& _Value, const Vec4f& _Min, const Vec4f& _Max);
-			static const Vec4f Mix(const Vec4f& _A, const Vec4f& _B, const float _Percentage);
+			static const Vec4f Mix(const Vec4f& _P1, const Vec4f& _P2, const float _Percentage);
 			static const Vec4f Pow(const Vec4f& _Base, const Vec4f& _Pow);
 			static const Vec4f Exp(const Vec4f& _Pow);
-			static const Vec4f Min(const Vec4f& _A, const Vec4f& _B);
-			static const Vec4f Max(const Vec4f& _A, const Vec4f& _B);
+			static const Vec4f Min(const Vec4f& _P1, const Vec4f& _P2);
+			static const Vec4f Max(const Vec4f& _P1, const Vec4f& _P2);
 			static const Vec4f Reflect(const Vec4f& _Vec, const Vec4f& _Normal);
 
 		};
@@ -434,11 +434,11 @@ namespace BSR
 		extern const float DegreesToRadians;
 		extern const float RadiansToDegrees;
 
-		void Swap(float& _A, float& _B);
+		void Swap(float& _V1, float& _V2);
 		const float Clamp(const float _Value, const float _Min, const float _Max);
-		const float Mix(const float _A, const float _B, const float _Percentage);
-		const float Min(const float _A, const float _B);
-		const float Max(const float _A, const float _B);
+		const float Mix(const float _V1, const float _V2, const float _Percentage);
+		const float Min(const float _V1, const float _V2);
+		const float Max(const float _V1, const float _V2);
 
 	}
 
