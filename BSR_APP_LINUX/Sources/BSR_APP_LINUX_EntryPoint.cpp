@@ -16,7 +16,7 @@ char* LoadFile(size_t& _FileSize, const char* _FilePath)
 	}
 
 	_FileIn.seekg(0, std::ios::end);
-	_FileSize = _FileIn.tellg();
+	_FileSize = (size_t)(_FileIn.tellg());
 	_FileIn.seekg(0, std::ios::beg);
 
 	char* _Result = new char[_FileSize];
