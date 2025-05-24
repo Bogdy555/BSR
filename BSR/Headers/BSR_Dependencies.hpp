@@ -28,11 +28,9 @@
 
 
 
-#ifdef BSR_ARDUINO
+#ifdef __AVR__
 
 #include <stdint.h>
-
-typedef uint32_t size_t;
 
 #include <math.h>
 
@@ -42,7 +40,7 @@ typedef uint32_t size_t;
 
 
 
-#ifdef BSR_ESP32
+#ifdef ESP32
 
 #include <stdint.h>
 

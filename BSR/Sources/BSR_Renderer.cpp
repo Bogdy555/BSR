@@ -840,6 +840,648 @@ void BSR::Renderer::Mesh::GenerateQuad(Mesh& _Mesh)
 
 
 
+const bool BSR::Renderer::LoadModel(const char* _FileData, const size_t _FileSize, Model& _Model)
+{
+	struct MeshFileData
+	{
+		char* Name = nullptr;
+		size_t FacesStart = (size_t)(-1);
+		size_t FacesEnd = (size_t)(-1);
+	};
+
+	struct FaceVertex
+	{
+		size_t Position = (size_t)(-1);
+		size_t Normal = (size_t)(-1);
+		size_t TextureCoords = (size_t)(-1);
+	};
+
+	for (size_t _Index = 0; _Index < _Model.GetSize(); _Index++)
+	{
+		delete[] _Model[_Index].Name;
+	}
+
+	_Model.Clear();
+
+	if (!_FileData || !_FileSize)
+	{
+		return false;
+	}
+
+	BSR::Vector<MeshFileData> _Meshes;
+
+	BSR::Vector<BSR::Math::Vec3f> _Positions;
+	BSR::Vector<BSR::Math::Vec3f> _Normals;
+	BSR::Vector<BSR::Math::Vec2f> _TextureCoords;
+
+	BSR::Vector<BSR::Vector<FaceVertex>> _Faces;
+
+	BSR::Vector<BSR::Vector<char>> _Lines;
+
+	{
+		_Lines.EmplaceBack(BSR::Vector<char>());
+
+		size_t _Index = 0;
+
+		while (_Index < _FileSize)
+		{
+			if (_FileData[_Index] == '\n')
+			{
+				_Lines[_Lines.GetSize() - 1].PushBack('\0');
+				_Lines.EmplaceBack(BSR::Vector<char>());
+				_Index++;
+				continue;
+			}
+
+			_Lines[_Lines.GetSize() - 1].PushBack(_FileData[_Index]);
+			_Index++;
+		}
+
+		_Lines.Erase(_Lines.GetSize() - 1);
+	}
+
+	for (size_t _LineIndex = 0; _LineIndex < _Lines.GetSize(); _LineIndex++)
+	{
+		BSR::Vector<char*> _Tokens;
+
+		for (size_t _Index = 0; _Index < _Lines[_LineIndex].GetSize() - 1; _Index++)
+		{
+			if (_Lines[_LineIndex][_Index] == ' ' || _Lines[_LineIndex][_Index] == '\t')
+			{
+				_Lines[_LineIndex][_Index] = '\0';
+			}
+		}
+
+		if (_Lines[_LineIndex][0] != '\0')
+		{
+			_Tokens.PushBack(&_Lines[_LineIndex][0]);
+		}
+
+		for (size_t _Index = 1; _Index < _Lines[_LineIndex].GetSize() - 1; _Index++)
+		{
+			if (_Lines[_LineIndex][_Index] != '\0' && _Lines[_LineIndex][_Index - 1] == '\0')
+			{
+				_Tokens.PushBack(&_Lines[_LineIndex][_Index]);
+			}
+		}
+
+		if (!_Tokens.GetSize())
+		{
+			continue;
+		}
+
+		if (_Tokens[0][0] == '#')
+		{
+			continue;
+		}
+
+		if (strcmp(_Tokens[0], "o") == 0)
+		{
+			if (_Tokens.GetSize() != 2)
+			{
+				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+				{
+					delete[] _Meshes[_IndexDelete].Name;
+				}
+				return false;
+			}
+
+			for (size_t _Index = 0; _Index < _Meshes.GetSize(); _Index++)
+			{
+				if (strcmp(_Tokens[1], _Meshes[_Index].Name) == 0)
+				{
+					for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+					{
+						delete[] _Meshes[_IndexDelete].Name;
+					}
+					return false;
+				}
+			}
+
+			MeshFileData _MeshFileData;
+
+			size_t _NameLen = strlen(_Tokens[1]);
+
+			_MeshFileData.Name = new char[_NameLen + 1];
+
+			if (!_MeshFileData.Name)
+			{
+				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+				{
+					delete[] _Meshes[_IndexDelete].Name;
+				}
+				return false;
+			}
+
+			for (size_t _Index = 0; _Index < _NameLen + 1; _Index++)
+			{
+				_MeshFileData.Name[_Index] = _Tokens[1][_Index];
+			}
+
+			_MeshFileData.FacesStart = _Faces.GetSize();
+
+			if (_Meshes.GetSize())
+			{
+				_Meshes[_Meshes.GetSize() - 1].FacesEnd = _Faces.GetSize();
+			}
+
+			_Meshes.PushBack(_MeshFileData);
+
+			continue;
+		}
+
+		if (strcmp(_Tokens[0], "v") == 0)
+		{
+			if (_Tokens.GetSize() != 4)
+			{
+				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+				{
+					delete[] _Meshes[_IndexDelete].Name;
+				}
+				return false;
+			}
+
+			_Positions.PushBack(BSR::Math::Vec3f(strtof(_Tokens[1], nullptr), strtof(_Tokens[2], nullptr), strtof(_Tokens[3], nullptr)));
+
+			continue;
+		}
+
+		if (strcmp(_Tokens[0], "vn") == 0)
+		{
+			if (_Tokens.GetSize() != 4)
+			{
+				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+				{
+					delete[] _Meshes[_IndexDelete].Name;
+				}
+				return false;
+			}
+
+			_Normals.PushBack((BSR::Math::Vec3f(strtof(_Tokens[1], nullptr), strtof(_Tokens[2], nullptr), strtof(_Tokens[3], nullptr))));
+
+			continue;
+		}
+
+		if (strcmp(_Tokens[0], "vt") == 0)
+		{
+			if (_Tokens.GetSize() != 3)
+			{
+				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+				{
+					delete[] _Meshes[_IndexDelete].Name;
+				}
+				return false;
+			}
+
+			_TextureCoords.PushBack((BSR::Math::Vec2f(strtof(_Tokens[1], nullptr), strtof(_Tokens[2], nullptr))));
+
+			continue;
+		}
+
+		if (strcmp(_Tokens[0], "f") == 0)
+		{
+			if (_Tokens.GetSize() < 4)
+			{
+				for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+				{
+					delete[] _Meshes[_IndexDelete].Name;
+				}
+				return false;
+			}
+
+			_Faces.EmplaceBack(BSR::Vector<FaceVertex>());
+
+			BSR::Vector<FaceVertex>& _CurrentFace = _Faces[_Faces.GetSize() - 1];
+
+			for (size_t _Index = 1; _Index < _Tokens.GetSize(); _Index++)
+			{
+				size_t _TokenLen = strlen(_Tokens[_Index]);
+
+				if (_Tokens[_Index][0] == '/' || _Tokens[_Index][_TokenLen - 1] == '/')
+				{
+					for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+					{
+						delete[] _Meshes[_IndexDelete].Name;
+					}
+					return false;
+				}
+
+				FaceVertex _FaceVertex;
+
+				size_t _CountSlash = 0;
+
+				for (size_t _IndexCount = 0; _IndexCount < strlen(_Tokens[_Index]); _IndexCount++)
+				{
+					if (_Tokens[_Index][_IndexCount] == '/')
+					{
+						_CountSlash++;
+					}
+				}
+
+				switch (_CountSlash)
+				{
+				case 0:
+				{
+					_FaceVertex.Position = strtoull(_Tokens[_Index], nullptr, 10) - 1;
+
+					if (_FaceVertex.Position >= _Positions.GetSize())
+					{
+						for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+						{
+							delete[] _Meshes[_IndexDelete].Name;
+						}
+						return false;
+					}
+
+					break;
+				}
+				case 1:
+				{
+					BSR::Vector<char> _FaceVertexText;
+
+					for (size_t _IndexCopy = 0; _IndexCopy < _TokenLen + 1; _IndexCopy++)
+					{
+						_FaceVertexText.PushBack(_Tokens[_Index][_IndexCopy]);
+					}
+
+					BSR::Vector<const char*> _FaceVertexTokens;
+
+					for (size_t _IndexToken = 0; _IndexToken < _FaceVertexText.GetSize() - 1; _IndexToken++)
+					{
+						if (_FaceVertexText[_IndexToken] == '/')
+						{
+							_FaceVertexText[_IndexToken] = '\0';
+						}
+					}
+
+					if (_FaceVertexText[0] != '\0')
+					{
+						_FaceVertexTokens.PushBack(&_FaceVertexText[0]);
+					}
+
+					for (size_t _IndexToken = 1; _IndexToken < _FaceVertexText.GetSize() - 1; _IndexToken++)
+					{
+						if (_FaceVertexText[_IndexToken] != '\0' && _FaceVertexText[_IndexToken - 1] == '\0')
+						{
+							_FaceVertexTokens.PushBack(&_FaceVertexText[_IndexToken]);
+						}
+					}
+
+					_FaceVertex.Position = strtoull(_FaceVertexTokens[0], nullptr, 10) - 1;
+
+					if (_FaceVertex.Position >= _Positions.GetSize())
+					{
+						for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+						{
+							delete[] _Meshes[_IndexDelete].Name;
+						}
+						return false;
+					}
+
+					_FaceVertex.TextureCoords = strtoull(_FaceVertexTokens[1], nullptr, 10) - 1;
+
+					if (_FaceVertex.TextureCoords >= _TextureCoords.GetSize())
+					{
+						for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+						{
+							delete[] _Meshes[_IndexDelete].Name;
+						}
+						return false;
+					}
+
+					break;
+				}
+				case 2:
+				{
+					BSR::Vector<char> _FaceVertexText;
+
+					for (size_t _IndexCopy = 0; _IndexCopy < _TokenLen + 1; _IndexCopy++)
+					{
+						_FaceVertexText.PushBack(_Tokens[_Index][_IndexCopy]);
+					}
+
+					BSR::Vector<const char*> _FaceVertexTokens;
+
+					for (size_t _IndexToken = 0; _IndexToken < _FaceVertexText.GetSize() - 1; _IndexToken++)
+					{
+						if (_FaceVertexText[_IndexToken] == '/')
+						{
+							_FaceVertexText[_IndexToken] = '\0';
+						}
+					}
+
+					if (_FaceVertexText[0] != '\0')
+					{
+						_FaceVertexTokens.PushBack(&_FaceVertexText[0]);
+					}
+
+					for (size_t _IndexToken = 1; _IndexToken < _FaceVertexText.GetSize() - 1; _IndexToken++)
+					{
+						if (_FaceVertexText[_IndexToken] != '\0' && _FaceVertexText[_IndexToken - 1] == '\0')
+						{
+							_FaceVertexTokens.PushBack(&_FaceVertexText[_IndexToken]);
+						}
+					}
+
+					if (_FaceVertexTokens.GetSize() == 2)
+					{
+						_FaceVertex.Position = strtoull(_FaceVertexTokens[0], nullptr, 10) - 1;
+
+						if (_FaceVertex.Position >= _Positions.GetSize())
+						{
+							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+							{
+								delete[] _Meshes[_IndexDelete].Name;
+							}
+							return false;
+						}
+
+						_FaceVertex.Normal = strtoull(_FaceVertexTokens[1], nullptr, 10) - 1;
+
+						if (_FaceVertex.Normal >= _Normals.GetSize())
+						{
+							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+							{
+								delete[] _Meshes[_IndexDelete].Name;
+							}
+							return false;
+						}
+					}
+					else
+					{
+						_FaceVertex.Position = strtoull(_FaceVertexTokens[0], nullptr, 10) - 1;
+
+						if (_FaceVertex.Position >= _Positions.GetSize())
+						{
+							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+							{
+								delete[] _Meshes[_IndexDelete].Name;
+							}
+							return false;
+						}
+
+						_FaceVertex.TextureCoords = strtoull(_FaceVertexTokens[1], nullptr, 10) - 1;
+
+						if (_FaceVertex.TextureCoords >= _TextureCoords.GetSize())
+						{
+							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+							{
+								delete[] _Meshes[_IndexDelete].Name;
+							}
+							return false;
+						}
+
+						_FaceVertex.Normal = strtoull(_FaceVertexTokens[2], nullptr, 10) - 1;
+
+						if (_FaceVertex.Normal >= _Normals.GetSize())
+						{
+							for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+							{
+								delete[] _Meshes[_IndexDelete].Name;
+							}
+							return false;
+						}
+					}
+
+					break;
+				}
+				default:
+				{
+					for (size_t _IndexDelete = 0; _IndexDelete < _Meshes.GetSize(); _IndexDelete++)
+					{
+						delete[] _Meshes[_IndexDelete].Name;
+					}
+					return false;
+				}
+				}
+
+				_CurrentFace.PushBack(_FaceVertex);
+			}
+
+			continue;
+		}
+	}
+
+	if (!_Meshes.GetSize())
+	{
+		const char* _DefaultName = "default_name";
+
+		MeshFileData _DefaultMesh;
+
+		_DefaultMesh.Name = new char[strlen(_DefaultName) + 1];
+
+		if (!_DefaultMesh.Name)
+		{
+			return false;
+		}
+
+		for (size_t _Index = 0; _Index < strlen(_DefaultName); _Index++)
+		{
+			_DefaultMesh.Name[_Index] = _DefaultName[_Index];
+		}
+		_DefaultMesh.FacesStart = 0;
+
+		_Meshes.PushBack(_DefaultMesh);
+	}
+
+	_Meshes[_Meshes.GetSize() - 1].FacesEnd = _Faces.GetSize();
+
+	for (size_t _IndexMesh = 0; _IndexMesh < _Meshes.GetSize(); _IndexMesh++)
+	{
+		MeshFileData& _CurrentMesh = _Meshes[_IndexMesh];
+
+		Mesh _MeshTemp;
+
+		_MeshTemp.Name = _CurrentMesh.Name;
+
+		for (size_t _IndexFace = _CurrentMesh.FacesStart; _IndexFace < _CurrentMesh.FacesEnd; _IndexFace++)
+		{
+			BSR::Vector<FaceVertex>& _CurrentFace = _Faces[_IndexFace];
+
+			for (size_t _IndexFaceVertex = 1; _IndexFaceVertex < _CurrentFace.GetSize() - 1; _IndexFaceVertex++)
+			{
+				VertexData _VertA;
+				VertexData _VertB;
+				VertexData _VertC;
+
+				_VertA.Position = _Positions[_CurrentFace[0].Position];
+
+				_VertB.Position = _Positions[_CurrentFace[_IndexFaceVertex].Position];
+
+				_VertC.Position = _Positions[_CurrentFace[_IndexFaceVertex + 1].Position];
+
+				if (_CurrentFace[0].Normal != (size_t)(-1))
+				{
+					_VertA.Normal = _Normals[_CurrentFace[0].Normal];
+				}
+				else
+				{
+					_VertA.Normal = BSR::Math::Vec3f::Cross(_VertB.Position - _VertA.Position, _VertC.Position - _VertA.Position);
+				}
+				if (_CurrentFace[0].TextureCoords != (size_t)(-1))
+				{
+					_VertA.TextureCoords = _TextureCoords[_CurrentFace[0].TextureCoords];
+				}
+				else
+				{
+					_VertA.TextureCoords = BSR::Math::Vec2f(0.0f, 0.0f);
+				}
+
+				if (_CurrentFace[_IndexFaceVertex].Normal != (size_t)(-1))
+				{
+					_VertB.Normal = _Normals[_CurrentFace[_IndexFaceVertex].Normal];
+				}
+				else
+				{
+					_VertB.Normal = BSR::Math::Vec3f::Cross(_VertB.Position - _VertA.Position, _VertC.Position - _VertA.Position);
+				}
+				if (_CurrentFace[_IndexFaceVertex].TextureCoords != (size_t)(-1))
+				{
+					_VertB.TextureCoords = _TextureCoords[_CurrentFace[_IndexFaceVertex].TextureCoords];
+				}
+				else
+				{
+					_VertB.TextureCoords = BSR::Math::Vec2f(0.0f, 0.0f);
+				}
+
+				if (_CurrentFace[_IndexFaceVertex + 1].Normal != (size_t)(-1))
+				{
+					_VertC.Normal = _Normals[_CurrentFace[_IndexFaceVertex + 1].Normal];
+				}
+				else
+				{
+					_VertC.Normal = BSR::Math::Vec3f::Cross(_VertB.Position - _VertA.Position, _VertC.Position - _VertA.Position);
+				}
+				if (_CurrentFace[_IndexFaceVertex + 1].TextureCoords != (size_t)(-1))
+				{
+					_VertC.TextureCoords = _TextureCoords[_CurrentFace[_IndexFaceVertex + 1].TextureCoords];
+				}
+				else
+				{
+					_VertC.TextureCoords = BSR::Math::Vec2f(0.0f, 0.0f);
+				}
+
+				if (_CurrentFace[0].TextureCoords != (size_t)(-1) && _CurrentFace[_IndexFaceVertex].TextureCoords != (size_t)(-1) && _CurrentFace[_IndexFaceVertex + 1].TextureCoords != (size_t)(-1))
+				{
+					if (_VertA.TextureCoords != _VertB.TextureCoords && _VertB.TextureCoords != _VertC.TextureCoords && _VertC.TextureCoords != _VertA.TextureCoords)
+					{
+						BSR::Math::Vec3f _Edge1 = _VertB.Position - _VertA.Position;
+						BSR::Math::Vec3f _Edge2 = _VertC.Position - _VertA.Position;
+
+						BSR::Math::Vec2f _Delta1 = _VertB.TextureCoords - _VertA.TextureCoords;
+						BSR::Math::Vec2f _Delta2 = _VertC.TextureCoords - _VertA.TextureCoords;
+
+						float _Factor = 1.0f / (_Delta1.x * _Delta2.y - _Delta2.x * _Delta1.y);
+
+						_VertA.Tangent.x = _Factor * (_Delta2.y * _Edge1.x - _Delta1.y * _Edge2.x);
+						_VertA.Tangent.y = _Factor * (_Delta2.y * _Edge1.y - _Delta1.y * _Edge2.y);
+						_VertA.Tangent.z = _Factor * (_Delta2.y * _Edge1.z - _Delta1.y * _Edge2.z);
+
+						_VertA.Tangent /= _VertA.Tangent.Magnitude();
+
+						_VertB.Tangent.x = _VertA.Tangent.x;
+						_VertB.Tangent.y = _VertA.Tangent.y;
+						_VertB.Tangent.z = _VertA.Tangent.z;
+
+						_VertC.Tangent.x = _VertA.Tangent.x;
+						_VertC.Tangent.y = _VertA.Tangent.y;
+						_VertC.Tangent.z = _VertA.Tangent.z;
+					}
+					else
+					{
+						_VertA.Tangent = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
+						_VertB.Tangent = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
+						_VertC.Tangent = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
+					}
+				}
+				else
+				{
+					_VertA.Tangent = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
+					_VertB.Tangent = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
+					_VertC.Tangent = BSR::Math::Vec3f(0.0f, 0.0f, 0.0f);
+				}
+
+				IndexData _IndexData;
+
+				_IndexData.IndexA = _MeshTemp.VBO.GetSize();
+				_IndexData.IndexB = _MeshTemp.VBO.GetSize() + 1;
+				_IndexData.IndexC = _MeshTemp.VBO.GetSize() + 2;
+
+				_MeshTemp.VBO.PushBack(_VertA);
+				_MeshTemp.VBO.PushBack(_VertB);
+				_MeshTemp.VBO.PushBack(_VertC);
+
+				_MeshTemp.IBO.PushBack(_IndexData);
+			}
+		}
+
+		Mesh _MeshTrue;
+
+		_MeshTrue.Name = _CurrentMesh.Name;
+
+		for (size_t _IndexTemp = 0; _IndexTemp < _MeshTemp.VBO.GetSize(); _IndexTemp++)
+		{
+			bool _Found = false;
+
+			for (size_t _IndexTrue = 0; _IndexTrue < _MeshTrue.VBO.GetSize(); _IndexTrue++)
+			{
+				if (_MeshTemp.VBO[_IndexTemp].Position == _MeshTrue.VBO[_IndexTrue].Position && _MeshTemp.VBO[_IndexTemp].Normal == _MeshTrue.VBO[_IndexTrue].Normal && _MeshTemp.VBO[_IndexTemp].Tangent == _MeshTrue.VBO[_IndexTrue].Tangent && _MeshTemp.VBO[_IndexTemp].TextureCoords == _MeshTrue.VBO[_IndexTrue].TextureCoords)
+				{
+					_Found = true;
+					break;
+				}
+			}
+
+			if (_Found)
+			{
+				continue;
+			}
+
+			_MeshTrue.VBO.PushBack(_MeshTemp.VBO[_IndexTemp]);
+		}
+
+		for (size_t _IndexTemp = 0; _IndexTemp < _MeshTemp.IBO.GetSize(); _IndexTemp++)
+		{
+			IndexData _IndexDataTrue;
+
+			for (size_t _IndexTrue = 0; _IndexTrue < _MeshTrue.VBO.GetSize(); _IndexTrue++)
+			{
+				if (_MeshTemp.VBO[_MeshTemp.IBO[_IndexTemp].IndexA].Position == _MeshTrue.VBO[_IndexTrue].Position && _MeshTemp.VBO[_MeshTemp.IBO[_IndexTemp].IndexA].Normal == _MeshTrue.VBO[_IndexTrue].Normal && _MeshTemp.VBO[_MeshTemp.IBO[_IndexTemp].IndexA].Tangent == _MeshTrue.VBO[_IndexTrue].Tangent && _MeshTemp.VBO[_MeshTemp.IBO[_IndexTemp].IndexA].TextureCoords == _MeshTrue.VBO[_IndexTrue].TextureCoords)
+				{
+					_IndexDataTrue.IndexA = _IndexTrue;
+					break;
+				}
+			}
+
+			for (size_t _IndexTrue = 0; _IndexTrue < _MeshTrue.VBO.GetSize(); _IndexTrue++)
+			{
+				if (_MeshTemp.VBO[_MeshTemp.IBO[_IndexTemp].IndexB].Position == _MeshTrue.VBO[_IndexTrue].Position && _MeshTemp.VBO[_MeshTemp.IBO[_IndexTemp].IndexB].Normal == _MeshTrue.VBO[_IndexTrue].Normal && _MeshTemp.VBO[_MeshTemp.IBO[_IndexTemp].IndexB].Tangent == _MeshTrue.VBO[_IndexTrue].Tangent && _MeshTemp.VBO[_MeshTemp.IBO[_IndexTemp].IndexB].TextureCoords == _MeshTrue.VBO[_IndexTrue].TextureCoords)
+				{
+					_IndexDataTrue.IndexB = _IndexTrue;
+					break;
+				}
+			}
+
+			for (size_t _IndexTrue = 0; _IndexTrue < _MeshTrue.VBO.GetSize(); _IndexTrue++)
+			{
+				if (_MeshTemp.VBO[_MeshTemp.IBO[_IndexTemp].IndexC].Position == _MeshTrue.VBO[_IndexTrue].Position && _MeshTemp.VBO[_MeshTemp.IBO[_IndexTemp].IndexC].Normal == _MeshTrue.VBO[_IndexTrue].Normal && _MeshTemp.VBO[_MeshTemp.IBO[_IndexTemp].IndexC].Tangent == _MeshTrue.VBO[_IndexTrue].Tangent && _MeshTemp.VBO[_MeshTemp.IBO[_IndexTemp].IndexC].TextureCoords == _MeshTrue.VBO[_IndexTrue].TextureCoords)
+				{
+					_IndexDataTrue.IndexC = _IndexTrue;
+					break;
+				}
+			}
+
+			_MeshTrue.IBO.PushBack(_IndexDataTrue);
+		}
+
+		_Model.EmplaceBack((BSR::Renderer::Mesh&&)(_MeshTrue));
+	}
+
+	return true;
+}
+
+
+
 const BSR::Math::Mat4f BSR::Renderer::Camera::GetViewMatrix() const
 {
 	return
