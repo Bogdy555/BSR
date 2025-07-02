@@ -12,6 +12,8 @@
 
 #include <cstring>
 
+#include <cstdlib>
+
 #endif
 
 
@@ -23,6 +25,8 @@
 #include <cmath>
 
 #include <cstring>
+
+#include <cstdlib>
 
 #endif
 
@@ -36,6 +40,8 @@
 
 #include <string.h>
 
+#include <stdlib.h>
+
 #endif
 
 
@@ -47,6 +53,8 @@
 #include <math.h>
 
 #include <string.h>
+
+#include <stdlib.h>
 
 #endif
 

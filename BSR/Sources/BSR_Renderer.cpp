@@ -1001,7 +1001,7 @@ const bool BSR::Renderer::LoadModel(const char* _FileData, const size_t _FileSiz
 				return false;
 			}
 
-			_Positions.PushBack(BSR::Math::Vec3f(strtof(_Tokens[1], nullptr), strtof(_Tokens[2], nullptr), strtof(_Tokens[3], nullptr)));
+			_Positions.PushBack(BSR::Math::Vec3f((float)(atof(_Tokens[1])), (float)(atof(_Tokens[2])), (float)(atof(_Tokens[3]))));
 
 			continue;
 		}
@@ -1017,7 +1017,7 @@ const bool BSR::Renderer::LoadModel(const char* _FileData, const size_t _FileSiz
 				return false;
 			}
 
-			_Normals.PushBack((BSR::Math::Vec3f(strtof(_Tokens[1], nullptr), strtof(_Tokens[2], nullptr), strtof(_Tokens[3], nullptr))));
+			_Normals.PushBack((BSR::Math::Vec3f((float)(atof(_Tokens[1])), (float)(atof(_Tokens[2])), (float)(atof(_Tokens[3])))));
 
 			continue;
 		}
@@ -1033,7 +1033,7 @@ const bool BSR::Renderer::LoadModel(const char* _FileData, const size_t _FileSiz
 				return false;
 			}
 
-			_TextureCoords.PushBack((BSR::Math::Vec2f(strtof(_Tokens[1], nullptr), strtof(_Tokens[2], nullptr))));
+			_TextureCoords.PushBack((BSR::Math::Vec2f((float)(atof(_Tokens[1])), (float)(atof(_Tokens[2])))));
 
 			continue;
 		}
@@ -1082,7 +1082,7 @@ const bool BSR::Renderer::LoadModel(const char* _FileData, const size_t _FileSiz
 				{
 				case 0:
 				{
-					_FaceVertex.Position = (size_t)(strtoull(_Tokens[_Index], nullptr, 10) - 1);
+					_FaceVertex.Position = (size_t)(strtoul(_Tokens[_Index], nullptr, 10) - 1);
 
 					if (_FaceVertex.Position >= _Positions.GetSize())
 					{
@@ -1127,7 +1127,7 @@ const bool BSR::Renderer::LoadModel(const char* _FileData, const size_t _FileSiz
 						}
 					}
 
-					_FaceVertex.Position = (size_t)(strtoull(_FaceVertexTokens[0], nullptr, 10) - 1);
+					_FaceVertex.Position = (size_t)(strtoul(_FaceVertexTokens[0], nullptr, 10) - 1);
 
 					if (_FaceVertex.Position >= _Positions.GetSize())
 					{
@@ -1138,7 +1138,7 @@ const bool BSR::Renderer::LoadModel(const char* _FileData, const size_t _FileSiz
 						return false;
 					}
 
-					_FaceVertex.TextureCoords = (size_t)(strtoull(_FaceVertexTokens[1], nullptr, 10) - 1);
+					_FaceVertex.TextureCoords = (size_t)(strtoul(_FaceVertexTokens[1], nullptr, 10) - 1);
 
 					if (_FaceVertex.TextureCoords >= _TextureCoords.GetSize())
 					{
@@ -1185,7 +1185,7 @@ const bool BSR::Renderer::LoadModel(const char* _FileData, const size_t _FileSiz
 
 					if (_FaceVertexTokens.GetSize() == 2)
 					{
-						_FaceVertex.Position = (size_t)(strtoull(_FaceVertexTokens[0], nullptr, 10) - 1);
+						_FaceVertex.Position = (size_t)(strtoul(_FaceVertexTokens[0], nullptr, 10) - 1);
 
 						if (_FaceVertex.Position >= _Positions.GetSize())
 						{
@@ -1196,7 +1196,7 @@ const bool BSR::Renderer::LoadModel(const char* _FileData, const size_t _FileSiz
 							return false;
 						}
 
-						_FaceVertex.Normal = (size_t)(strtoull(_FaceVertexTokens[1], nullptr, 10) - 1);
+						_FaceVertex.Normal = (size_t)(strtoul(_FaceVertexTokens[1], nullptr, 10) - 1);
 
 						if (_FaceVertex.Normal >= _Normals.GetSize())
 						{
@@ -1209,7 +1209,7 @@ const bool BSR::Renderer::LoadModel(const char* _FileData, const size_t _FileSiz
 					}
 					else
 					{
-						_FaceVertex.Position = (size_t)(strtoull(_FaceVertexTokens[0], nullptr, 10) - 1);
+						_FaceVertex.Position = (size_t)(strtoul(_FaceVertexTokens[0], nullptr, 10) - 1);
 
 						if (_FaceVertex.Position >= _Positions.GetSize())
 						{
@@ -1220,7 +1220,7 @@ const bool BSR::Renderer::LoadModel(const char* _FileData, const size_t _FileSiz
 							return false;
 						}
 
-						_FaceVertex.TextureCoords = (size_t)(strtoull(_FaceVertexTokens[1], nullptr, 10) - 1);
+						_FaceVertex.TextureCoords = (size_t)(strtoul(_FaceVertexTokens[1], nullptr, 10) - 1);
 
 						if (_FaceVertex.TextureCoords >= _TextureCoords.GetSize())
 						{
@@ -1231,7 +1231,7 @@ const bool BSR::Renderer::LoadModel(const char* _FileData, const size_t _FileSiz
 							return false;
 						}
 
-						_FaceVertex.Normal = (size_t)(strtoull(_FaceVertexTokens[2], nullptr, 10) - 1);
+						_FaceVertex.Normal = (size_t)(strtoul(_FaceVertexTokens[2], nullptr, 10) - 1);
 
 						if (_FaceVertex.Normal >= _Normals.GetSize())
 						{
